@@ -41,11 +41,12 @@
 \usepackage{mathtools}
 \usepackage{amssymb}
 \usepackage{amsthm} % proofs
+\usepackage{stmaryrd} % llbracket for jumps
 % bold for everything
 \usepackage{bm}
 %\usepackage{showlabels}
 % lowercase mathcal font
-%\usepackage{dutchcal}
+\usepackage{dutchcal}
 
 % braces for subeqns and boxes
 \usepackage{empheq}
@@ -62,8 +63,10 @@
 \newcommand{\bmesh}{{\vect{\mathcal T}}}
 \newcommand{\mcell}{\tau}
 \newcommand{\mmesh}{{\vect{\mathcal \tau}}}
+\newcommand{\bface}{F}
 \newcommand{\bfaces}[1][]{{\vect{\mathcal F}_{\text{#1}}}}
-\newcommand{\mfaces}[1][]{{\vect{ f}_{\text{#1}}}}
+\newcommand{\mface}{f}
+\newcommand{\mfaces}[1][]{{\vect{\mathcal f}_{\text{#1}}}}
 
 \newcommand{\LTwo}{{\mathbb L^2}}
 \newcommand{\lTwo}{{\ell^2}}
@@ -73,6 +76,8 @@
 \newcommand{\LTwoSpace}[1][\Omega]{{\mathbb L^2\left({#1}\right)}}
 \newcommand{\lTwoSpace}[1][\Omega]{{\ell^2\left({#1}\right)}}
 \newcommand{\HDivSpace}[1][\Omega]{{\mathbb H_\text{div}\left({#1}\right)}}
+\newcommand{\HDivNodeSpace}[1][\Omega]{{\mathbb H_\text{div,\,0}\left({#1}\right)}}
+\newcommand{\HHalfSpace}[1][\bface]{{\mathbb H^{\frac{1}{2}}\left({#1}\right)}}
 \newcommand{\PnSpace}[2]{{\mathbb P^{#1}\left({#2}\right)}}
 
 \newcommand{\errlTwo}[1]{e^{\lTwo}_{#1}}
@@ -80,105 +85,92 @@
 \newcommand{\MO}[1]{{\color{blue}MO: #1}}
 \newcommand{\DS}[1]{{\color{blue}DS: #1}}
 \newcommand{\Sasha}[1]{\colorbox{Cyan}{\textbf{Sasha}:} #1}
+\newcommand{\toDiscuss}[1]{\colorbox{Cyan}{\textbf{\,!\,}:} #1}
 
 % differentials
 \newcommand*\diff{\mathop{}\!\mathrm{d}}
 \newcommand*\Diff[1]{\mathop{}\!\mathrm{d^#1}}
 
-\DeclareMathOperator{\Ker}{Ker}
-
-% listings
-%\usepackage{listings}
-%\lstset{
-%	basicstyle=\linespread{.95}\footnotesize\ttfamily\color{black},
-%	keywordstyle=\color{green!40!black},
-%	emphstyle=\bfseries\color{green!40!black},
-%	commentstyle=\itshape\color{purple!40!black},
-%	identifierstyle=\color{blue!30!black},
-%	showstringspaces=false,
-%	stringstyle=\color{orange},
-%	numbers=left,
-%	tabsize=2,
-%	breaklines=true,
-%	breakatwhitespace=true,
-%	language=C++
-%}
+\DeclareMathOperator{\Ker}{ker}
+\DeclareMathOperator{\Dim}{dim}
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{corollary}{Corollary}[theorem]
 \newtheorem{lemma}[theorem]{Lemma}
 
-	\newgeometry{
-		left=3cm, right=2.5cm, top=1.5cm, bottom=1.5cm,
-		includefoot, heightrounded
-	}
+\newgeometry{
+	left=3cm, right=2.5cm, top=1.5cm, bottom=1.5cm,
+	includefoot, heightrounded
+}
+
+\title{A higher order approximate static condensation method for multi-material diffusion problems}
+\author{
+	Alexander Zhiliakov\thanks{Department of Mathematics, University of Houston, Houston, Texas 77204 (alex@math.uh.edu).}
+	\and Daniil Svyatskiy\thanks{Los Alamos National Laboratory, Los Alamos,
+		New Mexico, USA (dasvyat@lanl.gov).}
+	\and
+	Maxim Olshanskii\thanks{Department of Mathematics, University of Houston, Houston, Texas 77204 (molshan@math.uh.edu); Partially supported by NSF through grant  DMS-1717516.}
+	\and Evgeny Kikinzon \thanks{Los Alamos National Laboratory, Los Alamos,
+		New Mexico, USA (kikinzon@lanl.gov).}
+	\and Mikhail Shashkov\thanks{Los Alamos National Laboratory, Los Alamos,
+		New Mexico, USA (shashkov@lanl.gov).}
+}
 
 \begin{document}
 	
-\title{A higher order approximate static condensation method for multi-material diffusion problems}
-\author{
-Alexander Zhiliakov\thanks{Department of Mathematics, University of Houston, Houston, Texas 77204 (alex@math.uh.edu).}
-\and Daniil Svyatskiy\thanks{Los Alamos National Laboratory, Los Alamos,
-New Mexico, USA (dasvyat@lanl.gov).}
-\and
-Maxim Olshanskii\thanks{Department of Mathematics, University of Houston, Houston, Texas 77204 (molshan@math.uh.edu); Partially supported by NSF through grant  DMS-1717516.}
-\and Evgeny Kikinzon \thanks{Los Alamos National Laboratory, Los Alamos,
-  New Mexico, USA (kikinzon@lanl.gov).}
-\and Mikhail Shashkov\thanks{Los Alamos National Laboratory, Los Alamos,
-  New Mexico, USA (shashkov@lanl.gov).}
-}
-
-\maketitle
-
-\let\oldtabular\tabular
-\renewcommand{\tabular}[1][1.5]{\def\arraystretch{#1}\oldtabular}
-
-\begin{abstract}
-The paper studies an approximate static condensation method for the diffusion problem with discontinuous diffusion coefficients. The method allows for a general polygonal mesh which is unfitted to the material interfaces. Moreover, the interfaces can be discontinuous across the mesh edges as typical for numerical reconstructions using the volume or moments of fluid methods.  We apply a mimetic finite difference method to solve local diffusion problems and use $P_1$ (mortar) edge elements to couple local problems into the global system. The condensation process and the properties of the resulting algebraic system are discussed. It is demonstrated that the method is second order accurate on smooth solutions and performs well for problems with high contrast in diffusion coefficients. Experiments also show the robustness with respect to position of the interface against the underlying mesh.
-\end{abstract}
-
-%\Sasha{Note that \texttt{usepackage\{dutchcal\}} seems to be not working with miktex (I need this package for a bold mathcal font). I use texlive and it works just ok. I left it commented so it compiles more or less everywhere. You may see some funny symbols from time to time  while reading if you leave it commented.}
-
-\section{Introduction}
- Multi-phase and multi-material processes are ubiquitous in nature and engineering.
- Mathematical models of such processes are often formulated in terms of systems of partial differential equations with discontinuous coefficients and interface conditions on time-dependent internal boundaries.
- Due to their high complexity, these models   resist analytical treatment, and hence numerical simulations became an indispensable tool for solving the models and gaining insights into underlying phenomena.
-
- Past decades evidenced an 	explosive growth in developing of efficient computational techniques for problems with evolving interfaces, which involve interaction between many materials or different phases of matter. This includes immersed boundary method \cite{peskin2002immersed}, level-set method \cite{sethian1999level}, and unfitted finite element methods \cite{belytschko2009review,burman2015cutfem}, to name several popular numerical approaches.
- The present study is motivated by the successful applications of the volume of fluid (VOF)~\cite{hirt1981volume} and the moment of fluids (MOF) methods~\cite{ahn2009adaptive} for the numerical  reconstruction of time-dependent interfaces. Both  methods do not require a mesh aligned with the  interfaces and reconstruct them from the information about the volumes of materials in each cell.
- % implicitly with the help of a characteristic function
-% and construct allow for general polygonal computational meshes not fitted to the position of the interface.
- The superior conservation properties of the  VOF and MOF approaches, however, commonly come at a price of recovering piecewise smooth interface approximation that is  discontinuous across the faces of the underlying computational mesh.
-
-In this report, we devise  a higher order method for the numerical solution of the diffusion problem with discontinuous  coefficients on a general polyhedral mesh, which does not respect the position of multi-material interfaces.  The method builds upon the approximate static condensation (ASC) algorithm first  proposed in ~\cite{kikinzon2017approximate}; it admits high-contrast diffusion coefficients and discontinuous reconstruction of the interfaces as typical for the volume/moment of fluid method. The ASC approach uses the formulation of the interface diffusion problem as a system of local inter-cell problems  coupled through the concentration values and fluxes on the cell faces. This face concentration serves as the new primal unknown and it is further approximated by piecewise  polynomial functions defined on all faces of the global (unfitted polygonal) mesh. The original paper ~\cite{kikinzon2017approximate} considered $P_0$ (piecewise constant) approximation to the face concentration, while the present study introduces higher order polynomials for this purpose.
-Although the latter potentially leads to more accurate results  (and in some cases we shall see that it provides convergent results, when the $P_0$ version fails), it also raises some questions about stability and robustness, which we address in the present report.
-
-The approximate static condensation approach leaves much freedom in the choice of the discretization method for the local diffusion problems.  Posed in each polygonal cell, these problems are given by  diffusion equations with  discontinuous coefficients. The method benefits from the observation that   for any fixed cell $T$,  material interfaces, which possibly intersect with $T$,  induce a \emph{consistent polygonal subdivision} (local mesh) of $T$. Opposite to the global mesh, the local one is \emph{fitted} to interfaces, i.e. each micro polyhedral element is shared only by one material. Following~\cite{kikinzon2017approximate}, we apply the mimetic finite difference (MFD) method from~\cite{lipnikov2014mimetic} to approximate the local diffusion problems on this fine fitted mesh.
-After eliminating inter-cell degrees of freedom, one obtains a system of linear algebraic equations for the face concentration degrees of freedom. The fluxes and inter-element degrees of freedom are recovered by simple postprocessing. In the report, we study the performance of the method in terms of accuracy, robustness with respect to the interfaces position,  and algebraic stability.
-
-The remainder of the paper is organized as follows. In section~\ref{sec:model} we formulate the model diffusion problem with discontinuous diffusion tensor, introduce the basic mesh and discuss a reformulation of the model as a system of coupled local problems. Section~\ref{sec:ASC} presents the method and discusses certain  properties of the resulting  system of algebraic equations. Finally, section~\ref{sec:num} collects results of numerical experiments. These results include accuracy tests, numerical comparison with the method from  \cite{kikinzon2017approximate} and with a homogenization method as an alternative approach.
-
-
+	\maketitle
 	
-\section{Model problem and macro-mesh decomposition} \label{sec:model}
-In a polygonal bounded domain $\Omega \subset \Rn{2}$  we consider the following diffusion problem in the mixed form
+	\let\oldtabular\tabular
+	\renewcommand{\tabular}[1][1.5]{\def\arraystretch{#1}\oldtabular}
+	
+	%\let\oldarray\array
+	%\renewcommand{\array}[1][2pt]{\arraycolsep=#1\def\arraystretch{1.5}\oldarray}
+	
+	\begin{abstract}
+		The paper studies an approximate static condensation method for the diffusion problem with discontinuous diffusion coefficients. The method allows for a general polygonal mesh which is unfitted to the material interfaces. Moreover, the interfaces can be discontinuous across the mesh edges as typical for numerical reconstructions using the volume or moment-of-fluid methods.  We apply a mimetic finite difference method to solve local diffusion problems and use $P_1$ (mortar) edge elements to couple local problems into the global system. The condensation process and the properties of the resulting algebraic system are discussed. It is demonstrated that the method is second order accurate on smooth solutions and performs well for problems with high contrast in diffusion coefficients. Experiments also show the robustness with respect to position of the interface against the underlying mesh.
+	\end{abstract}
+	
+	%\Sasha{Note that \texttt{usepackage\{dutchcal\}} seems to be not working with miktex (I need this package for a bold mathcal font). I use texlive and it works just ok. I left it commented so it compiles more or less everywhere. You may see some funny symbols from time to time  while reading if you leave it commented.}
+	
+	\section{Introduction}
+	
+	Multi-phase and multi-material processes are ubiquitous in nature and engineering.
+	Mathematical models of such processes are often formulated in terms of systems of partial differential equations with discontinuous coefficients and interface conditions on time-dependent internal boundaries.
+	Due to their high complexity, these models   resist analytical treatment, and hence numerical simulations became an indispensable tool for solving the models and gaining insights into underlying phenomena.
+	
+	Past decades evidenced an 	explosive growth in developing of efficient computational techniques for problems with evolving interfaces, which involve interaction between many materials or different phases of matter. This includes immersed boundary method \cite{peskin2002immersed}, level-set method \cite{sethian1999level}, and unfitted finite element methods \cite{belytschko2009review,burman2015cutfem}, to name several popular numerical approaches.
+	The present study is motivated by the successful applications of the volume-of-fluid (VOF)~\cite{hirt1981volume} and the moment-of-fluid (MOF) methods~\cite{ahn2009adaptive} for the numerical  reconstruction of time-dependent interfaces. Both  methods do not require a mesh aligned with the  interfaces and reconstruct them from the information about the volumes of materials in each cell.
+	% implicitly with the help of a characteristic function
+	% and construct allow for general polygonal computational meshes not fitted to the position of the interface.
+	The superior conservation properties of the  VOF and MOF approaches, however, commonly come at a price of recovering piecewise smooth interface approximation that is  discontinuous across the faces of the underlying computational mesh.
+	
+	In this report, we devise  a higher order method for the numerical solution of the diffusion problem with discontinuous  coefficients on a general polyhedral mesh, which does not respect the position of multi-material interfaces.  The method builds upon the approximate static condensation (ASC) algorithm first proposed in~\cite{kikinzon2017approximate}; it admits high-contrast diffusion coefficients and discontinuous reconstruction of the interfaces as typical for the volume/moment-of-fluid method. The ASC approach uses the formulation of the interface diffusion problem as a system of local inter-cell problems  coupled through the concentration values and fluxes on the cell faces. This face concentration serves as the new primal unknown and it is further approximated by piecewise  polynomial functions defined on all faces of the global (unfitted polygonal) mesh. The original paper ~\cite{kikinzon2017approximate} considered $P_0$ (piecewise constant) approximation to the face concentration, while the present study introduces higher order polynomials for this purpose.
+	Although the latter potentially leads to more accurate results  (and in some cases we shall see that it provides convergent results, when the $P_0$ version fails), it also raises some questions about stability and robustness, which we address in the present report.
+	
+	The approximate static condensation approach leaves much freedom in the choice of the discretization method for the local diffusion problems.  Posed in each polygonal cell, these problems are given by  diffusion equations with  discontinuous coefficients. The method benefits from the observation that   for any fixed cell $T$,  material interfaces, which possibly intersect with $T$,  induce a \emph{consistent polygonal subdivision} (local mesh) of $T$. Opposite to the global mesh, the local one is \emph{fitted} to interfaces, i.e. each micro polyhedral element is shared only by one material. Following~\cite{kikinzon2017approximate}, we apply the mimetic finite difference (MFD) method from~\cite{lipnikov2014mimetic} to approximate the local diffusion problems on this fine fitted mesh.
+	After eliminating inter-cell degrees of freedom (d.o.f.), one obtains a system of linear algebraic equations for the face concentration degrees of freedom. The fluxes and inter-element degrees of freedom are recovered by simple postprocessing. In the report, we study the performance of the method in terms of accuracy, robustness with respect to the interfaces position,  and algebraic stability.
+	
+	The remainder of the paper is organized as follows. In section~\ref{sec:model} we formulate the model diffusion problem with discontinuous diffusion tensor, introduce the basic mesh and discuss a reformulation of the model as a system of coupled local problems. Section~\ref{sec:ASC} presents the method and discusses certain  properties of the resulting  system of algebraic equations. Finally, section~\ref{sec:num} collects results of numerical experiments. These results include accuracy tests, numerical comparison with the method from  \cite{kikinzon2017approximate} and with a homogenization method as an alternative approach.
+	
+	\section{Model problem and macro-mesh decomposition} \label{sec:model}
+	
+	In a polygonal bounded domain $\Omega \subset \Rn{2}$  we consider the following diffusion problem in the mixed form
 	\begin{equation}\label{dual}
-		\left\{\begin{split}
-			\vect K^{-1}\,\vect u &+ \nabla\,p\,&= 0&\quad\text{in } \Omega , \\
-			\nabla\cdot\vect u    &+ c\,p       &= f&\quad\text{in } \Omega,
-		\end{split}\right.
-\end{equation}
-with boundary data
-		\begin{equation}
-			p = g_D \quad\text{on } \partial\Omega_D,\qquad %\label{dual:bc:dirichlet} \\
-			\vect u \cdot {\vect n} = g_N \quad\text{on } \partial\Omega_N. \label{dual:bc:neumann}
-		\end{equation}
-Here $p$ is a concentration and $\vect u$ is the diffusive flux, $\vect K$ is the positive definite  symmetric diffusivity tensor, which we assume constant within each material subdomain, $c\ge0$ is the reaction coefficient, $\vect n$ is the outward normal vector to $\partial\Omega$, $g_D$ and $g_N$ are Dirichlet and Neumann boundary data, respectively. In the context of fluid flows in porous media, \eqref{dual}--\eqref{dual:bc:neumann} is also known as the Darcy problem. In this case, $p$ has the meaning of pressure, $\vect u$ is fluid velocity and $\vect K$ is the permeability tensor.
-
+		\arraycolsep=2pt\def\arraystretch{1.5}
+			\left\{\begin{array}{rcrccl}
+			\vect K^{-1}\,\vect u & + & \nabla\,p & = & 0 &\quad\text{in } \Omega , \\
+			\nabla\cdot\vect u    & + & c\,p      & = & f &\quad\text{in } \Omega
+		\end{array}\right.
+	\end{equation}
+	with boundary data
+	\begin{equation}
+		p = g_D \quad\text{on } \partial\Omega_D,\qquad %\label{dual:bc:dirichlet} \\
+		\vect u \cdot \hat{\vect n} = g_N \quad\text{on } \partial\Omega_N. \label{dual:bc}
+	\end{equation}
+	Here $p$ is a concentration and $\vect u$ is the diffusive flux, $\vect K$ is the positive definite  symmetric diffusivity tensor, which we assume constant within each material subdomain, $c\ge0$ is the reaction coefficient, $\hat{\vect n}$ is the outward normal vector to $\partial\Omega$, $g_D$ and $g_N$ are Dirichlet and Neumann boundary data, respectively. In the context of fluid flows in porous media, \eqref{dual}--\eqref{dual:bc} is also known as the Darcy problem. In this case, $p$ has the meaning of pressure, $\vect u$ is fluid velocity, and $\vect K$ is the permeability tensor.
 	
 	\begin{figure}[h]
 		\centering
-		\caption{The figure illustrates global unstructured polyhedral mesh (left); Physical interfaces for three materials and cut cells, i.e. multi-material cells (central); The piecewise-planar discontinuous reconstruction of the interfaces by the moment of fluid method (right). Everything is shown for two refinement level of the base mesh. \label{fig:problem_geometry}}
 		\begin{subfigure}{.33\linewidth}
 			\centering
 			\includegraphicsw{ring_base_voronoi.png}
@@ -213,74 +205,77 @@ Here $p$ is a concentration and $\vect u$ is the diffusive flux, $\vect K$ is th
 			\centering
 			\includegraphicsw{ring_mini_voronoi_refined.png}
 		\end{subfigure}
+		\caption{The figure illustrates global unstructured polyhedral mesh (left); Physical interfaces for three materials and cut cells, i.e. multi-material cells (central); The piecewise-planar discontinuous reconstruction of the interfaces by the moment-of-fluid method (right). Everything is shown for two refinement level of the base mesh. \label{fig:problem_geometry}}
 	\end{figure}
 	
-We assume the triangulation  $\bmesh$ of $\Omega$ consisting of general polyhedral elements as illustrated in Figure~\ref{fig:problem_geometry} (left). This triangulation constitutes our macro-mesh. The material interfaces, i.e. surfaces where $\vect K$ may experience discontinuities, may cut through the macro-mesh in an arbitrary way; see Figure~\ref{fig:problem_geometry} (center). The polygonal cells ${\bcell \in \bmesh}$ cut by the interfaces are further called Multi-Material Cells (MMC). In practice,  we are given a reconstructed interface by a volume-of-fluid or moment-of-fluid method. This reconstructed interface may be discontinuous across faces of MMC, but locally within each ${\bcell \in \bmesh}$ it is a collection of planar surfaces; see Figure~\ref{fig:problem_geometry} (right).
-
-Denote by $\bfaces$ the collection of all faces of the macro-mesh $\bmesh$. We shall distinct between the subset of internal and external faces,  $\bfaces = \bfaces[int] \cup \bfaces[ext]$\footnote{For the sake of  notation, we shall use  ~$\bfaces$ to denote both the set of elements and the corresponding domain formed by their union~$\cup_{F\in \bfaces} \bar{F}$; same for $\bfaces[int]$, $\bfaces[ext]$ and other collections of mesh elements introduced later in the text. The meaning should be clear from a context}.
-Introducing the new unknown $\lambda\in H^{\frac12}(\bfaces)$, we reformulate \eqref{dual}--\eqref{dual:bc:neumann} as a system of local problems coupled through the boundary data
-and flux continuity condition:
- 	\begin{eqnarray}\label{dual_mini}
-		%\begin{empheq}[left = \empheqlbrace]{alignat=2}
-\left\{
-\begin{split}
-			\vect K^{-1}\,\vect u &+ \nabla\,p\,    &= 0       &\quad\text{in } \bcell, \\
-			\nabla\cdot\vect u    &+ c\,p           &= f       &\quad\text{in } \bcell, \\
-			                      &\phantom{+cc\,}p &= \lambda &\quad\text{on } \partial\bcell, %\label{dual_mini:trace}
-		%\end{empheq}
-\end{split}
-\right.&
-\qquad \forall~\bcell\in\bmesh,\\
-        \left[\vect u\cdot\hat{\vect n}\right]=0\quad\text{on } F& \qquad \forall~F\in\bfaces[int]  \label{flux_cond}
+	We assume the triangulation  $\bmesh$ of $\Omega$ consisting of general polyhedral elements as illustrated in Figure~\ref{fig:problem_geometry} (left). This triangulation constitutes our macro-mesh. The material interfaces, i.e. surfaces where $\vect K$ may experience discontinuities, may cut through the macro-mesh in an arbitrary way; see Figure~\ref{fig:problem_geometry} (center). The polygonal cells ${\bcell \in \bmesh}$ cut by the interfaces are further called Multi-Material Cells (MMCs). In practice,  we are given a reconstructed interface by a volume-of-fluid or moment-of-fluid method. This reconstructed interface may be discontinuous across faces of MMC, but locally within each ${\bcell \in \bmesh}$ it is a collection of planar surfaces; see Figure~\ref{fig:problem_geometry} (right).
+	
+	Denote by $\bfaces$ the collection of all faces of the macro-mesh $\bmesh$. We shall distinct between the subset of internal and external faces,  $\bfaces = \bfaces[int] \cup \bfaces[ext]$\footnote{For the sake of  notation, we shall use~$\bfaces$ to denote both the set of elements and the corresponding domain formed by their union~$\cup_{F\in \bfaces} \bar{F}$; same for $\bfaces[int]$, $\bfaces[ext]$ and other collections of mesh elements introduced later in the text. The meaning should be clear from a context.}.
+	Introducing the new unknown $\lambda \in \HHalfSpace[\bfaces]$, we reformulate \eqref{dual}--\eqref{dual:bc} as a system of local problems coupled through the boundary data
+	and flux continuity condition:
+	\begin{eqnarray}
+		\arraycolsep=2pt\def\arraystretch{1.5}
+		\left\{\begin{array}{rcrccl}
+			\vect K^{-1}\,\vect u                    & + & \nabla\,p & = & 0       &\quad\text{in } \bcell, \\
+			\nabla\cdot\vect u                       & + & c\,p      & = & f       &\quad\text{in } \bcell, \\
+			                                         &   & p         & = & \lambda &\quad\text{on } \partial\bcell, %\label{dual_mini:trace}
+		\end{array}\right. 
+		& \qquad \forall~\bcell\in\bmesh, \label{dual_mini} \\
+		\llbracket\vect u \cdot \hat{\vect n}\rrbracket = 0\quad\:\:\text{on } F,\:\:\:\:
+		& \qquad\quad \forall~F\in\bfaces[int]. \label{flux_cond}
 	\end{eqnarray}
-Here $\hat{\vect n}$ denotes a normal vector to the face $F\in\bfaces[int]$ and $\left[\vect u\cdot\hat{\vect n}\right]$ is the jump of the normal flux across $F$. On the outer boundary $\partial\Omega$ we assume \eqref{dual:bc:neumann}.
-
-Note that~$\lambda$ defines Dirichlet boundary data for local diffusion problems. Once~$\lambda$ is known, one can solve \eqref{dual_mini} for $\vect u$ and $p$ inside each element independently, and hence recover the solution of the original problem~\eqref{dual}. The idea behind the ASC method is to introduce a piecewise polynomial space to approximate $\lambda$, and  define discretizations of subproblems from \eqref{dual_mini}. This local subproblems are further explicitly resolved to eliminate internal degrees of freedom and to form a system of algebraic equations for $\lambda$.
-
-Before we go into details of the method, we note that $\lambda$ can also  be observed as the Lagrange multiplier corresponding to the normal flux condition~\eqref{flux_cond}. The problem \eqref{dual_mini}--\eqref{flux_cond} can be formulated in the weak form: Find  $\vect u  \in \bigotimes\limits_{\bcell\in\bmesh}\HDivSpace[\bcell]$, $ p\in\LTwoSpace[\Omega]$, $\lambda\in H^{\frac12}(\bfaces[int])$ such that $\vect u\cdot{\vect n}=g_N$ on $\partial\Omega_N$ and
-	%\begin{empheq}[box=\widefbox]{equation}
-\begin{equation}\label{weak_form}
+	Here $\hat{\vect n}$ denotes a normal vector to the face $F\in\bfaces[int]$ and $\llbracket \vect u\cdot\hat{\vect n} \rrbracket$ is the jump of the normal flux across $F$. On the outer boundary $\partial\Omega$ we assume \eqref{dual:bc}.
+	
+	Note that~$\lambda$ defines Dirichlet boundary data for local diffusion problems. Once~$\lambda$ is known, one can solve \eqref{dual_mini} for $\vect u$ and $p$ inside each element independently, and hence recover the solution of the original problem~\eqref{dual}. The idea behind the ASC method is to introduce a piecewise polynomial space to approximate $\lambda$, and  define discretizations of subproblems from \eqref{dual_mini}. This local subproblems are further explicitly resolved to eliminate internal degrees of freedom and to form a system of algebraic equations for $\lambda$.
+	
+	Before we go into details of the method, we note that $\lambda$ can also  be observed as the Lagrange multiplier corresponding to the normal flux condition~\eqref{flux_cond}. The problem \eqref{dual_mini}--\eqref{flux_cond} can be formulated in the weak form: Find $\vect u \in \bigotimes\limits_{\bcell\in\bmesh}\HDivSpace[\bcell]$ s.t. $\vect u \cdot \hat{\vect n} = g_N$ on $\partial\Omega_N$, $ p\in\LTwoSpace$, $\lambda\in\HHalfSpace[{\bfaces[int]}]$ such that
+	\begin{equation}\label{weak_form}
 		\begin{split}
-				\int_{\Omega} \vect K^{-1}\,\vect u\cdot\vect v \diff \vect x - \sum_{\bcell\in\bmesh}\int_\bcell p\,\nabla\cdot\vect v \diff \vect x +\int_{\bfaces[int]} \lambda\,\left[\vect v\cdot\hat{\vect n}\right] \diff \vect l &- \int_{\bfaces[int]}\left[\vect u\cdot\hat{\vect n}\right]\mu\diff \vect l, \\
-				+\sum_{\bcell\in\bmesh}\int_\bcell \nabla\cdot\vect u\,q \diff \vect x + \int_\Omega c\,p\,q \diff \vect x &= \int_\Omega f\,q \diff \vect x-\int_{\partial\Omega_D}\vect v\cdot{\vect n}g_D\diff \vect l
+			\int_{\Omega} \vect K^{-1}\,\vect u\cdot\vect v \diff \vect x - \sum_{\bcell\in\bmesh}\int_\bcell p\,\nabla\cdot\vect v \diff \vect x + \sum_{\bface\in\bfaces[int]}\int_{\bface} \lambda\,\llbracket\vect v\cdot\hat{\vect n}\rrbracket \diff l &= -\int_{\partial\Omega_D} g_D\,\vect v\cdot\hat{\vect n} \diff l, \\
+			\sum_{\bcell\in\bmesh}\int_\bcell \nabla\cdot\vect u\,q \diff \vect x + \int_\Omega c\,p\,q \diff \vect x &= \int_\Omega f\,q \diff \vect x, \\
+			\sum_{\bface\in\bfaces[int]}\int_{\bface} \llbracket\vect u\cdot\hat{\vect n}\rrbracket\,\mu \diff l &= 0
 		\end{split}
 	\end{equation}
-for all $\vect v  \in \bigotimes\limits_{\bcell\in\bmesh}\HDivSpace[\bcell]$, $ q\in\LTwoSpace[\Omega]$, $\mu\in H^{\frac12}(\bfaces[int])$.
-
-
-
-	\section{Approximate Static Condensation Method} \label{sec:ASC}
+	for all $\vect v \in \bigotimes\limits_{\bcell\in\bmesh}\HDivSpace[\bcell]$ s.t. $\vect v \cdot \hat{\vect n} = 0$ on $\partial\Omega_N$, $q \in \LTwoSpace[\Omega]$, and $\mu \in \HHalfSpace[{\bfaces[int]}]$.
 	
-	In this section we describe  approximate static condensation method of order $n$ ( ASC($n$)\,), for solving the multi-material heterogeneous diffusion problem~\eqref{dual}.
+	%	\footnotetext{Here we assumed~$g_N \equiv 0$. The case $g_N \ne 0$ is handled via the change of variables~$\vect u = \vect u_0 + \vect u_N$, $\vect u_0\cdot\hat{\vect n} = 0$ and $\vect u_N\cdot\hat{\vect n} = g_N$ on~$\partial\Omega_N$ with some fixed~$\vect u_N \in \bigotimes\limits_{\bcell\in\bmesh}\HDivSpace[\bcell]$.}
+	%Find  $\vect u  \in \bigotimes\limits_{\bcell\in\bmesh}\HDivSpace[\bcell]$, $ p\in\LTwoSpace[\Omega]$, $\lambda\in H^{\frac12}(\bfaces[int])$ such that $\vect u\cdot\hat{\vect n}=g_N$ on $\partial\Omega_N$ and
+	%\begin{equation}\label{weak_form}
+	%		\begin{split}
+	%				\int_{\Omega} \vect K^{-1}\,\vect u\cdot\vect v \diff \vect x - \sum_{\bcell\in\bmesh}\int_\bcell p\,\nabla\cdot\vect v \diff \vect x +\int_{\bfaces[int]} \lambda\,\left[\vect v\cdot\hat{\vect n}\right] \diff \vect l &- \int_{\bfaces[int]}\left[\vect u\cdot\hat{\vect n}\right]\mu\diff \vect l, \\
+	%				+\sum_{\bcell\in\bmesh}\int_\bcell \nabla\cdot\vect u\,q \diff \vect x + \int_\Omega c\,p\,q \diff \vect x &= \int_\Omega f\,q \diff \vect x-\int_{\partial\Omega_D}\vect v\cdot\hat{\vect n}g_D\diff \vect l
+	%		\end{split}
+	%\end{equation}
+	%for all $\vect v  \in \bigotimes\limits_{\bcell\in\bmesh}\HDivSpace[\bcell]$, $ q\in\LTwoSpace[\Omega]$, $\mu\in H^{\frac12}(\bfaces[int])$.
 	
-
-        Consider an arbitrary but fixed cell $T\in\bmesh$. We now introduce the discretization of the local diffusion problem \eqref{dual_mini} in $T$.
-        To this end, we consider the local mesh $\mmesh(T)$ of $T$, which is reffered as mini-mesh. While the original triangulation $\bmesh$ is referred as macro-mesh.
-\begin{wrapfigure}{r}{0.4\textwidth}
-\vspace{-10pt}
-  \begin{center}
-    \includegraphics[width=0.3\textwidth]{./ring_mini_voronoi_cell.png}%{./Pictures/mainscreen1.png}
-    \caption{Local polyhedral mesh for a three-material cell $T\in\bmesh$.\label{fig:mmesh}}
-  \end{center}
-  \vspace{-15pt}
-  \vspace{1pt}
-\end{wrapfigure}
-If $T$ contains only one phase or material, then we obviously have $\mmesh(T) = \{\bcell\}$. Otherwise for the cell shared by several phases, $\mmesh(T)$ consists of polygonal elements, forming a tessellation of $T$, such that any ${\tau \in \mmesh(T)}$ contains only one phase/material; see Figure~\ref{fig:mmesh}. We denote by $\mfaces(T)$ the set of all faces in $\mmesh(T)$, which collects both   internal and boundary (external) faces with respect to $T$,  $\mfaces(T) = \mfaces[int](T) \cup \mfaces[ext](T)$. Thus for the example of local mesh drafted in Figure~\ref{fig:mmesh}, we have three elements in $\mmesh(T)$, two internal faces from $\mfaces[int](T)$ and eleven external faces from $\mfaces[ext](T)$. It is clear that this local mesh is fitted to the material interfaces.
-
-
-We shall discretize \eqref{dual_mini} in $T$ in terms of average fluxes assigned to each face from $\mfaces(T)$,
-we denote the corresponding vector by ${\vect u}_\mmesh\in\mathbb{R}^{n_f}$, $n_f=2\,(\#\mfaces(T))$,  and concentration values assigned to each cell  ${\tau \in \mmesh(T)}$, we denote the corresponding vector by ${\vect p}_\mmesh\in\mathbb{R}^{n_p}$, $n_p=\#\mmesh(T)$. The given data is the source term vector ${\vect f}_\mmesh\in \mathbb{R}^{n_p}$ and the concentration values $\lambda$ on the boundary of $T$.
-To approximate this boundary data \emph{for the local problem}, we introduce the vector
-${\vect \lambda}_\mmesh\in\mathbb{R}^{n_\lambda}$, $n_\lambda=\#\mfaces[ext](T)$,
-where we assign one averaged concentration value for each $f\in\mfaces[ext](T)$, so that ${\vect \lambda}_\mmesh$ can be seen as a piecewise-constant approximation of $\lambda$ with respect to the subdivision of $\partial T$ into the faces of the local mesh $\mmesh$.
-
-%On the faces of macro mesh $\bmesh$ this
-
+	\section{Approximate static condensation method} \label{sec:ASC}
 	
-Given the above definition of the degrees of freedom on the local mesh we apply the mimetic finite difference (MFD) method from~\cite{lipnikov2014mimetic}. The method leads to the following system of equations with the matrix having the block structure:
+	In this section we describe  approximate static condensation method of order $n$, ASC($n$), for solving the multi-material heterogeneous diffusion problem~\eqref{dual}.
+	
+	Consider an arbitrary but fixed cell $T\in\bmesh$. We now introduce the discretization of the local diffusion problem \eqref{dual_mini} in $T$. To this end, we consider the local mesh $\mmesh(T)$ of $T$, which is referred as mini-mesh. While the original triangulation $\bmesh$ is referred as macro-mesh.
+	\begin{wrapfigure}{r}{0.4\textwidth}
+		\vspace{-10pt}
+		\begin{center}
+			\includegraphics[width=0.3\textwidth]{./ring_mini_voronoi_cell.png}%{./Pictures/mainscreen1.png}
+			\caption{Local polyhedral mesh for a three-material cell $T\in\bmesh$.\label{fig:mmesh}}
+		\end{center}
+		\vspace{-15pt}
+		\vspace{1pt}
+	\end{wrapfigure}
+	If $T$ contains only one phase or material, then we obviously have $\mmesh(T) = \{\bcell\}$. Otherwise for the cell shared by several phases, $\mmesh(T)$ consists of polygonal elements, forming a tessellation of $T$, such that any ${\tau \in \mmesh(T)}$ contains only one phase/material; see Figure~\ref{fig:mmesh}. We denote by $\mfaces(T)$ the set of all faces in $\mmesh(T)$, which collects both   internal and boundary (external) faces with respect to $T$,  $\mfaces(T) = \mfaces[int](T) \cup \mfaces[ext](T)$. Thus for the example of local mesh drafted in Figure~\ref{fig:mmesh}, we have three elements in $\mmesh(T)$, two internal faces from $\mfaces[int](T)$ and eleven external faces from $\mfaces[ext](T)$. It is clear that this local mesh is fitted to the material interfaces.
+	
+	We shall discretize \eqref{dual_mini} in $T$ in terms of average fluxes assigned to each face from $\mfaces(T)$,
+	we denote the corresponding vector by ${\vect u}_\mmesh\in\mathbb{R}^{n_f}$, $n_f=\#\mfaces(T)$,  and concentration values assigned to each cell ${\tau \in \mmesh(T)}$, we denote the corresponding vector by ${\vect p}_\mmesh\in\mathbb{R}^{n_p}$, $n_p=\#\mmesh(T)$. The given data is the source term vector ${\vect f}_\mmesh\in \mathbb{R}^{n_p}$ and the concentration values $\lambda$ on the boundary of $T$.
+	To approximate this boundary data \emph{for the local problem}, we introduce the vector
+	${\vect \lambda}_\mmesh\in\mathbb{R}^{n_\lambda}$, $n_\lambda=\#\mfaces[ext](T)$,
+	where we assign one averaged concentration value for each $f\in\mfaces[ext](T)$, so that ${\vect \lambda}_\mmesh$ can be seen as a piecewise-constant approximation of $\lambda$ with respect to the subdivision of $\partial T$ into the faces of the local mesh $\mmesh$.
+	
+	%On the faces of macro mesh $\bmesh$ this
+	
+	Given the above definition of the degrees of freedom on the local mesh we apply the mimetic finite difference (MFD) method from~\cite{lipnikov2014mimetic}. The method leads to the following system of equations with the matrix having the block structure:
 	\begin{equation}\label{local}
 		\begin{pmatrix}
-			\vect M_\mmesh & \vect B^T_\mmesh \\
+			\phantom{-}\vect M_\mmesh & \vect B^T_\mmesh \\
 			-\vect B_\mmesh & \vect \Sigma_\mmesh
 		\end{pmatrix}
 		\begin{pmatrix}
@@ -293,103 +288,96 @@ Given the above definition of the degrees of freedom on the local mesh we apply 
 			{\vect f}_\mmesh
 		\end{pmatrix}.
 	\end{equation}
-Here $\vect M_\mmesh,~\vect\Sigma_\mmesh$, $\vect B^T_\mmesh$, $-\vect B_\mmesh$ are vector-mass, mass, gradient and divergence matrices, respectively.
-$C_\mmesh$ is a diagonal scaling matrix. i.e. the mass matrix for ${\vect \lambda}_\mmesh$ unknowns;
-$\vect E_\mmesh \in \mathbb{R}^{n_{\lambda}\times n_f} $ is a rectangular matrix with 0 and 1 entries which sparsifies a vector from  $\mathbb{R}^{n_{\lambda}}$
-to a vector from  $\mathbb{R}^{n_{f}}$.
-For the details on MFD and accurate definition of the matrices we refer to \cite{lipnikov2014mimetic,MFDbook}.
-Here we need the property that  $\vect B_\mmesh$ has a full row rank, and $\vect M_\mmesh = \vect M^T_\mmesh$ is positive definite.
-
-
-Since the continuity of flux condition \eqref{flux_cond} and boundary conditions are enforced on all the \emph{external} edges of $T$, we need to distinct the vector ${\vect u}^\text{ext}_\mmesh$ of fluxes on $\mfaces[ext](T)$, which is just a trivial restriction of ${\vect u}_\mmesh$ on the edges  from $\mfaces[ext](T)$,
+	Here $\vect M_\mmesh$, $\vect\Sigma_\mmesh$, $\vect B^T_\mmesh$, $-\vect B_\mmesh$ are vector-mass, mass, gradient and divergence matrices, respectively. $-\vect C_\mmesh$ is a diagonal scaling matrix. i.e. the mass matrix for ${\vect \lambda}_\mmesh$ unknowns;
+	$\vect E_\mmesh \in \mathbb{R}^{n_f \times n_\lambda}$ is a rectangular matrix with 0 and 1 entries which sparsifies a vector from  $\mathbb{R}^{n_{\lambda}}$
+	to a vector from  $\mathbb{R}^{n_{f}}$.
+	For the details on MFD and accurate definition of the matrices we refer to \cite{lipnikov2014mimetic,MFDbook}.
+	Here we need the property that  $\vect B_\mmesh$ has a full row rank, and $\vect M_\mmesh = \vect M^T_\mmesh$ is positive definite.
+	
+	Since the continuity of flux condition \eqref{flux_cond} and boundary conditions are enforced on all the \emph{external} edges of $T$, we need to distinct the vector ${\vect u}^\text{ext}_\mmesh$ of fluxes on $\mfaces[ext](T)$, which is just a trivial restriction of ${\vect u}_\mmesh$ on the edges  from $\mfaces[ext](T)$,
 	\begin{equation}\label{system_mini}
 		{\vect u}^\text{ext}_\mmesh \coloneqq \vect E_\mmesh^T\,{\vect u}_\mmesh
 	\end{equation}
-where $E_\mmesh^T$ is the restriction matrix with entries equal $0$ or $1$.
-
-
-We now eliminate ${\vect u}_\mmesh$ from \eqref{local} and express ${\vect p}_\mmesh$ in terms of~${\vect \lambda}_\mmesh$ (\textit{static condensation}); recovering fluxes (backward substitution) and using~\eqref{system_mini} we get
+	where $\vect E_\mmesh^T$ is the restriction matrix with entries equal $0$ or $1$.
+	
+	We now eliminate ${\vect u}_\mmesh$ from \eqref{local} and express ${\vect p}_\mmesh$ in terms of~${\vect \lambda}_\mmesh$ (\textit{static condensation}); recovering fluxes (backward substitution) and using~\eqref{system_mini} we get
 	\begin{equation}\label{mini_flux_dofs}
 		{\vect u}^\text{ext}_\mmesh = \vect A_\mmesh\,\vect C_\mmesh\,{\vect \lambda}_\mmesh - {\vect a}_\mmesh,
 	\end{equation}
-with
+	with
 	\begin{align} \label{defA}
-		\vect A_\mmesh &= \vect E^T_\mmesh \left( \vect M^{-1}_\mmesh + \vect M^{-1}_\mmesh\,\vect B^T_\mmesh \left( \vect \Sigma_\mmesh + \vect B_\mmesh\,\vect M^{-1}_\mmesh\,\vect B^{T}_\mmesh\right)^{-1} \vect B_\mmesh\,\vect M^{-1}_\mmesh \right) \vect E_\mmesh, \\
+		\vect A_\mmesh &= \vect E^T_\mmesh \left( \vect M^{-1}_\mmesh - \vect M^{-1}_\mmesh\,\vect B^T_\mmesh \left( \vect \Sigma_\mmesh + \vect B_\mmesh\,\vect M^{-1}_\mmesh\,\vect B^{T}_\mmesh\right)^{-1} \vect B_\mmesh\,\vect M^{-1}_\mmesh \right) \vect E_\mmesh, \\
 		{\vect a}_\mmesh &= \vect E^{T}_\mmesh\,\vect M^{-1}_\mmesh\,\vect B^T_\mmesh \left( \vect \Sigma_\mmesh + \vect B_\mmesh\,\vect M^{-1}_\mmesh\,\vect B^{T}_\mmesh\right)^{-1} {\vect f}_\mmesh.
 	\end{align}
-Note that matrices ~$\vect A_\mmesh$ and vector~${\vect a}_\mmesh$ are computed locally for each $T\in\bmesh$.
-\smallskip
-%	Matrix~$\vect A_\mmesh$ and vector~${\vect a}_\mmesh$ can be easily computed if the number of mini\,cells is relatively small. Otherwise, one may prefer to use a mixed-hybrid formulation instead of~$\eqref{weak_form}$ (see section~\ref{MH}).
-		
-Next, we should use the continuity of flux condition \eqref{flux_cond} and boundary conditions to obtain a complete system for ${\vect u}^\text{ext}_\mmesh$ and ${\vect \lambda}_\mmesh$. However, we cannot do this in a straightforward way, since the discontinuity of material interfaces across the macro-mesh faces may lead to a mismatch of discrete fluxes from two sides of $F\in\bfaces[int]$, including different space dimensions.
-Therefore, we shall enforce the flux continuity condition in the spirit of the mortar finite element method~\cite{mortar} using the space of function defined on $\bfaces[int]$, which are polynomials of degree at most $n$ on every $F\in\bfaces[int]$, an analog of the Lagrange multiplier space in the mortar method:
-\[
-\Lambda=\left\{\lambda\in L^2(F)\,:\, \lambda\in P_n~\text{for any}~F\in\bfaces[int]\right\}.
-\]
-
-%	Let $F \coloneqq {\bcell^+} \cap {\bcell^-}$, $F \in \bfaces[int]$, be a face shared by base\,cells~$\bcell^+$ and~${\bcell^- \in \bmesh}$ with mini\,meshes~$\mmesh^\pm$ and mini\,faces~$\mfaces^\pm$, respectively. We denote by~$\mfaces^\pm_F \subset \mfaces^\pm_{\text{ext}}$ mini\,faces that belong to the face~$F$. In general measures of mini\,faces of~$\mfaces^\pm_F$ corresponding to one material may be different, and, moreover, it may be the case that $\#\,\mfaces^+_F \ne \#\,\mfaces^-_F$ (see figure~\ref{fig:e_plus_e_minus}). That is, one may have different trace DOFs~\eqref{dual_mini:trace} from~$\mmesh^+$ and~$\mmesh^-$.
-%%	Let us set~$\nu_{F_{\bcell^\pm}} \coloneqq \#\,\mfaces^\pm_F$
-%	We set~$\nu_F \coloneqq \max\,\{ \#\,\mfaces^+_F,\,\#\,\mfaces^-_F \}$.
-%	
-%	\begin{figure}[h]
-%		\centering
-%		\caption{MMCs: $3 = \#\,\mfaces^+_F \ne \#\,\mfaces^-_F = 2$, $\nu_F = 3$}
-%		\label{fig:e_plus_e_minus}
-%		\svginputw[.7\linewidth]{e_plus_e_minus.pdf_tex}
-%	\end{figure}
+	Note that matrices~$\vect A_\mmesh$ and vectors~${\vect a}_\mmesh$ are computed locally for each $T\in\bmesh$.
+	\smallskip
+	%	Matrix~$\vect A_\mmesh$ and vector~${\vect a}_\mmesh$ can be easily computed if the number of mini\,cells is relatively small. Otherwise, one may prefer to use a mixed-hybrid formulation instead of~$\eqref{weak_form}$ (see section~\ref{MH}).
 	
-When the Lagrange multiplier space $\Lambda$ couples local MFD solutions, it is convenient to define
-degrees of freedom for $\lambda\in\Lambda$ in terms of its~$(n+1)$ moments $\lambda^{(i)}_F$ on every internal face $F\in\bfaces[int]$:
+	Next, we should use the continuity of flux condition \eqref{flux_cond} and boundary conditions to obtain a complete system for ${\vect u}^\text{ext}_\mmesh$ and ${\vect \lambda}_\mmesh$. However, we cannot do this in a straightforward way, since the discontinuity of material interfaces across the macro-mesh faces may lead to a mismatch of discrete fluxes from two sides of $F\in\bfaces[int]$, including different space dimensions.
+	Therefore, we shall enforce the flux continuity condition in the spirit of the mortar finite element method~\cite{mortar} using the space of function defined on $\bfaces[int]$, which are polynomials of degree at most $n$ on every $F\in\bfaces[int]$, an analog of the Lagrange multiplier space in the mortar method:
+	\[
+		\Lambda=\left\{\lambda\in \LTwoSpace[{\bfaces[int]}]\,:\, \lambda\in P_n~\text{for any}~F\in\bfaces[int]\right\}.
+	\]
+	
+	%	Let $F \coloneqq {\bcell^+} \cap {\bcell^-}$, $F \in \bfaces[int]$, be a face shared by base\,cells~$\bcell^+$ and~${\bcell^- \in \bmesh}$ with mini\,meshes~$\mmesh^\pm$ and mini\,faces~$\mfaces^\pm$, respectively. We denote by~$\mfaces^\pm_F \subset \mfaces^\pm_{\text{ext}}$ mini\,faces that belong to the face~$F$. In general measures of mini\,faces of~$\mfaces^\pm_F$ corresponding to one material may be different, and, moreover, it may be the case that $\#\,\mfaces^+_F \ne \#\,\mfaces^-_F$ (see figure~\ref{fig:e_plus_e_minus}). That is, one may have different trace DOFs~\eqref{dual_mini:trace} from~$\mmesh^+$ and~$\mmesh^-$.
+	%%	Let us set~$\nu_{F_{\bcell^\pm}} \coloneqq \#\,\mfaces^\pm_F$
+	%	We set~$\nu_F \coloneqq \max\,\{ \#\,\mfaces^+_F,\,\#\,\mfaces^-_F \}$.
+	%	
+	%	\begin{figure}[h]
+	%		\centering
+	%		\caption{MMCs: $3 = \#\,\mfaces^+_F \ne \#\,\mfaces^-_F = 2$, $\nu_F = 3$}
+	%		\label{fig:e_plus_e_minus}
+	%		\svginputw[.7\linewidth]{e_plus_e_minus.pdf_tex}
+	%	\end{figure}
+	
+	When the Lagrange multiplier space $\Lambda$ couples local MFD solutions, it is convenient to define
+	degrees of freedom for $\lambda\in\Lambda$ in terms of its~$(n+1)$ moments $\lambda^{(i)}_F$ on every internal face $F\in\bfaces[int]$:
 	\begin{equation}\label{asc_dofs}
 		\lambda^{(i)}_F=\frac{\int_F  \lambda\,s_i \diff l}{|F|}, \quad i = 0, \dots, n.
 	\end{equation}
-	Here~$\{s\}_{i=0,\dots,n}$ is the set of $L^2(F)$-orthogonal polynomials of degree~$n$.
+	Here~$\{\,s_i\,\}_{i=0,\dots,n}$ is the set of $\LTwoSpace[\bface]$-orthogonal polynomials of degree~$n$.
 	
- For $F \in \bfaces[int]$ shared by two polygonal cells~$\bcell^\pm\in \bmesh$  denote by~$\mfaces^\pm_F \subset \mfaces_{\text{ext}}(T^\pm)$ the subsets of mini-faces that belong to the macro-face~$F$ from each side.  Let~$\nu_F \coloneqq \max\,\{ \#\,\mfaces^+_F,\,\#\,\mfaces^-_F \}$.  	
-With each face $F \in \bfaces_\bcell$ we associate~$\min\,\{ n+1, \nu_F \}$ degrees of freedom~\eqref{asc_dofs} in the $\Lambda$ space. The local and global number of DOFs are
+	For $F \in \bfaces[int]$ shared by two polygonal cells~$\bcell^\pm\in \bmesh$  denote by~$\mfaces_F(T^\pm) \subset \mfaces_{\text{ext}}(T^\pm)$ the subsets of mini-faces that belong to the macro-face~$F$ from each side. Let $\nu_F \coloneqq \max\,\{ \#\,\mfaces_F(T^+),\,\#\,\mfaces_F(T^-) \}$. We set~$\bfaces_\bcell \subset \bfaces$ to be the subset of macro-faces forming the boundary of a cell~$T$. With each face $F \in \bfaces_\bcell$ we associate~$\min\,\{ n+1, \nu_F \}$ degrees of freedom~\eqref{asc_dofs} in the $\Lambda$ space. The local and global number of d.o.f. are
 	\[
 		n_\bcell = \sum_{F \in \bfaces_\bcell} \min\,\{ n+1, \nu_F \} \quad\text{and}\quad
 		n_\bmesh = \sum_{F \in \bfaces} \min\,\{ n+1, \nu_F \},
 	\]
- respectively.
+	respectively.
 	
-Further denote by~${{\vect \lambda}_\bcell \in \Rn{n_\bcell}}$ a vector of DOFs for elements of $\Lambda$ associated with all macro-faces spanning the boundary of~$\bcell$. We need a correspondence between elements of $\Lambda$ and local edge elements $\lambda_\mmesh$ used as boundary data in local problem \eqref{local}.
-This corresponding is given by the interpolation matrix $ \vect R_\mmesh$,
+	Further denote by~${{\vect \lambda}_\bcell \in \Rn{n_\bcell}}$ a vector of d.o.f. for elements of $\Lambda$ associated with all macro-faces spanning the boundary of~$\bcell$. We need a correspondence between elements of $\Lambda$ and local face elements $\vect \lambda_\mmesh$ used as boundary data in local problem \eqref{local}.
+	This corresponding is given by the interpolation matrix $ \vect R_\mmesh$,
 	\begin{equation}\label{asc_lambda}
 		{\vect \lambda}_\mmesh = \vect R_\mmesh\,{\vect \lambda}_\bcell,
 	\end{equation}
-where ${\vect \lambda}_\mmesh$ is effectively a piecewise constant approximation of ${\vect \lambda}_\bcell$ on $\mfaces_{\text{ext}}(T)$.
-Using this in \eqref{mini_flux_dofs}, we get
+	where ${\vect \lambda}_\mmesh$ is effectively a piecewise constant approximation of ${\vect \lambda}_\bcell$ on $\mfaces_{\text{ext}}(T)$.
+	Using this in \eqref{mini_flux_dofs}, we get
 	\begin{equation}\label{asc_flux_lambda}
 		{\vect u}^\text{ext}_\mmesh = \vect A_\mmesh\,\vect C_\mmesh\,\vect R_\mmesh\,{\vect \lambda}_\bcell + {\vect a}_\mmesh.
 	\end{equation}
 	%The interpolating matrix~$\vect R_\mmesh$ is completely defined by~$n$ and boundary mini\,faces~$\mfaces[ext]$ of~$\mmesh$.
-If we find the mortar vector ~${\vect \lambda}_\bcell$, we recover the local approximation to the edge concentration, i.e. ${\vect \lambda}_\mmesh$, from~\eqref{asc_lambda}.
-Further we solve numerically local subproblems in~\eqref{dual_mini} applying the mimetic FD method. This completes the solution algorithm for \eqref{dual}.
+	If we find the mortar vector ~${\vect \lambda}_\bcell$, we recover the local approximation to the face concentration, i.e. ${\vect \lambda}_\mmesh$, from~\eqref{asc_lambda}.
+	Further we solve numerically local subproblems in~\eqref{dual_mini} applying the mimetic FD method. This completes the solution algorithm for \eqref{dual}.
 	
 	The dimension of the $\Lambda$ space is~$n_\bmesh$, i.e. $(n+1)$ or less unknowns for each face~${F \in \bfaces}$.
-        To obtain the system of $n_\bmesh$ equations, we enforce the weak continuity of the moments of  fluxes  on each internal macro-face
+	To obtain the system of $n_\bmesh$ equations, we enforce the weak continuity of the moments of  fluxes  on each internal macro-face
 	\begin{equation}\label{flux_cont}
 		\int_F \vect u|_{\bcell^+}\cdot\hat{\vect n}\,s_i \diff l = \int_F \vect u|_{\bcell^-}\cdot\hat{\vect n}\,s_i \diff l, \quad i = 0, \dots, n, \quad \text{for each } F \in \bfaces[int],
 	\end{equation}
-with $\vect u|_{\bcell^+}(x)={\vect u}^\text{ext}_\mmesh(f)|f|$, if $x\in f$ for $f\in \mfaces[ext](\bcell^+)$, and ${\vect u}^\text{ext}_\mmesh(f)$ is the local flux assigned to $f$. Similar definition applies to $\vect u|_{\bcell^-}$. 	
-This and ~\eqref{asc_flux_lambda} result in the linear algebraic system
+	with $\big(\vect u|_{\bcell^+}\cdot\hat{\vect n}\big)(\vect x) = u^\text{ext}_\mmesh(f)\,|f|$, if $\vect x \in f$ for $f\in\mfaces_F(T^+)$, and $u^\text{ext}_\mmesh(f)$ is the local flux assigned to $f$ (component of~$\vect u^\text{ext}_\mmesh$). Similar definition applies to $\vect u|_{\bcell^-}$. 	
+	This and~\eqref{asc_flux_lambda} result in the linear algebraic system
 	\begin{equation}\label{asc_system}
 		\vect S_\bmesh\,{\vect \lambda}_\bmesh = {\vect b}_\bmesh,
 	\end{equation}
-with	$\vect S_\bmesh \in \Rn{n_\bmesh \times n_\bmesh}, {\vect \lambda}_\bmesh, {\vect b}_\bmesh \in \Rn{n_\bmesh}$.
-Neumann boundary condition in~\eqref{dual:bc:neumann} is handle in the similar way, and Dirichlet boundary data in~\eqref{dual:bc:neumann} is enforced strongly in~\eqref{asc_system}.
+	with	$\vect S_\bmesh \in \Rn{n_\bmesh \times n_\bmesh}, {\vect \lambda}_\bmesh, {\vect b}_\bmesh \in \Rn{n_\bmesh}$.
+	Neumann boundary condition in~\eqref{dual:bc} is handled in the similar way, and Dirichlet boundary data in~\eqref{dual:bc} is enforced strongly in~\eqref{asc_system}.
 	
 	Matrix~$\vect S_\bmesh$ is sparse and its sparsity pattern does not depend on mini-meshes. Some useful properties of this matrix will be discussed in the next section.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Matrix properties}
-
-In this section we discuss the assembly procedure of the global matrix from \eqref{asc_system} and show that $\vect S_\bmesh$ is symmetric positive definite. We concentrate on ASC(1), which we implement and validate  in the next section. We shall make necessary remarks about ASC(0) as it is largely obtain by obvious simplifications of ASC(1).
 	
-\begin{figure}[h]
+	\subsection{Matrix properties}
+	
+	In this section we discuss the assembly procedure of the global matrix from \eqref{asc_system} and show that $\vect S_\bmesh$ is symmetric positive definite. We concentrate on ASC(1), which we implement and validate  in the next section. We shall make necessary remarks about ASC(0) as it is largely obtained by obvious simplifications of ASC(1).
+	
+	\begin{figure}[h]
 		\centering		
 		\begin{subfigure}{.45\linewidth}
 			\centering
@@ -401,41 +389,34 @@ In this section we discuss the assembly procedure of the global matrix from \eqr
 		\begin{subfigure}{.45\linewidth}
 			\centering
 			\svginputw{e_plus_2.pdf_tex}
-			\caption{$\nu_F = 2$}		
+			\caption{$\nu_F = 3$}		
 		\end{subfigure}
-\caption{$\lambda_{ij}(\mmesh)$ are local d.o.f. used in MFD for $\lambda$ from \eqref{dual_mini}, $\lambda_{i}(T)$, $\lambda'_{i}(T)$ are global d.o.f. used to describe mortar space $\Lambda$.
-Left: Face $F$ is single-material and uses one global d.o.f.; Right: Face $F$ is multi-material and uses two global d.o.f.\label{fig:asc_dofs:asc1:mmc}}
+		\caption{$\lambda_{ji}(\mmesh)$ are local d.o.f. used in MFD for $\lambda$ from \eqref{dual_mini}, $\lambda_j(T)$, $\lambda'_j(T)$ are global d.o.f. used to describe mortar space $\Lambda$. Left: Face $F$ is single-material and uses one global d.o.f.; Right: Face $F$ is multi-material and uses two global d.o.f.
+		\label{fig:asc_dofs:asc1:mmc}}
 	\end{figure}
 	
-The method uses local piecewise constant  and global piecewise $P_1$ (for ASC(1)\,) approximation of the concentration on $\bfaces$. Local piecewise constant approximations $\lambda_\mmesh$, however, use finer local subdivisions and so $\lambda_\mmesh$ does not belong to the restriction of the global space $\Lambda$ on the boundary of a given cell $T$. For the method, we define a mapping given by the matrix $\vect R_\mmesh$ to map global to local degrees of freedom and $\vect R_\mmesh^T$ from local   to global. For the well-posedness of the method, we need $\vect R_\mmesh$ to have a full rank.
-
-We  define $\vect R_\mmesh$ locally for any fixed $T\in\bmesh$. Let us enumerate all faces of the given $T$ by index $j$. For example, $j=1,\dots,4$ for the polygonal cell in Figure~\ref{fig:asc_dofs:asc1:mmc}. For each $j$, index $i$ enumerates mini-faces from $\mfaces[ext](T)$ belonging to the macro-face $j$. For example, $i\in\{1,2,3\}$ for $j=1$ and $i\in\{1\}$ for $j=4$ for the same example in Figure~\ref{fig:asc_dofs:asc1:mmc}.
-Further,  denote by $\lambda_{j\,i}(\mmesh)$ the local d.o.f. assigned  to the $i$-th mini-face~ belonging to the $j$-th macro-face~, and by $\lambda_{j}(T)$, $\lambda_{j}'(T)$ to moments defining an element from $\Lambda$ on the $j$-th macro-face (see Figure~\ref{fig:asc_dofs:asc1:mmc})) so that
-we have for $\lambda\in\Lambda$,
+	The method uses local piecewise constant  and global piecewise $P_1$ \big(for ASC(1)\big) approximation of the concentration on $\bfaces$. Local piecewise constant approximations $\vect\lambda_\mmesh$, however, use finer local subdivisions, so $\vect\lambda_\mmesh$ does not belong to the restriction of the global space $\Lambda$ on the boundary of a given cell $T$. For the method, we define a mapping given by the matrix $\vect R_\mmesh$ to map global to local degrees of freedom and $\vect R_\mmesh^T$ from local   to global. For the well-posedness of the method, we need $\vect R_\mmesh$ to have a full rank.
+	
+	We define $\vect R_\mmesh$ locally for any fixed $\bcell\in\bmesh$. Let us enumerate all faces of the given $T$ by index $j$. For example, $j=1,\dots,4$ for the polygonal cell in Figure~\ref{fig:asc_dofs:asc1:mmc}. For each $j$, index $i$ enumerates mini-faces from $\mfaces[ext](T)$ belonging to the macro-face $j$. For example, $i\in\{1,2,3\}$ for $j=1$ and $i\in\{1\}$ for $j=4$ for the same example in Figure~\ref{fig:asc_dofs:asc1:mmc}. Further, denote by $\lambda_{j\,i}(\mmesh)$ the local d.o.f. assigned to the $i$-th mini-face belonging to the $j$-th macro-face, and by $\lambda^{(0)}_{j}(T)$, $\lambda^{(1)}_{j}(T)$ two moments defining an element from $\Lambda$ on the $j$-th macro-face (see Figure~\ref{fig:asc_dofs:asc1:mmc}) so that we have
 	\begin{equation}\label{lambda_intermsof_moments}
-		{\lambda}\big({\vect r}(t)\big) = \lambda_{j}'(T)|F|\,t + \left( \lambda_{j}(T) - \frac{\lambda_{j}'(T)\,|F|}{2} \right),\qquad  F\in\bfaces[int],
+		{\lambda}\big({\vect r}(t)\big) = \lambda^{(1)}_{j}(T)\,|F|\,t + \left( \lambda^{(0)}_{j}(T) - \frac{\lambda^{(1)}_{j}(T)\,|F|}{2} \right),\qquad  F\in\bfaces[int]
 	\end{equation}
-where $t\in(0,1)$ and ${\vect r}\::\:\left(0,1\right) \rightarrow F$ is the affine parametrization of $F$, which has index $j$ among macro-faces of $T$.
-
-
-Integrating \eqref{lambda_intermsof_moments} over all mini-faces $f\in \mfaces(T)\cap F$ ($f$ has local index $i$ among mini-faces belonging to $F$) and re-scaling, we get
+	for $\lambda\in\Lambda$. Here $t\in(0,1)$ and ${\vect r}\::\:\left(0,1\right) \rightarrow F$ is the affine parametrization of $F$, which has index $j$ among macro-faces of $T$.
+	
+	Integrating \eqref{lambda_intermsof_moments} over all mini-faces $f \in \mfaces_\bface(\bcell)$ ($f$ has local index $i$ among mini-faces belonging to $F$) and re-scaling, we get
 	\begin{equation}\label{asc1_interp}
 		\lambda_{j\,i}(\mmesh) =
 		\begin{cases}
-			\lambda_{j}(\bcell) +  s_{j\,i}\,\lambda'_{j}(\bcell), & \text{if}~F~\text{is a multi-material face}, \\
-			\lambda_{j}(\bcell),                                    & \text{otherwise},
+			\lambda^{(0)}_{j}(\bcell) +  s_{j\,i}\,\lambda^{(1)}_{j}(\bcell), & \text{if}~F~\text{is a multi-material face}, \\
+			\lambda^{(0)}_{j}(\bcell),                                        & \text{otherwise},
 		\end{cases}
 	\end{equation}
-	where $s_{j\,i} $ is a signed distance between centroids of~$f$  and~$F$. For the corresponding vectors of unknowns  ${\vect \lambda}_\mmesh = \{ \lambda_{j\,i}(\mmesh) \}$ and ${\vect \lambda}_\bcell = \{ \lambda_{i}(\bcell) \}$ this defines
-the matrix $\vect R_\mmesh$ through
-\[
-{\vect \lambda}_\mmesh=\vect R_\mmesh {\vect \lambda}_\bcell.
-\]
-For the example in Figure~\ref{fig:asc_dofs:asc1:mmc}\,(left), $\vect R_\mmesh$ is given by
-\begin{equation*}\footnotesize
-	\vect R_\mmesh
+	where $s_{j\,i} $ is a signed distance between centroids of~$f$  and~$F$. For the corresponding vectors of unknowns  ${\vect \lambda}_\mmesh = \{ \lambda_{j\,i}(\mmesh) \}$ and ${\vect \lambda}_\bcell = \{ \lambda^{(0)}_{j}(\bcell) \} \cup \{ \lambda^{(1)}_{j}(\bcell) \}$ this defines
+	the matrix $\vect R_\mmesh$ through~\eqref{asc_lambda}. For the example in Figure~\ref{fig:asc_dofs:asc1:mmc} (left), $\vect R_\mmesh$ is given by
+	\begin{equation*}\footnotesize
+		\vect R_\mmesh
 		=
-		 \begin{pmatrix}
+		\begin{pmatrix}
 			1 &  s_{1\,1} & 0 & 0 & 0 & 0 & 0 \\
 			1 &  s_{1\,2} & 0 & 0 & 0 & 0 & 0 \\
 			1 &  s_{1\,3} & 0 & 0 & 0 & 0 & 0 \\
@@ -447,81 +428,74 @@ For the example in Figure~\ref{fig:asc_dofs:asc1:mmc}\,(left), $\vect R_\mmesh$ 
 			0 & 0 & 0 & 0 & 0 & 0 & 1
 		\end{pmatrix}.		
 	\end{equation*}
-For ASC(0) the matrix $\vect R_\mmesh$  is as above with rows containing $s_{ij}$-s eliminated.
-%Since the fourth base\,face $F \in \bfaces_\bcell$ has only one material, a trace on~$F$ from the cell~$\bcell$ is approximated by a constant. However, if in the adjacent cell we have several materials on $F$\footnotemark{}, we will use the value of~$\lambda'_{\bcell\,4}$ to improve the approximation of the fine traces on~$F$ in the adjacent cell.
+	For ASC(0) the matrix $\vect R_\mmesh$  is as above with rows containing $s_{ij}$-s eliminated.
+	%Since the fourth base\,face $F \in \bfaces_\bcell$ has only one material, a trace on~$F$ from the cell~$\bcell$ is approximated by a constant. However, if in the adjacent cell we have several materials on $F$\footnotemark{}, we will use the value of~$\lambda'_{\bcell\,4}$ to improve the approximation of the fine traces on~$F$ in the adjacent cell.
 	
-	
-Now, when the mappings between local and global approximations of $\lambda$ are defined, we are ready to proceed with the assembly of the global matrix $\vect S_\bmesh$. 	The flux continuity over the face $F$ condition ~\eqref{flux_cont} yields
+	Now, when the mappings between local and global approximations of $\lambda$ are defined, we are ready to proceed with the assembly of the global matrix $\vect S_\bmesh$. The flux continuity over the face $F$ \big(condition~\eqref{flux_cont}\big) yields
 	\begin{equation*}
-\left\{
-\begin{split}
-		\sum_{f\in \mfaces(T^+)\cap F} u^{\text{ext}}_{\mmesh^+}(f)\,|f| &+ \sum_{f\in \mfaces(T^-)\cap F} u^{\text{ext}}_{\mmesh^-}(f)\,|f| &= 0 \\
-		\sum_{f\in \mfaces(T^+)\cap F} u^{\text{ext}}_{\mmesh^+}(f)\,\int_{f} s_1 \diff{l} &+ \sum_{f\in \mfaces(T^-)\cap F} u^{\text{ext}}_{\mmesh^-}(f)\,\int_{f} s_1 \diff{l} &= 0
-\end{split}
-\right.
-%\quad\Leftrightarrow \\
-%		\sum_{i \in I_{\mfaces^+_F}} u^{\text{ext}}_{\mmesh^+\,i}\,\Delta s^+_i\,|\mfaces^+_{F\,i}| &+ \sum_{i \in I_{\mfaces^-_F}} u^{\text{ext}}_{\mmesh^-\,i}\,\Delta s^-_i\,|\mfaces^-_{F\,i}| = 0,
+		\left\{\begin{split}
+			\sum_{f\in \mfaces_F(T^+)} u^{\text{ext}}_{\mmesh^+}(f)\,|f| &+ \sum_{f\in \mfaces_F(T^-)} u^{\text{ext}}_{\mmesh^-}(f)\,|f| &= 0, \\
+			\sum_{f\in \mfaces_F(T^+)} u^{\text{ext}}_{\mmesh^+}(f)\,\int_{f} s_1 \diff{l} &+ \sum_{f\in \mfaces_F(T^-)} u^{\text{ext}}_{\mmesh^-}(f)\,\int_{f} s_1 \diff{l} &= 0
+		\end{split}\right.
+		%\quad\Leftrightarrow \\
+		%		\sum_{i \in I_{\mfaces^+_F}} u^{\text{ext}}_{\mmesh^+\,i}\,\Delta s^+_i\,|\mfaces^+_{F\,i}| &+ \sum_{i \in I_{\mfaces^-_F}} u^{\text{ext}}_{\mmesh^-\,i}\,\Delta s^-_i\,|\mfaces^-_{F\,i}| = 0,
 	\end{equation*}
 	or in the matrix form
 	\begin{equation}\label{eq:aux1}
 		\left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect u}^{\text{ext}}_{\mmesh^+} \right)_i + \left( \vect R^T_{\mmesh^-}\,\vect C_{\mmesh^-}\,{\vect u}^{\text{ext}}_{\mmesh^-} \right)_j = 0,
 	\end{equation}
-where $i$ and $j$ are the local indexes of the face $F$ in the cells $T^+$ and $T^-$, respectively.
-If $F$ from $T^+$ belong to the Neumann part of the boundary, then we have
-	\begin{align*}
-		\left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect u}^{\text{ext}}_{\mmesh^+} \right)_i &= \left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect g}_{N\,\mmesh^+} \right)_i, \quad
-		{\vect g}_{N\,\mmesh^+} &\coloneqq \left\{ \int_f g_N\,s_k \diff{l}\,/\,|f| \right\}_{f \in \mfaces[ext,\,\textit{N}]}, \quad k = 0, 1.
-	\end{align*}
+	where $i$ and $j$ are the local indexes of the face $F$ in the cells $T^+$ and $T^-$, respectively. For the Neumann part of the boundary of~$\bcell^\pm$ we set $\mfaces_N(\bcell^\pm) \coloneqq \{ f \in \mfaces[ext](\bcell^\pm)\::\:f \subset \partial\Omega_N \}$. If $F$ from $T^+$ belongs to the Neumann part of the boundary, then we have
+	\begin{equation*}
+		\left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect u}^{\text{ext}}_{\mmesh^+} \right)_i = \left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect g}_{N\,\mmesh^+} \right)_i, \quad
+		{\vect g}_{N\,\mmesh^+} \coloneqq \left\{ \int_f g_N\,s_k \diff{l}\,/\,|f| \right\}_{f\,\in\,\mfaces_N(\bcell^+),\:k\,\in\,\{0,\,1\}}.
+	\end{equation*}
 	
-Substituting~\eqref{asc_flux_lambda} into \eqref{eq:aux1} we get the local equation for~${\vect \lambda}_\bcell$
+	Substituting~\eqref{asc_flux_lambda} into \eqref{eq:aux1} we get the local equation for~${\vect \lambda}_\bcell$
 	\begin{align}\label{local_system}
 		\begin{split}
 			\Big( \underbrace{\left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,\vect A_{\mmesh^+}\,\vect C_{\mmesh^+}\,\vect R_{\mmesh^+} \right)}_{\vect S_{\bcell^+} \coloneqq} {\vect \lambda}_{\bcell^+} \Big)_i
 			&+
 			\Big( \underbrace{\left( \vect R^T_{\mmesh^-}\,\vect C_{\mmesh^-}\,\vect A_{\mmesh^-}\,\vect C_{\mmesh^-}\,\vect R_{\mmesh^-} \right)}_{\vect S_{\bcell^-} \coloneqq} {\vect \lambda}_{\bcell^-} \Big)_j = \\
-			\big( \underbrace{\vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect a}_{\mmesh^+}}_{{\vect b}_{\bcell^+}} \big)_i
+			\big( \underbrace{\vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect a}_{\mmesh^+}}_{{\vect b}_{\bcell^+} \coloneqq} \big)_i
 			&+
-			\big( \underbrace{\vect R^T_{\mmesh^-}\,\vect C_{\mmesh^-}\,{\vect a}_{\mmesh^-}}_{{\vect b}_{\bcell^-}} \big)_j.
+			\big( \underbrace{\vect R^T_{\mmesh^-}\,\vect C_{\mmesh^-}\,{\vect a}_{\mmesh^-}}_{{\vect b}_{\bcell^-} \coloneqq} \big)_j.
 		\end{split}
 	\end{align}
-As standard in finite element methods, one assembles the global system~\eqref{asc_system} from the local matrices and local right-hand side vectors.  Thus we may formally write
+	As standard in finite element methods, one assembles the global system~\eqref{asc_system} from the local matrices and local right-hand side vectors.  Thus we may formally write
 	\begin{align}\label{global_system_assembly}
 		%\begin{split}
-			\vect S_\bmesh = \sum_{\bcell \in \bmesh} \vect N^T_\bcell\,\vect S_\bcell\,\vect N_\bcell, \quad
-			{\vect b}_\bmesh = \sum_{\bcell \in \bmesh} \vect N^T_\bcell\,{\vect b}_\bcell.
+		\vect S_\bmesh = \sum_{\bcell \in \bmesh} \vect N^T_\bcell\,\vect S_\bcell\,\vect N_\bcell, \quad
+		{\vect b}_\bmesh = \sum_{\bcell \in \bmesh} \vect N^T_\bcell\,{\vect b}_\bcell.
 		%\end{split}
 	\end{align}
-where $N_\bcell$ defines global to local mapping for the cell $T$.
-
-From~\eqref{local_system} it is clear that~$\vect S_\bmesh$ is sparse: Global  $\lambda_{\bmesh\,i}$ interacts only with d.o.f. associated with faces of macro elements that share $i$th base\,face. For example, if $F\in\bfaces[ext]$ is shared by two quadrilaterals and has global index $i$, then $i$th row of~$\vect S_\bmesh$ will have~7 nonzero elements. %; if $i$th base\,face is a face shared by a quadrilateral and a triangle, $i$th row of~$\vect S_\bmesh$ will have~6 nonzero elements and so forth.
-
-
+	where $\vect N_\bcell$ defines global to local mapping for the cell $T$.
 	
-	Now we show that the global matrix~$\vect S_\bmesh$ in~\eqref{asc_system} is symmetric and positive definite. We give the arguments for ASC(1). Same arguments hold for  ASC(0) after obvious simplifications.
+	From~\eqref{local_system} it is clear that~$\vect S_\bmesh$ is sparse: Global d.o.f. $\lambda^{(0)}_m(\bmesh)$, $\lambda^{(1)}_m(\bmesh)$ (components of~$\vect\lambda_\bmesh$) interact only with d.o.f. associated with faces of macro-cells that share $m$th macro-face. For example, if $F\in\bfaces[int]$ is shared by two quadrilaterals and has global index $m$, then $m$th row of~$\vect S_\bmesh$ has at most 14 nonzero elements for ASC(1) and at most 7 for ASC(0). %; if $i$th base\,face is a face shared by a quadrilateral and a triangle, $i$th row of~$\vect S_\bmesh$ will have~6 nonzero elements and so forth.
+	
+	Now we show that the global matrix~$\vect S_\bmesh$ in~\eqref{asc_system} is symmetric and positive definite. We give the arguments for ASC(1). Same arguments hold for ASC(0) after obvious simplifications.
 	%\begin{theorem}\label{thm:asc0}
-%		$\Ker\vect R_\mmesh = \{ {\vect 0} \}$ for ASC(0)
-%	\end{theorem}
-%	\begin{proof}
-%		From~\eqref{asc0_interp} we have that for any cell~$\bcell$\,/\,its mini\,mesh~$\mmesh$ the interpolating matrix may be written as
-%		\begin{equation*}
-%			\vect R_\mmesh =
-%			\begin{pmatrix}
-%				{\vect e}_1 & & & \\
-%				& {\vect e}_2 & & \\
-%				& & \ddots & \\
-%				& & & {\vect e}_m
-%			\end{pmatrix},
-%		\end{equation*}
-%		where~$m \coloneqq$ number of base\,faces spanning~$\bcell$ and ${\vect e}_k \coloneqq$ column vector of all ones; its length is the number of mini\,faces of the base\,face~$k$. Clearly, columns of~$\vect R_\mmesh$ are linearly independent.
-%		
-%	\end{proof}
-
-
+	%		$\Ker\vect R_\mmesh = \{ {\vect 0} \}$ for ASC(0)
+	%	\end{theorem}
+	%	\begin{proof}
+	%		From~\eqref{asc0_interp} we have that for any cell~$\bcell$\,/\,its mini\,mesh~$\mmesh$ the interpolating matrix may be written as
+	%		\begin{equation*}
+	%			\vect R_\mmesh =
+	%			\begin{pmatrix}
+	%				{\vect e}_1 & & & \\
+	%				& {\vect e}_2 & & \\
+	%				& & \ddots & \\
+	%				& & & {\vect e}_m
+	%			\end{pmatrix},
+	%		\end{equation*}
+	%		where~$m \coloneqq$ number of base\,faces spanning~$\bcell$ and ${\vect e}_k \coloneqq$ column vector of all ones; its length is the number of mini\,faces of the base\,face~$k$. Clearly, columns of~$\vect R_\mmesh$ are linearly independent.
+	%		
+	%	\end{proof}
 	\begin{lemma}\label{thm:asc1}
 		%If~$\bfaces_\bcell \cap \bfaces[\textnormal{mixed}] = \varnothing$, then~
 		$\Ker\vect R_\mmesh = \{ {\vect 0} \}$ for ASC(1)
 	\end{lemma}
 	\begin{proof}
+		\vskip -.3cm
 		From~\eqref{asc1_interp} we have that for any cell~$\bcell$ and its mini-mesh~$\mmesh(T)$
 		%that has no mixed base\,faces, ${\bfaces_\bcell \cap \bfaces[mixed] = \varnothing}$,
 		the interpolating matrix may be written as
@@ -534,7 +508,7 @@ From~\eqref{local_system} it is clear that~$\vect S_\bmesh$ is sparse: Global  $
 				& & & \vect S_m
 			\end{pmatrix},
 		\end{equation}
-		where~$m \coloneqq$ number of base\,faces spanning~$\bcell$ and
+		where~$m \coloneqq$ number of macro-faces spanning~$\bcell$ and
 		\begin{equation*}
 			\vect S_k \coloneqq
 			\begin{cases}
@@ -546,11 +520,11 @@ From~\eqref{local_system} it is clear that~$\vect S_\bmesh$ is sparse: Global  $
 				1, & \text{otherwise},
 			\end{cases}
 		\end{equation*}
-		$1 < m_k$ is the number of mini-faces of the~$k$th macro-face, $ s_{k\,i}$ is the signed distance between centroids of~$i$th mini-face and~$k$th base\,face. If~$\bcell$ contains only one material, then $\vect R_\mmesh = \vect I$ and hence $\Ker\vect R_\mmesh = \{ {\vect 0} \}$, so we assume that there is at least one multi-material  face.
+		$1 < m_k$ is the number of mini-faces of the~$k$th macro-face, $ s_{k\,i}$ is the signed distance between centroids of~$i$th mini-face and~$k$th macro-face. If~$\bcell$ contains only one material, then $\vect R_\mmesh = \vect I$ and hence $\Ker\vect R_\mmesh = \{ {\vect 0} \}$, so we assume that there is at least one multi-material  face.
 		
-		Clearly, matrix~$\vect R_\mmesh$ has a non\,--\,trivial kernel iff
+		Clearly, matrix~$\vect R_\mmesh$ has a non-trivial kernel iff
 		\begin{equation*}
-			 s_{k\,i} =  s_{k\,j}, \quad i, j = 1, 2, \dots, m_k
+			s_{k\,i} =  s_{k\,j}, \quad i, j = 1, 2, \dots, m_k
 		\end{equation*}
 		for some~$k$. Take some $\vect S \equiv \vect S_k$ corresponding to a multi-material face~$F \in \bfaces_\bcell$ with~${l \coloneqq m_k}$ materials,
 		\begin{equation*}
@@ -562,58 +536,62 @@ From~\eqref{local_system} it is clear that~$\vect S_\bmesh$ is sparse: Global  $
 		\end{equation*}
 		It is sufficient to show that~$ s_1 \ne  s_2$. Let $f_1$ and $f_2$ be corresponding mini-faces. We have
 		\[
-			 s_1 = \frac{1}{2}\left( |f_1| - |F| \right), \quad
-			 s_2 = |f_1| + \frac{1}{2}\left( |f_2| - |F| \right)
+			s_1 = \frac{1}{2}\left( |f_1| - |F| \right), \quad
+			s_2 = |f_1| + \frac{1}{2}\left( |f_2| - |F| \right),
 		\]
 		and
 		\begin{equation*}
-			 s_1 =  s_2 \quad\Leftrightarrow\quad |f_1| + |f_2| = 0.
+			s_1 =  s_2 \quad\Leftrightarrow\quad |f_1| + |f_2| = 0.
 		\end{equation*}
 		Hence $ s_1 \ne  s_2$, and~$\Ker\vect R_\mmesh = \{ {\vect 0} \}$ follows.
-		
 	\end{proof}
-
-	\begin{theorem} Matrix $\vect S_\bmesh$ is symmetric. If $c \ne 0$ or $|\partial\Omega_D|>0 $, then  $\vect S_\bmesh$ is positive definite.
+	\vskip .3cm
+	\begin{theorem} 
+		Matrix $\vect S_\bmesh$ is symmetric. If $c > 0$ or $|\partial\Omega_D|>0 $, then  $\vect S_\bmesh$ is positive definite.
 	\end{theorem}
-
-\begin{proof}
-		From the identity \eqref{defA} it immediately follows that $\vect A_{\mmesh}$ is symmetric and non-negative definite.  Thus, the symmetry of $\vect S_\bmesh$ follows from the definition in \eqref{local_system}--\eqref{global_system_assembly}.
-It is easy to see that $\vect A_{\mmesh}$ is positive definite for all~$\bcell$, where $c \ne 0$. Hence if $c \ne 0$ in $\Omega$ , then \eqref{local_system}--\eqref{global_system_assembly} and the full ranks of $\vect R$-s and $\vect C$-s imply
-the positive definiteness of $\vect S_\bmesh$.
-Now we show the positive definiteness of $\vect S_\bmesh$ if $|\partial\Omega_D|>0 $. Consider  any given $\bcell\in\bmesh$.
-Matrix  $\vect A_{\mmesh}$ defines the discrete Dirichlet-to-Neumann map for $\partial\bcell$.
-If $\partial\bcell\cap\partial\Omega_D$, then $\mbox{ker}(\vect A_{\mmesh})=0$. Otherwise $\mbox{dim}(\mbox{ker}(\vect A_{\mmesh}))=1$ and $\vect A_{\mmesh}\vect C_{\mmesh}\lambda_\mmesh=0$ implies that $\lambda_\mmesh$ is constant on $\partial\bcell$. Consider some $\lambda$ from the mortar space $\Lambda$ and corresponding vector of moments  $\vect \lambda_\bmesh$. Using connectivity of the mesh one easily finds that $\vect R_\mmesh \lambda_\bmesh$ can be constant on every $T\in\bmesh$ only if $\lambda$ is constant. Due to the assumption $|\partial\Omega_D|>0 $ this implies $\lambda=0$.
-% Thus we have
-%		\begin{equation*}
-%			\big(\vect S_\bcell\,{\vect x},\,{\vect x}\big) =
-%			\big(\vect R^T_\mmesh \left( \vect C_{\mmesh}\,\vect A_{\mmesh}\,\vect C_{\mmesh} \right) \vect R_\mmesh\,{\vect x},\,{\vect x} \big) =
-%			\big(\vect A_{\mmesh}\,\vect C_{\mmesh}\,\vect R_\mmesh\,{\vect x},\,\vect C_{\mmesh}\,\vect R_\mmesh\,{\vect x} \big) \ge 0
-%		\end{equation*}
-%		for all~$\bcell \in \bmesh$ and
-%		\begin{equation*}
-%			\big(\vect S_\bcell\,{\vect x},\,{\vect x} \big) > 0
-%		\end{equation*}
-%		for some~$\bcell \in \bmesh$ since~$\Ker\vect R_\mmesh = \{ {\vect 0} \}$. So
-Hence for any $0\neq\lambda_\bmesh\in \mathbb{R}^{n_\bmesh}$ we have
+	\begin{proof}
+		\vskip -.3cm
+		First, noting that for any two symmetric positive definite matrices $\vect A_1$ and $\vect A_2$ inequality $\vect A_1 \ge \vect A_2$ implies $\vect A_1^{-1} \le \vect A_2^{-1}$, we conclude 
+		\begin{equation}\label{aux2}
+			\widetilde{\vect B}^T \left( \vect \Sigma+ \widetilde{\vect B}\,\widetilde{\vect B}^{T}\right)^{-1} \widetilde{\vect B}
+			\le
+			\widetilde{\vect B}^T \left(\widetilde{\vect B}\,\widetilde{\vect B}^{T}\right)^{-1} \widetilde{\vect B} \le \vect I,
+		\end{equation}
+		where $\vect \Sigma$ is any symmetric and non-negative definite matrix, $\widetilde{\vect B}$ is any matrix such that \\ ${\Ker\widetilde{\vect B}^T = \{ \vect 0 \}}$, and $\vect I$ is identity matrix. To check the last inequality in~\eqref{aux2}, one can consider, e.g., the SVD decomposition of $\widetilde{\vect B}$.
+		
+		From the identities~\eqref{defA} and~\eqref{aux2} with $\widetilde{\vect B}^T \coloneqq \vect M^{-\frac12}_\mmesh\,\vect B_\mmesh^T$, $\vect \Sigma \coloneqq \vect \Sigma_\mmesh$ it immediately follows that $\vect A_{\mmesh}$ is symmetric and non-negative definite.  The symmetry of $\vect S_\bmesh$ follows from the definition in \eqref{local_system}--\eqref{global_system_assembly}.
+		By similar considerations, it is easy to see that $\vect A_{\mmesh}$ is positive definite for all~$\bcell$, where $c > 0$. Hence if $c > 0$ in $\Omega$ , then \eqref{local_system}--\eqref{global_system_assembly} and the full ranks of $\vect R_\mmesh$'s and $\vect C_\mmesh$'s imply
+		the positive definiteness of $\vect S_\bmesh$.
+		
+		Now we show the positive definiteness of $\vect S_\bmesh$ if $|\partial\Omega_D|>0 $. Consider  any given $\bcell\in\bmesh$.
+		Matrix  $\vect A_{\mmesh}$ defines the discrete Dirichlet-to-Neumann map for $\partial\bcell$.
+		If $\partial\bcell\cap\partial\Omega_D$, then $\Ker \vect A_{\mmesh} = \{\vect 0\}$. Otherwise $\Dim\big(\Ker \vect A_{\mmesh}\big) = 1$ and $\vect A_{\mmesh}\,\vect C_{\mmesh}\,\vect\lambda_\mmesh=0$ implies that $\vect\lambda_\mmesh$ is constant on $\partial\bcell$. Consider some $\lambda$ from the mortar space $\Lambda$ and corresponding vector of moments  $\vect \lambda_\bmesh$. Using connectivity of the mesh one easily finds that $\vect R_\mmesh\,\vect\lambda_\bcell$ can be constant on every $T\in\bmesh$ only if $\lambda$ is constant. Due to the assumption $|\partial\Omega_D|>0$ this implies $\lambda=0$.
+		% Thus we have
+		%		\begin{equation*}
+		%			\big(\vect S_\bcell\,{\vect x},\,{\vect x}\big) =
+		%			\big(\vect R^T_\mmesh \left( \vect C_{\mmesh}\,\vect A_{\mmesh}\,\vect C_{\mmesh} \right) \vect R_\mmesh\,{\vect x},\,{\vect x} \big) =
+		%			\big(\vect A_{\mmesh}\,\vect C_{\mmesh}\,\vect R_\mmesh\,{\vect x},\,\vect C_{\mmesh}\,\vect R_\mmesh\,{\vect x} \big) \ge 0
+		%		\end{equation*}
+		%		for all~$\bcell \in \bmesh$ and
+		%		\begin{equation*}
+		%			\big(\vect S_\bcell\,{\vect x},\,{\vect x} \big) > 0
+		%		\end{equation*}
+		%		for some~$\bcell \in \bmesh$ since~$\Ker\vect R_\mmesh = \{ {\vect 0} \}$. So
+		Hence for any $\vect0\neq\vect\lambda_\bmesh\in \mathbb{R}^{n_\bmesh}$ we have
 		\begin{align*}
-			\left(\vect S_\bmesh\,\lambda_\bmesh,\,\lambda_\bmesh\right) &\stackrel{\eqref{global_system_assembly}}{=}
-			\Big( \big( \sum_{\bcell \in \bmesh} \vect N^T_\bcell\,\vect S_\bcell\,\vect N_\bcell \big){\lambda_\bmesh},\,{\lambda_\bmesh} \Big) =
-			\sum_{\bcell \in \bmesh} \big( \vect S_\bcell\,\vect N_\bcell\,{\lambda_\bmesh},\,\underbrace{\vect N_\bcell\,{\lambda_\bmesh}}_{{\vect x} \coloneqq} \big)\\
-& =
-			\sum_{\bcell \in \bmesh} \big(\vect S_\bcell\,{\vect x},\,{\vect x} \big) > 0.
+		\left(\vect S_\bmesh\,\vect\lambda_\bmesh,\,\vect\lambda_\bmesh\right) &\stackrel{\eqref{global_system_assembly}}{=}
+		\Big( \big( \sum_{\bcell \in \bmesh} \vect N^T_\bcell\,\vect S_\bcell\,\vect N_\bcell \big){\vect\lambda_\bmesh},\,{\vect\lambda_\bmesh} \Big) =
+		\sum_{\bcell \in \bmesh} \big( \vect S_\bcell\,\vect N_\bcell\,{\vect\lambda_\bmesh},\,\underbrace{\vect N_\bcell\,{\vect\lambda_\bmesh}}_{{\vect \lambda_\bcell} \coloneqq} \big) \\
+		& = \sum_{\bcell \in \bmesh} \big(\vect S_\bcell\,{\vect \lambda_\bcell},\,{\vect \lambda_\bcell} \big) > 0.
 		\end{align*}
-The last inequality holds, since the exists $\bcell$ such that $\vect x=N_\bcell\,{\lambda_\bmesh}$ is not in the kernel for $\lambda_\bmesh\neq0$.
+		The last inequality holds, since there exists $\bcell$ such that $\vect \lambda_\bcell=\vect N_\bcell\,{\vect\lambda_\bmesh}$ is not in the kernel for $\vect\lambda_\bmesh\neq\vect0$.
 	\end{proof}
 
-
-
-
-        \input{num_sec.tex}
-
- \subsection*{Acknowledgements} Alexander Zhiliakov acknowledges the internship opportunity in Methods and Algorithms group of the Los Alamos National Laboratory.
-\bibliographystyle{plain}
-\bibliography{bibl}
-		
+	\input{num_sec.tex}
+	
+	\subsection*{Acknowledgments} Alexander Zhiliakov acknowledges the internship opportunity in Methods and Algorithms group of the Los Alamos National Laboratory.
+	
+	\bibliographystyle{plain}
+	\bibliography{bibl}
+	
 \end{document}
-
-
