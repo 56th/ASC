@@ -1,324 +1,279 @@
 \section{Numerical Results}\label{sec:num}
 
-We define \textit{discrete} $\LTwo$\,--\,norm of $v \in \mathbb V_h \subset \LTwoSpace$
+Let $h$ be a max cell diameter for the macro-mesh~$\bmesh_h$, and $\mathbb V_h \subset \LTwoSpace$ be a space of piecewise constant
+functions on each cell~$\mcell \in \mmesh(\bcell)$, $\bcell \in \bmesh_h$. We define \textit{discrete} $\LTwo$-norm of $v \in \LTwoSpace$ as
 \begin{equation}\label{l2}
   \| v \|_{\lTwoSpace} \coloneqq \| P_h\,v \|_{\LTwoSpace},
 \end{equation}
-where $P_h \coloneqq$ $\LTwo$\,--\,projection operator on the space of piecewise constant
-functions on each mesh element~$\bcell \in \bmesh_h$ (or on each~$\mcell \in \mmesh_h$
-if $\bcell$ is a  multi-material cell).
+where $P_h\;:\;\LTwoSpace\rightarrow\mathbb V_h$ is $\LTwo$-projection operator.
 
-The the discretization error $e_h = p - p_h$ is defined as:
-
-\begin{equation*}
-  \errlTwo{} =  \|e_h  \|_{\lTwoSpace} = \| P_h\,p - P_h\,p_h \|_{\LTwoSpace} = \| P_h\,p - p_h \|_{\LTwoSpace}
-\end{equation*}
-\noindent since~$P_h$ is linear and~$p_h \in \mathbb V_h$.  Then the discrete norm of the discretization error is computed as follows:
+For the error~$e_h \coloneqq p - p_h$ between the exact and computed solutions we have
+\begin{equation}\label{l2norm}
+	\errlTwo{h} \coloneqq \| e_h \|_{\lTwoSpace} = \| p - p_h \|_{\lTwoSpace} = \| P_h\,p - P_h\,p_h \|_{\LTwoSpace} = \| P_h\,p - p_h \|_{\LTwoSpace}
+\end{equation}
+since~$P_h$ is linear and~$p_h \in \mathbb V_h$. The discrete norm~\eqref{l2norm} of the discretization error is computed as follows:
 $$
-\errlTwo{} = \left[\sum\limits_{\bcell \in \bmesh_h}\sum\limits_{\mcell\in\mmesh_h(\bcell)} \left(\frac{1}{|\mcell|}\int_{\mcell} p \,{\rm dx} - p_{\mcell}\right)^2|\mcell|\right]^2,
+	\errlTwo{h} = \left[\sum\limits_{\bcell \in \bmesh_h}\sum\limits_{\mcell\in\mmesh(\bcell)} \left(\frac{1}{|\mcell|}\int_{\mcell} p \diff{\vect x} - p_h(\mcell)\right)^2|\mcell|\right]^\frac12,
 $$
-where $|\mcell|$ is
-the area of cell $\mcell$.
+where $|\mcell|$ is the area of cell $\mcell$.
 
-
+If~$\bmesh_h$ consists of triangles and no material interfaces are present, ASC($n$) boils down to mixed-hybrid Raviart\,--\,Thomas finite element method (which is algebraically equivalent to~$R\,T_0$ finite element method). In this particular case we have~\cite{M2AN_1980__14_3_249_0}
+$$
+	\|\vect u - \vect u_h\|_{\LTwoSpace} \le c\,h\,\|\vect u\|_{\HSpace{1}},\quad\|p - p_h\|_{\LTwoSpace} \le c \left( h\,\|p\|_{\HSpace{1}} + h^2\,\|p\|_{\HSpace{2}} \right),
+$$
+so one cannot expect ASC($n$) $\LTwo$-convergence to be better than linear. Note that
+\begin{equation}\label{l2L2}
+	\| p - p_h \|_{\lTwoSpace} \le \| p - p_h \|_{\LTwoSpace}
+\end{equation}
+since $\| p - p_h \|_{\lTwoSpace} = \| P_h\,(p - p_h) \|_{\lTwoSpace} \le \|P_h\|_{\mathcal L(\LTwoSpace, \mathbb V_h)} \| p - p_h \|_{\LTwoSpace}$, and the operator norm~$\|P_h\|_{\mathcal L(\LTwoSpace, \mathbb V_h)} = 1$ by Pythagorean theorem. Thus one may expect some improvement in $\lTwo$-convergence as one increases~$n$ for ASC($n$).  
 
 \subsection{Linear solution}
 
-	\begin{figure}[h]
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{.41\linewidth}
 		\centering
-		\begin{subfigure}{.41\linewidth}
-			\centering
-			\includegraphicsw{err2_asc0.png}
-			\caption{$\vect K_1 \equiv \vect K_2 \equiv \vect I$}
-			\label{fig:fake:2}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.41\linewidth}
-			\centering
-			\includegraphicsw{err3_asc0.png}
-			\caption{$\vect K_1 \equiv \vect K_2 \equiv \vect K_3 \equiv \vect I$}
-			\label{fig:fake:3}
-		\end{subfigure}
-		\caption{Material distribution for pseudo-multi-material problem 2-materials(left), 3-materials(right) \label{fig:fake}}		
-	\end{figure}
-
-The first set of tests is designed to check the property of the method to accurately recover the solution that is the polynomial of degree~1. Let us consider the diffusion problem~\eqref{dual} with~$c \equiv f \equiv 0$,
-$\partial\Omega_D = \partial\Omega$. The computational domain $\Omega=[0,1]^2$
-is divided into several subdomains by nonintersecting straight lines.
-In these settings the interface reconstruction algorithm MOF reconstructs
-the interfaces exactly. To test the {\it linearity preservation} property,
- we set up a pseudo-multi-material problem with the diffusion tensor being the
- same in all subdomains, $\vect K_i = \vect I$ .
- The exact solution a linear function. The geometry of two cases under consideration is shown in Figure~
-\ref{fig:fake}.
-	
-
-	
-	We denote
-        %the exact pressure solution by~$p$ and
-        the solution computed  with the ASC($n$) method by~$p_{h,\,n}$, $n = 0, 1$.
-
-        For ASC(0) we have~$\errlTwo{0} = 6.38 \times 10^{-2}$ and $6.41 \times 10^{-2}$ for the configurations shown in Figures~\ref{fig:fake:2} and~\ref{fig:fake:3}, respectively.
-        That is, ASC(0) is not able to recover $P_1$ solutions exactly.
-
-	Since ASC(1) approximates interface traces with $P_1$ functions
-        it recovers edge-based degrees of freedom exactly in the sense of mean values. This results in exact reconstruction
-        of cell-based unknowns and {\it linearity preservation} property for both examples, i.e.,
-	\begin{equation*}
-		\errlTwo{1} = \left\| p - p_{h,\,1} \right\|_{\lTwoSpace} = 0.
-	\end{equation*}
-	
-	%% As we saw in previous section,
-        In general, one may not expect concentration and flux convergence to be better than second order with respect to~$\lTwo$\,--\,error for ASC($1$).  However, taking the example above into account, one may expect that convergence of ASC(1) with respect to~$\lTwo$-norm is superior
-        to  convergence properties of ASC(0).
-	
-
-        \subsection{Piecewise $P_1$ solution}
-
-        In this set of tests, we consider the diffusion problem~\eqref{dual} with~$c = f = 0$, $\partial\Omega_D = \partial\Omega$,
-        and two different materials in the domain.
-        $\vect K = k\,\vect I$, $k = 1$ in the left part of the domain and $k = 0.1$ in the right (see Figure~\ref{fig:pwlin:mat}).
-        The exact solution is piecewise linear such that the normal flux is continuous across the interface (see Figure~\ref{fig:pwlin:p}).
-	
-	\begin{figure}[h!]
+		\includegraphicsw{err2_asc0.png}
+		\caption{$\vect K_1 \equiv \vect K_2 \equiv \vect I$}
+		\label{fig:fake:2}
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.41\linewidth}
 		\centering
-		\label{fig:pwlin}
-		\begin{subfigure}{.44\linewidth}
-			\centering
-			\includegraphicsw{skew_ref.png}
-			\caption{Reference solution~$p$}
-			\label{fig:pwlin:p}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.4\linewidth}
-			\centering
-			\includegraphicsw{skew_geometry_square.png}
-			\caption{Materials: $k_1 = 1$, $k_2 = 0.1$}
-			\label{fig:pwlin:mat}
-		\end{subfigure}
-		\caption{Piecewise linear reference solution}
-	\end{figure}
+		\includegraphicsw{err3_asc0.png}
+		\caption{$\vect K_1 \equiv \vect K_2 \equiv \vect K_3 \equiv \vect I$}
+		\label{fig:fake:3}
+	\end{subfigure}
+	\caption{Material distribution for pseudo-multi-material problem: two materials (left), three materials (right)
+	\label{fig:fake}}		
+\end{figure}
 
-	For this example we use a sequence of square base\,meshes~$\bmesh_i$, $i = 1, 2, 3, 4$; $h_i \coloneqq$ max diameter of the cell. We denote by
-	\begin{equation*}
-		\rho_{n,\,i} \coloneqq \frac{\log \errlTwo{n,\,i} / \errlTwo{n,\,i+1}}{\log h_i / h_{i+1}}
-	\end{equation*}
-the reduction rate order of ASC($n$) in ~$\lTwo$\,-\,norm between $i$ and $i+1$ refinement step. We also compute the $\ell^{\infty}$-norm of the error
-	\begin{equation*}
-		\errInf{n,\,i} \coloneqq \left\| p - p_{h_i,\,n} \right\|_\infty
-	\end{equation*}
-	for ASC($n$).
+The first set of tests is designed to check the property of the method to accurately recover the solution that is the polynomial of degree~1. Let us consider the diffusion problem~\eqref{dual} with~$c \equiv f \equiv 0$, $\partial\Omega_D = \partial\Omega$. The computational domain $\Omega=(0,1)^2$ is divided into several subdomains by non-intersecting straight lines. In these settings the interface reconstruction algorithm MOF reconstructs the interfaces exactly. To test the {\it linearity preservation} property, we set up a pseudo-multi-material problem with the diffusion tensor being the same in all subdomains, $\vect K_i = \vect I$. The exact solution a linear function. The geometry of two cases under consideration is shown in Figure~\ref{fig:fake}.
 	
-	\begin{table}[h!]\small
+We denote the solution computed  with the ASC($n$) method by~$p_{h,\,n}$, $n = 0, 1$. For ASC(0) we have~$\errlTwo{h,\,0} = 6.38 \times 10^{-2}$ and $6.41 \times 10^{-2}$ for the configurations shown in Figures~\ref{fig:fake:2} and~\ref{fig:fake:3}, respectively. That is, ASC(0) is not able to recover $P_1$ solutions exactly.
+
+Since ASC(1) approximates interface traces with $P_1$ functions it recovers edge-based degrees of freedom exactly in the sense of mean values. This results in exact reconstruction of cell-based unknowns and {\it linearity preservation} property for both examples, i.e.
+\begin{equation*}
+	\errlTwo{h,\,1} = \left\| p - p_{h,\,1} \right\|_{\lTwoSpace} = 0.
+\end{equation*}
+% As we saw in previous section,
+%In general, one may not expect concentration and flux convergence to be better than second order with respect to~$\lTwo$\,--\,error for ASC($1$).  However, taking the example above into account, one may expect that convergence of ASC(1) with respect to~$\lTwo$-norm is superior
+%to  convergence properties of ASC(0).
+
+\subsection{Piecewise $P_1$ solution}
+
+In this set of tests, we consider the diffusion problem~\eqref{dual} with~$c \equiv f \equiv 0$, $\partial\Omega_D = \partial\Omega$, and two different materials in the domain. $\vect K = k\,\vect I$, $k = 1$ in the left part of the domain and $k = 0.1$ in the right (see Figure~\ref{fig:pwlin:mat}). The exact solution is piecewise linear such that the normal flux is continuous across the interface (see Figure~\ref{fig:pwlin:p}).
+	
+\begin{figure}[h!]
+	\centering
+	\label{fig:pwlin}
+	\begin{subfigure}{.44\linewidth}
 		\centering
-		\caption{Piecewise linear example: convergence \label{fig:conv:pwlin}}
-			\begin{tabular}[1.5]{| c | c || c | c || c |}
-				\hline
-				\multirow{5}{*}{\rotatebox{90}{ASC(0)}} & $h$ & $\errlTwo{0}$ & $\rho$ & $\errInf{0}$ \\
-				\cline{2-5}
-				& $3.5\times10^{-1}$ & $7.3\times10^{-1}$ & & 4.8 \\
-				\cline{2-5}
-				& $8.8\times10^{-2}$ & $1.6\times10^{-1}$ & 1.1 & 1.2 \\
-				\cline{2-5}
-				& $2.2\times10^{-2}$ & $3.7\times10^{-2}$ & 1.1 & $3.4\times10^{-1}$ \\
-				\cline{2-5}
-				& $5.5\times10^{-3}$ & $8.9\times10^{-3}$ & 1.0 & $7.9\times10^{-2}$ \\
-				\hline
-				\hline
-				\multirow{5}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{1}$ & $\rho$ & $\errInf{1}$ \\
-				\cline{2-5}
-				& $3.5\times10^{-1}$ & $2.5\times10^{-2}$ & & $1.6\times10^{-1}$ \\
-				\cline{2-5}
-				& $8.8\times10^{-2}$ & $1.9\times10^{-3}$ & 1.84 & $6.3\times10^{-2}$ \\
-				\cline{2-5}
-				& $2.2\times10^{-2}$ & $1.6\times10^{-4}$ & 1.79 & $9.8\times10^{-3}$ \\
-				\cline{2-5}
-				& $5.5\times10^{-3}$ & $1.3\times10^{-5}$ & 1.80 & $4.0\times10^{-3}$ \\
-				\hline
-			\end{tabular}
-	\end{table}
-
-	Numerical results are shown in Table~\ref{fig:conv:pwlin}. We observe that ASC(0) converges linearly with respect to $\lTwo$-norm, and ASC(1) has the convergence rate close to quadratic with respect to the $\lTwo$-norm.
-
-	\subsection{Piecewise $P_2$ solutions}
-	
-	\subsubsection{Two Materials}\label{sec:twomat}
-
-	\begin{figure}[h]
-		\begin{subfigure}{.45\linewidth}
-			\centering
-			\includegraphicsw{circle_ref_mesh.png}
-			\caption{Reference solution~$p$}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.45\linewidth}
-			\centering
-			\includegraphicsw{circle_ref_slice.png}
-			\caption{$p(x,\frac{1}{2})$}
-		\end{subfigure}
-		\caption{Piecewise quadratic reference solution, 2 materials\label{fig:pwquad2}}
-	\end{figure}
-
-	
-	Let us consider the diffusion problem~\eqref{dual} with~$c = 0$,
-        $\partial\Omega_D = \partial\Omega$. The computational domain is divided into
-        subdomains: $\Omega_1 = \{ {\bf x} : \|{\bf x} - {\bf x}_0\|< 0.25,~
-        {\bf x}_0 = (0.5,0.5)\}$ and  $\Omega_2 = [0,1]^2 / \Omega_1$.
-        The diffusion tensor is set  $\vect K_i = k_i\,\vect I$ in $\Omega_i$,
-        $k_1 = 0.001$ and $k_2=1$. The exact solution is piecewise quadratic such
-        that the normal flux is continuous across the interface (see Figure~\ref{fig:pwquad2}).
-        For this problem, we compared convergence properties of the  ASC(0) and ASC(1) methods
-        on a sequence of Voronoi meshes.
-	
-
-
-	\begin{table}[h!]\small
+		\includegraphicsw{skew_ref.png}
+		\caption{Reference solution~$p$}
+		\label{fig:pwlin:p}
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.4\linewidth}
 		\centering
-		\caption{Piecewise quadratic example, two materials: convergence \label{tab:conv:pwquad2}}
-		\begin{tabular}[1.5]{| c | c || c | c || c |}
-		  \hline
-		  \multirow{7}{*}{\rotatebox{90}{ASC(0)}} & $h$ & $\errlTwo{0}$ & ${\rho}$ & $\errInf{0}$ \\
-		  \cline{2-5}
-		  & $3.0\times10^{-1}$ & $2.4\times10^{-3}$ & & $6.3\times10^{-1}$ \\
-		  \cline{2-5}
-		  & $1.5\times10^{-1}$ & $6.5\times10^{-4}$ & 2.0 & $7.0\times10^{-3}$ \\
-		  \cline{2-5}
-		  & $8.1\times10^{-2}$ & $2.6\times10^{-4}$ & 1.4 & $3.2\times10^{-3}$ \\
-		  \cline{2-5}
-		  & $4.2\times10^{-2}$ & $1.4\times10^{-4}$ & 0.9 & $2.3\times10^{-3}$ \\
-		  \cline{2-5}
-		  & $2.1\times10^{-2}$ & $3.7\times10^{-5}$ & 1.9 & $1.1\times10^{-3}$ \\
-		  \cline{2-5}
-		  & $1.0\times10^{-2}$ & $2.7\times10^{-5}$ & 0.4 & $8.6\times10^{-4}$ \\
-		  \hline
-		  \hline
-		  \multirow{7}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{1}$ & ${\rho}$ & $\errInf{1}$ \\
-		  \cline{2-5}
-		  & $3.0\times10^{-1}$ & $2.4\times10^{-3}$ & & $2.1\times10^{-3}$ \\
-		  \cline{2-5}
-		  & {$1.5\times10^{-1}$} & $7.0\times10^{-4}$ & 1.9 & {$1.3\times10^{-2}$} \\
-		  \cline{2-5}
-		  & $8.1\times10^{-2}$ & $2.3\times10^{-4}$ & 1.8 & $6.8\times10^{-4}$ \\
-		  \cline{2-5}
-		  & $4.2\times10^{-2}$ & $6.8\times10^{-5}$ & 1.8 & $3.2\times10^{-4}$ \\
-		  \cline{2-5}
-		  & $2.1\times10^{-2}$ & $2.0\times10^{-5}$ & 1.8 & $1.1\times10^{-4}$ \\
-		  \cline{2-5}
-		  & $1.0\times10^{-2}$ & $5.4\times10^{-6}$ & 1.9 & $3.3\times10^{-5}$ \\
-		  \hline
-		\end{tabular}
-	\end{table}
+		\includegraphicsw{skew_geometry_square.png}
+		\caption{Materials: $k_1 = 1$, $k_2 = 0.1$}
+		\label{fig:pwlin:mat}
+	\end{subfigure}
+	\caption{Piecewise linear reference solution}
+\end{figure}
 
-	The norms of the errors are shown in Table~\ref{tab:conv:pwquad2}.        	
- ASC(1) demonstrates  convergence with the  rate in the $\lTwo$-norm close to quadratic.  ASC(0) convergence rate  fluctuates significantly.
+For this example we use a sequence of square base\,meshes~$\bmesh_{h_i}$, $i = 1, 2, 3, 4$. We denote by
+\begin{equation*}
+	\rho_{h_i,\,n} \coloneqq \frac{\ln \errlTwo{h_i,\,n} / \errlTwo{h_{i+1},\,n}}{\ln h_i / h_{i+1}}
+\end{equation*}
+the reduction rate order of ASC($n$) in~$\lTwo$-norm between $i$th and $(i+1)$th refinement steps. We also compute the $\ell^{\infty}$-norm of the error
+\begin{equation*}
+	\errInf{h_i,\,n} \coloneqq \left\| p - p_{h_i,\,n} \right\|_\infty
+\end{equation*}
+for ASC($n$).
+	
+\begin{table}[h!]
+	\centering
+	\caption{Piecewise linear example: convergence \label{fig:conv:pwlin}}
+	\footnotesize
+	\begin{tabular}[1.5]{| c | c || c | c || c |}
+		\hline
+		\multirow{5}{*}{\rotatebox{90}{ASC(0)}} & $h$ & $\errlTwo{0}$ & $\rho$ & $\errInf{0}$ \\
+		\cline{2-5}
+		& $3.5\times10^{-1}$ & $7.3\times10^{-1}$ & & 4.8 \\
+		\cline{2-5}
+		& $8.8\times10^{-2}$ & $1.6\times10^{-1}$ & 1.1 & 1.2 \\
+		\cline{2-5}
+		& $2.2\times10^{-2}$ & $3.7\times10^{-2}$ & 1.1 & $3.4\times10^{-1}$ \\
+		\cline{2-5}
+		& $5.5\times10^{-3}$ & $8.9\times10^{-3}$ & 1.0 & $7.9\times10^{-2}$ \\
+		\hline
+		\hline
+		\multirow{5}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{1}$ & $\rho$ & $\errInf{1}$ \\
+		\cline{2-5}
+		& $3.5\times10^{-1}$ & $2.5\times10^{-2}$ & & $1.6\times10^{-1}$ \\
+		\cline{2-5}
+		& $8.8\times10^{-2}$ & $1.9\times10^{-3}$ & 1.84 & $6.3\times10^{-2}$ \\
+		\cline{2-5}
+		& $2.2\times10^{-2}$ & $1.6\times10^{-4}$ & 1.79 & $9.8\times10^{-3}$ \\
+		\cline{2-5}
+		& $5.5\times10^{-3}$ & $1.3\times10^{-5}$ & 1.80 & $4.0\times10^{-3}$ \\
+		\hline
+	\end{tabular}
+\end{table}
 
-        We also observe a bump in the max norm error for ASC(1) on the second mesh level,
-        $h = 1.5\times10^{-1}$. To have some insight, we show the corresponding mesh in the Figure~\ref{fig:conv:pwquad2:inf:mesh}.
-        One may note that the interface reconstruction produces significant discontinuity of
-        interfaces: A small volume of the external material, i.e. the one occupying $\Omega_2$ domain, appears
-        inside the disk, domain $\Omega_1$. Due to constant trace approximation, ASC(0)
-        is not sensitive to such  irregularity. It turns out that for  ASC(1) the $\ell^\infty$ norm of the error is affected by  the appearance of such small isolated cut cells. At the same time, this  %as expected,
-        does not affect the $\lTwo$-convergence of ASC(1).
+Numerical results are shown in Table~\ref{fig:conv:pwlin}. We observe that ASC(0) converges linearly with respect to the $\lTwo$-norm, and ASC(1) has the convergence rate close to quadratic with respect to the $\lTwo$-norm.
 
-        \begin{figure}
+\subsection{Piecewise $P_2$ solutions}
+	
+\subsubsection{Two materials}\label{sec:twomat}
+
+\begin{figure}[h]
+	\begin{subfigure}{.45\linewidth}
 		\centering
-		\label{fig:conv:pwquad2:inf}
-		\begin{subfigure}{.29\linewidth}
-			\centering
-			\includegraphicsw{circle_voronoi_2_mat.png}
-			\caption{Materials}
-			\label{fig:conv:pwquad2:inf:mesh}
-		\end{subfigure}%
-\hskip1ex
-		\begin{subfigure}{.33\linewidth}
-			\centering
-			\includegraphicsw{circle_voronoi_2_asc0.png}
-			\caption{ASC(0), $p_h$}
-		\end{subfigure}%
-\hskip1ex
-		\begin{subfigure}{.33\linewidth}
-			\centering
-			\includegraphicsw{circle_voronoi_2_asc1.png}
-			\caption{ASC(1), $p_h$}			
-		\end{subfigure}%
-\caption{Piecewise quadratic example, two materials: $h = 1.5\times10^{-1}$. This figure illustrates the appearance of small isolated material volumes during numerical reconstruction of material interfaces. This may affect the $\ell^\infty$ error norm of the ASC(1).}
-	\end{figure}
-
-
-%	\clearpage
-	
-	\subsubsection{Three Materials}\label{sec:threemat}
-
-	
-	\begin{figure}[h]
+		\includegraphicsw{circle_ref_mesh.png}
+		\caption{Reference solution~$p$}
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.45\linewidth}
 		\centering
-		\begin{subfigure}{.45\linewidth}
-			\centering
-			\includegraphicsw{ring_ref_mesh.png}
-			\caption{Reference solution~$p$}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.45\linewidth}
-			\centering
-			\includegraphicsw{ring_ref_slice.png}
-			\caption{$p(x,\frac{1}{2})$}
-		\end{subfigure}
-\caption{Piecewise quadratic reference solution, three materials \label{fig:pwquad3}}
-	\end{figure}
-	
-	
-	In the next group of numerical tests, we consider the same  diffusion problem~\eqref{dual}
-        with~$c = 0$, $\partial\Omega_D = \partial\Omega$. The computational domain is now
-        divided into three subdomains: $\Omega_1 = \{{\bf x} : \|{\bf x} - {\bf x}_0\| < 0.2$,
-        $\Omega_2 = \{{\bf x} : 0.2 \le \|{\bf x} - {\bf x}_0\| < 0.25$, and
-        $\Omega_3 = [0,1]^2 / (\Omega_1\cup\Omega_2)$. The diffusion tensor is set to be
-        $\vect K_i = k_i\,\vect I$, $k_{1} = k_{3} = 1$, $k_2 = 0.001$.
-        The geometry represents a ring with $k_2=0.001$ inside the ring and $k_{1} = k_{3} = 1$ outside
-        the ring. The exact solution is piecewise quadratic such that the normal flux is
-        continuous across the interface; see Figure~\ref{fig:pwquad3}.
-        We use a sequence of triangular meshes to study convergence for this example. In this set of tests, we also consider the numerical method based on homogenization techniques for the comparison. The homogenization method we use is from \cite{dawes2013solving}. The homogenized values of the diffusion tensor are computed on the base cells $\bcell$ and then plugged into the MFD discretization applied on the  base mesh $\bmesh_h$; see \cite{kikinzon2017approximate} for implementation details of this method.
+		\includegraphicsw{circle_ref_slice.png}
+		\caption{$p(x,\frac{1}{2})$}
+	\end{subfigure}
+	\caption{Piecewise quadratic reference solution, 2 materials\label{fig:pwquad2}}
+\end{figure}
 
-        	\begin{table}[h]
-	  \centering
-	  \caption{Piecewise quadratic example, three materials: error norms and convergence rates\label{fig:conv:pwquad3}}
-	  \footnotesize
-	  \begin{tabular}[1.1]{| c | c || c | c || c |}
-	    \hline
-	    \multirow{7}{*}{\rotatebox{90}{ASC(0)}} & $h$ & $\errlTwo{0}$ & $\rho$ & $\errInf{0}$ \\
-	    \cline{2-5}
-	    & $3.0\times10^{-1}$ & 4.5 & & 17 \\
-	    \cline{2-5}
-	    & $2.5\times10^{-1}$ & 4.5 & & 17 \\
-	    \cline{2-5}
-	    & $1.3\times10^{-1}$ & 4.0 & & 17 \\
-	    \cline{2-5}
-	    & $8.3\times10^{-2}$ & 4.4 & & 17 \\
-	    \cline{2-5}
-	    & {$6.7\times10^{-2}$} & $7.1\times10^{-1}$ & & 4.9 \\
-	    \cline{2-5}
-	    & $4.3\times10^{-2}$ & $4.5\times10^{-1}$ & 1.2 & 5.0 \\
-	    \hline
-	    \hline
-	    \multirow{7}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{0}$ & $\rho$ & $\errInf{0}$ \\
-	    \cline{2-5}
-	    & $3.0\times10^{-1}$ & $4.5\times10^{-1}$ & & 3.5 \\
-	    \cline{2-5}
-	    & $2.5\times10^{-1}$ & $2.6\times10^{-1}$ & 3 & 2.7 \\
-	    \cline{2-5}
-	    & $1.3\times10^{-1}$ & $9.2\times10^{-2}$ & 1.5 & $6.2\times10^{-1}$ \\
-	    \cline{2-5}
-	    & $8.3\times10^{-2}$ & $4.8\times10^{-2}$ & 1.6 & $8.3\times10^{-1}$ \\
-	    \cline{2-5}
-	    & $6.7\times10^{-2}$ & $2.8\times10^{-2}$ & 2.5 & $2.3\times10^{-1}$ \\
-	    \cline{2-5}
-	    & $4.3\times10^{-2}$ & $1.0\times10^{-2}$ & 2.3 & $6.3\times10^{-2}$ \\
-	    \hline
-	  \end{tabular}	
-	  \centering
-	  \begin{tabular}[1.1]{c | c | c || c | c || c |}
-	    \cline{2-6}
+Let us consider the diffusion problem~\eqref{dual} with~$c \equiv 0$, $\partial\Omega_D = \partial\Omega$. The computational domain is divided into subdomains: $\Omega_1 = \{ {\bf x} : \|{\bf x} - {\bf x}_0\|< 0.2\}$ with~${\bf x}_0 = (0.5,0.5)$ and $\Omega_2 = (0,1)^2 \setminus \bar{\Omega}_1$. The diffusion tensor is set to be $\vect K_i = k_i\,\vect I$ in $\Omega_i$, $k_1 = 0.001$ and $k_2=1$. The exact solution is piecewise quadratic such that the normal flux is continuous across the interface (see Figure~\ref{fig:pwquad2}). For this problem we compare convergence properties of the  ASC(0) and ASC(1) methods on a sequence of Voronoi meshes.
+
+\begin{table}[h!]
+	\centering
+	\caption{Piecewise quadratic example, two materials: convergence \label{tab:conv:pwquad2}}
+	\footnotesize
+	\begin{tabular}[1.1]{| c | c || c | c || c |}
+		\hline
+		\multirow{7}{*}{\rotatebox{90}{ASC(0)}} & $h$ & $\errlTwo{0}$ & ${\rho}$ & $\errInf{0}$ \\
+		\cline{2-5}
+		& $3.0\times10^{-1}$ & $2.4\times10^{-3}$ & & $6.3\times10^{-1}$ \\
+		\cline{2-5}
+		& $1.5\times10^{-1}$ & $6.5\times10^{-4}$ & 2.0 & $7.0\times10^{-3}$ \\
+		\cline{2-5}
+		& $8.1\times10^{-2}$ & $2.6\times10^{-4}$ & 1.4 & $3.2\times10^{-3}$ \\
+		\cline{2-5}
+		& $4.2\times10^{-2}$ & $1.4\times10^{-4}$ & 0.9 & $2.3\times10^{-3}$ \\
+		\cline{2-5}
+		& $2.1\times10^{-2}$ & $3.7\times10^{-5}$ & 1.9 & $1.1\times10^{-3}$ \\
+		\cline{2-5}
+		& $1.0\times10^{-2}$ & $2.7\times10^{-5}$ & 0.4 & $8.6\times10^{-4}$ \\
+		\hline
+	\end{tabular}
+	\begin{tabular}[1.1]{| c | c || c | c || c |}
+		\hline
+		\multirow{7}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{1}$ & ${\rho}$ & $\errInf{1}$ \\
+		\cline{2-5}
+		& $3.0\times10^{-1}$ & $2.4\times10^{-3}$ & & $2.1\times10^{-3}$ \\
+		\cline{2-5}
+		& {$1.5\times10^{-1}$} & $7.0\times10^{-4}$ & 1.9 & {$1.3\times10^{-2}$} \\
+		\cline{2-5}
+		& $8.1\times10^{-2}$ & $2.3\times10^{-4}$ & 1.8 & $6.8\times10^{-4}$ \\
+		\cline{2-5}
+		& $4.2\times10^{-2}$ & $6.8\times10^{-5}$ & 1.8 & $3.2\times10^{-4}$ \\
+		\cline{2-5}
+		& $2.1\times10^{-2}$ & $2.0\times10^{-5}$ & 1.8 & $1.1\times10^{-4}$ \\
+		\cline{2-5}
+		& $1.0\times10^{-2}$ & $5.4\times10^{-6}$ & 1.9 & $3.3\times10^{-5}$ \\
+		\hline
+	\end{tabular}
+\end{table}
+
+The norms of the errors are shown in Table~\ref{tab:conv:pwquad2}. ASC(1) demonstrates convergence with the rate in the $\lTwo$-norm close to quadratic. ASC(0) convergence rate fluctuates significantly.
+
+We also observe a bump in the max norm error for ASC(1) on the second mesh level, $h = 1.5\times10^{-1}$. To have some insight, we show the corresponding mesh in the Figure~\ref{fig:conv:pwquad2:inf:mesh}. One may note that the interface reconstruction produces significant discontinuity of interfaces: A small volume of the external material, i.e. the one occupying $\Omega_2$ domain, appears inside the disk (domain $\Omega_1$). Due to constant trace approximation, ASC(0) is not sensitive to such irregularity. It turns out that for ASC(1) the $\ell^\infty$ norm of the error is affected by the appearance of such small isolated cut cells. At the same time, this does not affect the $\lTwo$-convergence of ASC(1).
+
+\begin{figure}[h]
+	\centering
+	\label{fig:conv:pwquad2:inf}
+	\begin{subfigure}{.29\linewidth}
+		\centering
+		\includegraphicsw{circle_voronoi_2_mat.png}
+		\caption{Materials}
+		\label{fig:conv:pwquad2:inf:mesh}
+	\end{subfigure}%
+	\hskip .6cm
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw{circle_voronoi_2_asc0.png}
+		\caption{ASC(0), $p_h$}
+	\end{subfigure}%
+	\hskip1ex
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw{circle_voronoi_2_asc1.png}
+		\caption{ASC(1), $p_h$}			
+	\end{subfigure}%
+	\caption{Piecewise quadratic example, two materials: $h = 1.5\times10^{-1}$. This figure illustrates the appearance of small isolated material volumes during numerical reconstruction of material interfaces. This may affect the $\ell^\infty$ error norm of the ASC(1)}
+\end{figure}
+
+\subsubsection{Three materials}\label{sec:threemat}
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{.45\linewidth}
+		\centering
+		\includegraphicsw{ring_ref_mesh.png}
+		\caption{Reference solution~$p$}
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.45\linewidth}
+		\centering
+		\includegraphicsw{ring_ref_slice.png}
+		\caption{$p(x,\frac{1}{2})$}
+	\end{subfigure}
+	\caption{Piecewise quadratic reference solution, three materials \label{fig:pwquad3}}
+\end{figure}
+		
+In the next group of numerical tests, we consider the same  diffusion problem~\eqref{dual} with~$c \equiv 0$, $\partial\Omega_D = \partial\Omega$. The computational domain is now divided into three subdomains: $\Omega_1 = \{{\bf x} : \|{\bf x} - {\bf x}_0\| < 0.15\}$, $\Omega_2 = \{{\bf x} : 0.15 < \|{\bf x} - {\bf x}_0\| < 0.2\}$, and $\Omega_3 = (0,1)^2 \setminus (\bar{\Omega}_1\cup\bar{\Omega}_2)$. The diffusion tensor is set to be $\vect K_i = k_i\,\vect I$, $k_{1} = k_{3} = 1$, $k_2 = 0.001$. The geometry represents a ring with $k_2=0.001$ inside the ring and $k_{1} = k_{3} = 1$ outside the ring. The exact solution is piecewise quadratic such that the normal flux is continuous across the interface; see Figure~\ref{fig:pwquad3}. We use a sequence of triangular meshes to study convergence for this example. In this set of tests, we also consider the numerical method based on homogenization techniques for the comparison. The homogenization method we use is from \cite{dawes2013solving}. The homogenized values of the diffusion tensor are computed on the base cells $\bcell$ and then plugged into the MFD discretization applied on the  base mesh $\bmesh_h$; see \cite{kikinzon2017approximate} for implementation details of this method.
+
+\begin{table}[h]
+	\centering
+	\caption{Piecewise quadratic example, three materials: error norms and convergence rates\label{fig:conv:pwquad3}}
+	\footnotesize
+	\begin{tabular}[1.1]{| c | c || c | c || c |}
+		\hline
+		\multirow{7}{*}{\rotatebox{90}{ASC(0)}} & $h$ & $\errlTwo{0}$ & $\rho$ & $\errInf{0}$ \\
+		\cline{2-5}
+		& $3.0\times10^{-1}$ & 4.5 & & 17 \\
+		\cline{2-5}
+		& $2.5\times10^{-1}$ & 4.5 & & 17 \\
+		\cline{2-5}
+		& $1.3\times10^{-1}$ & 4.0 & & 17 \\
+		\cline{2-5}
+		& $8.3\times10^{-2}$ & 4.4 & & 17 \\
+		\cline{2-5}
+		& {$6.7\times10^{-2}$} & $7.1\times10^{-1}$ & & 4.9 \\
+		\cline{2-5}
+		& $4.3\times10^{-2}$ & $4.5\times10^{-1}$ & 1.2 & 5.0 \\
+		\hline
+		\hline
+		\multirow{7}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{0}$ & $\rho$ & $\errInf{0}$ \\
+		\cline{2-5}
+		& $3.0\times10^{-1}$ & $4.5\times10^{-1}$ & & 3.5 \\
+		\cline{2-5}
+		& $2.5\times10^{-1}$ & $2.6\times10^{-1}$ & 3 & 2.7 \\
+		\cline{2-5}
+		& $1.3\times10^{-1}$ & $9.2\times10^{-2}$ & 1.5 & $6.2\times10^{-1}$ \\
+		\cline{2-5}
+		& $8.3\times10^{-2}$ & $4.8\times10^{-2}$ & 1.6 & $8.3\times10^{-1}$ \\
+		\cline{2-5}
+		& $6.7\times10^{-2}$ & $2.8\times10^{-2}$ & 2.5 & $2.3\times10^{-1}$ \\
+		\cline{2-5}
+		& $4.3\times10^{-2}$ & $1.0\times10^{-2}$ & 2.3 & $6.3\times10^{-2}$ \\
+		\hline
+	\end{tabular}
+	\begin{tabular}[1.1]{c | c | c || c | c || c |}
+		\cline{2-6}
 	    \multirow{14}{*}{\rotatebox{90}{Homogenization}} & \multirow{7}{*}{\rotatebox{90}{Arithmetic}} & $h$ & $\errlTwo{\text{AH}}$ & $\rho$ & $\errInf{\text{AH}}$ \\
-	    \cline{3-6}
+		\cline{3-6}
 	    & & $3.0\times10^{-1}$ & 4.9 & & 17 \\
 	    \cline{3-6}
 	    & & $2.5\times10^{-1}$ & 5.0 & & 17 \\
@@ -346,22 +301,11 @@ the reduction rate order of ASC($n$) in ~$\lTwo$\,-\,norm between $i$ and $i+1$ 
 	    & & $4.3\times10^{-2}$ & $1.6\times10^{-1}$ & 1.7 & 8.2 \\
 	    \cline{2-6}
 	  \end{tabular}
-
-	\end{table}
+\end{table}
 	
-	Numerical results are shown in Table~\ref{fig:conv:pwquad3}.
-        We compare ASC(0), ASC(1), arithmetic, and harmonic homogenization.
-        Note that up to mesh level~$h = 8.3\times10^{-2}$ base\,
-        faces with three materials are present, and starting from %
-        {$h = 6.7\times10^{-2}$} the meshes are fine
-        enough so that only   macro-faces sharing one or two materials occur.
+Numerical results are shown in Table~\ref{fig:conv:pwquad3}. We compare ASC(0), ASC(1), arithmetic, and harmonic homogenization. Note that up to mesh level~$h = 8.3\times10^{-2}$ macro-faces with three materials are present, and starting from {$h = 6.7\times10^{-2}$} the meshes are fine enough so that only macro-faces sharing one or two materials occur.
 	
-	We see that ASC(0) starts to converge linearly with respect to $\lTwo$-error
-        once~$h < 6.7\times10^{-2}$. ASC(1) demonstrates a robust behaviour and shows the convergence
-        rate close to quadratic with respect to $\lTwo$-error as in previous examples,
-        and performs better than homogenization approaches.
-
-
+We see that ASC(0) starts to converge linearly with respect to $\lTwo$-norm once~$h < 6.7\times10^{-2}$. ASC(1) demonstrates a robust behavior and shows the convergence rate close to quadratic with respect to $\lTwo$-norm as in previous examples, and performs better than homogenization approaches.
 
 \subsection{Algebraic robustness}
 %
@@ -378,84 +322,82 @@ the reduction rate order of ASC($n$) in ~$\lTwo$\,-\,norm between $i$ and $i+1$ 
 %
 %	\Sasha{We also believe that the max eig value stays the same (based on num experiments), i.e. $\mu_{\text{max}}^1 \approx \mu_{\text{max}}^0$ or even $\mu_{\text{max}}^1 = \mu_{\text{max}}^0$}. I think it would be nice to prove it here, so we can show that the cond number is governed by the smallest eig value alone.
 %	
+In this section, we study the dependence of the condition number of matrix $\vect S_\bmesh$ on the position of the material interface against the background mesh. For this purpose, we solve the diffusion problem~\eqref{dual} in the unit square with $\partial\Omega = \partial\Omega_D$, $\vect K = k\,\vect I$, $k = 1$ on the left part and $k = 0.1$ on the right. We keep the mesh fixed, and change the position of the interface so that the minimal length of mini-faces~$w$ gets smaller, $w = 10^{-1}, 10^{-2}, \dots, 10^{-5}$ (see Figure~\ref{fig:w}).
 
-
-	In this section, we study the dependence of the condition number of matrix $S_\bmesh$ on the position of the material interface against the background mesh.
- For this purpose, we solve the diffusion problem~\eqref{dual} in the unit square with $\partial\Omega = \partial\Omega_D$, $\vect K = k\,\vect I$, $k = 1$ on the left part and $k = 0.1$ on the right. We keep the mesh fixed, and change the position of the interface so that the minimal length of mini-faces~$w$ gets smaller, $w = 10^{-1}, 10^{-2}, \dots, 10^{-5}$ (see Figure~\ref{fig:w}).
-
-
-	\begin{figure}[h]
+\begin{figure}[h]
+	\centering
+	\caption{Distribution of materials leads to  different values of the minimal length of mini-faces $w$ \label{fig:w}}
+	\begin{subfigure}{.33\linewidth}
 		\centering
-		\caption{Distribution of materials leads to  different values of the minimal length of mini-faces $w$ \label{fig:w}}
-		\begin{subfigure}{.33\linewidth}
-			\centering
-			\includegraphicsw{skew1.png}
-			\caption{$w = .1$}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.33\linewidth}
-			\centering
-			\includegraphicsw{skew01.png}
-			\caption{$w = .01$}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.33\linewidth}
-			\centering
-			\includegraphicsw{skew001.png}
-			\caption{$w = .001$}
-		\end{subfigure}
-	\end{figure}
-
-
-	\begin{table}[h]
+		\includegraphicsw{skew1.png}
+		\caption{$w = .1$}
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.33\linewidth}
 		\centering
-		\caption{Condition numbers of ASC(0)\,/\,ASC(1) system matrices~\eqref{asc_system} \label{fig:w:res}}
-			\begin{tabular}[1.2]{ | c | c | c | c |}
-				\hline
-				$w$ & $\kappa_{\text{ASC(0)}}$ & $\kappa_{\text{ASC(1)}}$ & $\widetilde\kappa_{\text{ASC(1)}}$\\
-				\hline
-				$10^{-1}$ & 41.0 & 1\,730       & 41.0  \\
-				\hline
-				$10^{-2}$ & 45.2 & 2\,817       & 45.1  \\
-				\hline
-				$10^{-3}$ & 48.3 & 16\,391      & 48.3   \\
-				\hline
-				$10^{-4}$ & 49.0 & 152\,325     & 49.0    \\
-				\hline
-				$10^{-5}$ & 49.1 & $1.5\times10^6$&49.1  \\
-				\hline
-			\end{tabular}
+		\includegraphicsw{skew01.png}
+		\caption{$w = .01$}
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw{skew001.png}
+		\caption{$w = .001$}
+	\end{subfigure}
+\end{figure}
+
+\begin{table}[h]
+	\centering
+	\caption{Condition numbers of ASC(0)\,/\,ASC(1) system matrices~\eqref{asc_system} \label{fig:w:res}}
+	\begin{tabular}[1.2]{ | c | c | c | c |}
+		\hline
+		$w$ & $\kappa_{\text{ASC(0)}}$ & $\kappa_{\text{ASC(1)}}$ & $\widetilde\kappa_{\text{ASC(1)}}$\\
+		\hline
+		$10^{-1}$ & 41.0 & 1\,730       & 41.0  \\
+		\hline
+		$10^{-2}$ & 45.2 & 2\,817       & 45.1  \\
+		\hline
+		$10^{-3}$ & 48.3 & 16\,391      & 48.3   \\
+		\hline
+		$10^{-4}$ & 49.0 & 152\,325     & 49.0    \\
+		\hline
+		$10^{-5}$ & 49.1 & $1.5\times10^6$&49.1  \\
+		\hline
+	\end{tabular}%
 	%	\hfill
-%		\begin{subfigure}{.55\linewidth}
-%			\centering
-%			\includegraphicsw{logplot.png}
-%		\end{subfigure}
-	\end{table}
+	%		\begin{subfigure}{.55\linewidth}
+	%			\centering
+	%			\includegraphicsw{logplot.png}
+	%		\end{subfigure}
+\end{table}
 
-	Numerical results are shown in Table~\ref{fig:w:res}. We observe that the condition number~$\kappa_{\text{ASC(0)}}$ of $S_\bmesh$ for ASC(0) levels off if $w$ gets smaller. The condition number~$\kappa_{\text{ASC(1)}}$ of ASC(1) depends on $w$ and behaves as $O(w^{-1})$ for $w\to0$. A closer look at the spectrum of      $S_\bmesh$  reveals that the growth of the condition
-number for    ASC(1) is due to presence of only few (three for this example) small eigenvalues, which tend to zero. To illustrate this, Table~\ref{fig:w:res} shows the ``effective'' condition number of $S_\bmesh$ that is defines
-as
-	$$
-		\widetilde{\vect\kappa}_{\text{ASC(1)}} = {\mu_{\text{max}}}/{\mu_3}
-	$$
-	where  $\mu_{\text{min}}^1 = \mu_0 \ge \mu_1 \ge \dots \ge \mu_{\text{max}}$ are the eigenvalues of~$\vect S_\bmesh$ of ASC(1). From this results we see that the effective condition number of ASC(1) stays bounded with respect to the interface position and is  close to the condition number of ASC(0). We hypothesize that the number of outliers in the  spectrum of $\vect S_\bmesh$ is proportional to the number of multi-material cells with small cuts.
-
+Numerical results are shown in Table~\ref{fig:w:res}. We observe that the condition number~$\kappa_{\text{ASC(0)}}$ of $\vect S_\bmesh$ for ASC(0) levels off if $w$ gets smaller. The condition number~$\kappa_{\text{ASC(1)}}$ of ASC(1) depends on $w$ and behaves as $O(w^{-1})$ for $w\to0$. A closer look at the spectrum of~$\vect S_\bmesh$ reveals that the growth of the condition number for ASC(1) is due to presence of only few (three for this example) small eigenvalues, which tend to zero. To illustrate this, Table~\ref{fig:w:res} shows the ``effective'' condition number of $\vect S_\bmesh$ that is defined as
+$$
+	\widetilde{\vect\kappa}_{\text{ASC(1)}} = {\mu_{\text{max}}}/{\mu_3}
+$$
+where $\mu_{\text{min}} = \mu_0 \ge \mu_1 \ge \dots \ge \mu_{\text{max}}$ are the eigenvalues of~$\vect S_\bmesh$ of ASC(1). From this results we see that the effective condition number of ASC(1) stays bounded with respect to the interface position and is  close to the condition number of ASC(0). We hypothesize that the number of outliers in the  spectrum of $\vect S_\bmesh$ is proportional to the number of multi-material cells with small cuts.
 	
-	It is well-known that the presence of a few outliers in the spectrum does not affect the asymptotic convergence of the conjugate gradient (CG) iterative methods, see, e.g., \cite{olshanskii2014iterative}. Indeed, in our experiments the CG method was found to be equally effective for solving systems of algebraic equations resulting from ASC(0) and ASC(1).
+It is well-known that the presence of a few outliers in the spectrum does not affect the asymptotic convergence of the conjugate gradient (CG) iterative methods, see, e.g., \cite{olshanskii2014iterative}. Indeed, in our experiments the CG method (with algebraic multigrid preconditioner) was found to be equally effective for solving systems of algebraic equations resulting from ASC(0) and ASC(1).
 %Starting from some iteration CG method behaves like extreme eigenvalues are not present in the spectrum.
 %That is, several small eigenvalues with no clustering is not an obstacle neither for the optimal convergence rate of Krylov solvers, nor for the~$\LTwo$-convergence of the discrete solution.
 	
- 	\subsection{Unsteady problem}
+\subsection{Unsteady problem}
 
-	We finally apply the ASC methods to simulate the time dependent diffusion problem.  In the mixed form, the problem reads
-	\begin{equation}\label{dual_transient}
-		\left\{\begin{split}
-			\vect K^{-1}\,\vect u &+ \nabla\,p\,&= 0&\quad\text{in } \Omega , \\
-			\nabla\cdot\vect u    &+ \frac{\partial}{\partial t}\,p       &= f&\quad\text{in } \Omega,
-		\end{split}\right.
-\end{equation}
-for   $t\in(0, T]$ with initial data $p(\vect x, 0) = p_0(\vect x)$ and
-boundary data as in \eqref{dual:bc:neumann}. After discretizing in time by the implicit Euler method, the problem takes the form \eqref{dual}--\eqref{dual:bc:neumann} with $c=|\Delta t|^{-1}$ and we apply the spacial discretization described in section~\ref{sec:ASC}. For the purpose of comparison, we apply   arithmetic and harmonic homogenization methods followed by a MFD discretization.  
+We finally apply the ASC methods to simulate the time-dependent diffusion problem. In the mixed form, the problem reads
+\begin{equation}\label{dual_transient}
+	\arraycolsep=2pt\def\arraystretch{1.7}
+	\left\{\begin{array}{rcrccl}
+		\vect K^{-1}\,\vect u & + & \nabla\,p & = & 0 &\quad\text{in } \Omega , \\
+		\nabla\cdot\vect u    & + & \frac{\partial}{\partial t}\,p      & = & f &\quad\text{in } \Omega
+	\end{array}\right.
+\end{equation}%
+%\begin{equation}\label{dual_transient}
+%		\left\{\begin{split}
+%			\vect K^{-1}\,\vect u &+ \nabla\,p\,&= 0&\quad\text{in } \Omega , \\
+%			\nabla\cdot\vect u    &+ \frac{\partial}{\partial t}\,p       &= f&\quad\text{in } \Omega,
+%		\end{split}\right.
+%\end{equation}
+for $t\in(0, T]$ with initial data $p(\vect x, 0) = p_0(\vect x)$ and boundary data as in \eqref{dual:bc:neumann}. After discretizing in time by the implicit Euler method, the problem takes the form \eqref{dual}--\eqref{dual:bc:neumann} with $c=|\Delta t|^{-1}$ and we apply the spacial discretization described in section~\ref{sec:ASC}. For the purpose of comparison, we apply arithmetic and harmonic homogenization methods followed by a MFD discretization.  
 
 %We use the implicit Euler method to discretize~\eqref{dual_transient} in time. This leads to a sequence of problems~\eqref{dual} with nonzero source term~$f$. For the space discretization we use ASC(0), ASC(1), arithmetic, and harmonic homogenization methods.
 
@@ -481,133 +423,126 @@ boundary data as in \eqref{dual:bc:neumann}. After discretizing in time by the i
 %		\end{align}
 %	\end{subequations}
 
-The computational domain is the same as in section~\ref{sec:threemat} with the example of three different materials. $\Omega = \Omega_1 \cup \Omega_2 \cup \Omega_3$ is divided into three subdomains: $\Omega_1 = \{\vect x \in \Rn{2} : \|{\bf x} - {\bf x}_0\| \ge 0.2\}$,
-	$\Omega_2 = \{\vect x \in \Rn{2} : 0.15 \le \|{\bf x} - {\bf x}_0\| \le 0.2\}$, $\vect x_0 = (0.5, 0.5)$, and $\Omega_3 = (0,1)^2 \setminus (\Omega_1\cup\Omega_2)$. The diffusion tensor is set as $\vect K_i = k_i\,\vect I$, $k_1 = 1, k_2 = 0.002$, and $k_3 = 10$.
+The computational domain is the same as in section~\ref{sec:threemat} with the example of three different materials.  $\Omega_1 = \{{\bf x} : \|{\bf x} - {\bf x}_0\| < 0.15\}$, $\Omega_2 = \{{\bf x} : 0.15 < \|{\bf x} - {\bf x}_0\| < 0.2\}$, and $\Omega_3 = (0,1)^2 \setminus (\bar{\Omega}_1\cup\bar{\Omega}_2)$. The diffusion tensor is set as $\vect K_i = k_i\,\vect I$, $k_1 = 10, k_2 = 0.002$, and $k_3 = 1$.
 	
-	We prescribe Dirichlet boundary data $g_D = 1$ on the left side of the unit square, while right, top, and bottom sides are prescribed no-flux boundary condition,  $g_N \equiv 0$. The external source term is zero, $f= 0$. The initial concentration is set to be
-	\begin{equation*}
-		p_0(\vect x) = (1 - \vect x)^{10}.	
-	\end{equation*}
+We prescribe Dirichlet boundary data $g_D = 1$ on the left side of the unit square, while right, top, and bottom sides are prescribed no-flux boundary condition, $g_N \equiv 0$. The external source term is zero, $f \equiv 0$. The initial concentration is set to be
+\begin{equation*}
+	p_0(x,\,y) = (1 - x)^{10}.	
+\end{equation*}
 The equilibrium state for $t\to\infty$ is obviously $p \equiv 1$. In our computations, we set the final time~$T = 5$.
 	
-	
-	\begin{figure}[h]
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{.4\linewidth}
 		\centering
-		\begin{subfigure}{.4\linewidth}
-			\centering
-			\includegraphicsw{transient2/supermesh.png}
-			\caption{Conforming (super)mesh of~$\Omega$}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.58\linewidth}
-			\centering
-			\includegraphicsw{transient2/ref_slices.png}
-			\caption{Cuts~$p_*\left((x,0.5), t\right)$ of the reference solution}	
-		\end{subfigure}%
-\caption{Triangulation of~$\Omega$ used to obtain the reference solution and cuts of the reference solution for~$t \in \{0.13, 0.25, \dots, 5\}$ \label{fig:transient:ref}}
-	\end{figure}
-
-	We first compute solution $p_*$ to the problem~(\ref{dual_transient}) using $P2$ finite element method on sufficiently fine mesh consisting of  4\,908 triangles. This mesh is illustrated in Figure~\ref{fig:transient:ref} (left). The reference mesh is consistent with material interfaces so it consists only of single-material cells. Time step~$\Delta t$ is chosen as~$T / 40$. This solution was found to be (almost) mesh independent and will serve as the  reference solution. The center cutline profiles ~$p_*\left((x,0.5), t\right)$   are shown in the Figure~\ref{fig:transient:ref} (right) for several values of~$t \in (0, T]$.
-	
-	  For ASC(0), ASC(1), arithmetic and harmonic homogenization methods we use two Voronoi meshes with~$h = 1.5 \times 10^{-1}$ (124 base\,cells) and $h = 8.1 \times 10^{-2}$ (465 base\,cells).
-          The coarse mesh contains 20 multi-material cells and two macro-face sharing three materials. The fine mesh contains 50 multi-material cells and no three material macro-faces. For all these methods we use 20 time frames, $\Delta t = T / 20$. Results are shown in Figures~\ref{fig:transient:comp}\,--\,\ref{fig:transient:err}.
-	
-	\begin{figure}[h]
+		\includegraphicsw{transient2/supermesh.png}
+		\caption{Conforming (super)mesh of~$\Omega$}
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.58\linewidth}
 		\centering
-		\begin{subfigure}{.3\linewidth}
-			\centering
-			\includegraphicsw{transient2/movie_frames/ref/frame_1s34.png}
-			\caption{Reference}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.3\linewidth}
-			\centering
-			\includegraphicsw{transient2-1/movie_frames/arithmetic_homo/frame_1s43.png}
-			\caption{Arithmetic homo.}	
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.3\linewidth}
-			\centering
-			\includegraphicsw{transient2-1/movie_frames/harmonic_homo/frame_1s43.png}
-			\caption{Harmonic homo.}	
-		\end{subfigure}%
-		\par
-		\begin{subfigure}{.3\linewidth}
-			\centering
-			\includegraphicsw{transient2-1/movie_frames/asc0/frame_1s43.png}
-			\caption{ASC(0)}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.3\linewidth}
-			\centering
-			\includegraphicsw{transient2-1/movie_frames/asc1/frame_1s43.png}
-			\caption{ASC(1)}	
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.3\linewidth}
-			\centering
-			\includegraphicsw{transient2-1/movie_frames/asc_diff/frame_1s43.png}
-			\caption{ASC(0,\,1) difference}	
-		\end{subfigure}%
-\caption{Comparison of the discrete solutions~$p_h$ for~$h = 1.5 \times 10^{-1}$, $t = 1.25$. \label{fig:transient:comp}}
-	\end{figure}
+		\includegraphicsw{transient2/ref_slices.png}
+		\caption{Cuts~$p_*\big((x,0.5), t\big)$ of the reference solution}	
+	\end{subfigure}%
+	\caption{Triangulation of~$\Omega$ used to obtain the reference solution and cuts of the reference solution for~$t \in \{0.13, 0.25, \dots, 5\}$ \label{fig:transient:ref}}
+\end{figure}
 
-	%% \begin{figure}[h]
-	%% 	\centering
-	%% 	\begin{subfigure}{.45\linewidth}
-	%% 		\centering
-	%% 		\includegraphicsw{transient2-1/movie_slices_frames/frame_0s25.png}
-	%% 		\caption{Coarse mesh, $t = 0.25$}
-	%% 	\end{subfigure}%
-	%% 	\hfill
-	%% 	\begin{subfigure}{.45\linewidth}
-	%% 		\centering
-	%% 		\includegraphicsw{transient2-1/movie_slices_frames/frame_1s50.png}
-	%% 		\caption{Coarse mesh, $t = 1.50$}	
-	%% 	\end{subfigure}%
-	%% 	\par
-	%% 	\begin{subfigure}{.45\linewidth}
-	%% 		\centering
-	%% 		\includegraphicsw{transient2/movie_slices_frames/frame_0s25.png}
-	%% 		\caption{Fine mesh, $t = 0.25$}
-	%% 	\end{subfigure}%
-	%% 	\hfill
-	%% 	\begin{subfigure}{.45\linewidth}
-	%% 		\centering
-	%% 		\includegraphicsw{transient2/movie_slices_frames/frame_1s50.png}
-	%% 		\caption{Fine mesh, $t = 1.50$}	
-	%% 	\end{subfigure}%
-	%% 	\caption{Comparison of the cuts~$p_h((x,0.5), t)$ of discrete solutions for coarse and fine meshes, $h = 1.5 \times 10^{-1}$ and $h = 8.1 \times 10^{-2}$. 		\label{fig:transient:cuts}}
-	%% \end{figure}
-
-	\begin{figure}[h]
-		\centering
-		\begin{subfigure}{.8\linewidth}
-			\centering
-			\includegraphicsw{transient2-1/l2err.png}
-			\caption{Coarse mesh}
-		\end{subfigure}%
-		\par
-		\begin{subfigure}{.8\linewidth}
-			\centering
-			\includegraphicsw{transient2/l2err.png}
-			\caption{Fine mesh}	
-		\end{subfigure}%
-		\caption{$\lTwo$-norm of the error computed for the inclusion~$\Omega_2 \cup \Omega_3$ for coarse and fine meshes, $h = 1.5 \times 10^{-1}$ and $h = 8.1 \times 10^{-2}$. \label{fig:transient:err}}
-	\end{figure}
-
-	From the figures it is easy to appreciate  that among all the methods only  ASC(1)  provides a reasonable approximation for the coarse mesh, cf. Figures~\ref{fig:transient:comp}.
-        %and~\ref{fig:transient:cuts}
-        Numerical solution computed with ASC(0)  overestimates incoming fluxes  for the ring.  This solution converges to the equilibrium state~$p_h \approx 1$ at approximately $t = 3.75$, which is significantly earlier than the time when same state is achieved by the reference solution  for the same coarse mesh. Note that the coarse mesh contains faces with three materials, and we saw already that ASC(0) may fail to converge for this case even for stationary examples\footnotemark{}.
-	%
-	Arithmetic homogenization performs poorly for both mesh levels (even finer mesh near the inclusions is required to provide reasonably accurate solution). Harmonic homogenization shows reasonable results only for the fine mesh.
-
-        In Figure \ref{fig:transient:err} we present the $\lTwo$-norm of the error $p_* - p_h$ computed for the inclusion~$\Omega_2 \cup \Omega_3$ as a function of time.
-        Since all numerical solutions eventually converge to the same steady state,  numerical errors for any method decrease for large enough time.
-        On earlier stages ASC(1) outperforms all methods on the coarse mesh and provides comparable results with ASC(0) scheme and the harmonic homogenization approach
-        on the fine mesh.
+We first compute solution $p_*$ to the problem~(\ref{dual_transient}) using $P2$ finite element method on sufficiently fine mesh consisting of 4\,908 triangles. This mesh is illustrated in Figure~\ref{fig:transient:ref} (left). The reference mesh is consistent with material interfaces so it consists only of single-material cells. Time step~$\Delta t$ is chosen as~$T / 40$. This solution was found to be (almost) mesh independent and will serve as the  reference solution. The center cutline profiles~$p_*\big((x,0.5), t\big)$   are shown in the Figure~\ref{fig:transient:ref} (right) for several values of~$t \in (0, T]$.
 	
+For ASC(0), ASC(1), arithmetic and harmonic homogenization methods we use two Voronoi meshes with~$h = 1.5 \times 10^{-1}$ (124 base\,cells) and $h = 8.1 \times 10^{-2}$ (465 base\,cells).
+The coarse mesh contains 20 multi-material cells and two macro-faces sharing three materials. The fine mesh contains 50 multi-material cells and no three material macro-faces. For all these methods we use 20 time frames, $\Delta t = T / 20$. Results are shown in Figures~\ref{fig:transient:comp}\,--\,\ref{fig:transient:err}.
 
-	\footnotetext{
-		We tried replacing Voronoi mesh with a triangulation such that the number of triangles is close to the number of the polygonal cells in the fine Voronoi mesh (456 elements for the triangular mesh v.s. 465 for the Voronoi mesh); the achieved difference is that the triangular mesh has faces with three materials, and Voronoi mesh does not. Nevertheless, ASC(0) performed poorly for this example converging to the steady-state at approximately $t = 3$.
-	}
+\clearpage
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{.3\linewidth}
+		\centering
+		\includegraphicsw{transient2/movie_frames/ref/frame_1s34.png}
+		\caption{Reference}
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.3\linewidth}
+		\centering
+		\includegraphicsw{transient2-1/movie_frames/arithmetic_homo/frame_1s43.png}
+		\caption{Arithmetic homo.}	
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.3\linewidth}
+		\centering
+		\includegraphicsw{transient2-1/movie_frames/harmonic_homo/frame_1s43.png}
+		\caption{Harmonic homo.}	
+	\end{subfigure}%
+	\par
+	\begin{subfigure}{.3\linewidth}
+		\centering
+		\includegraphicsw{transient2-1/movie_frames/asc0/frame_1s43.png}
+		\caption{ASC(0)}
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.3\linewidth}
+		\centering
+		\includegraphicsw{transient2-1/movie_frames/asc1/frame_1s43.png}
+		\caption{ASC(1)}	
+	\end{subfigure}%
+	\hfill
+	\begin{subfigure}{.3\linewidth}
+		\centering
+		\includegraphicsw{transient2-1/movie_frames/asc_diff/frame_1s43.png}
+		\caption{ASC(0,\,1) difference}	
+	\end{subfigure}%
+	\caption{Comparison of the discrete solutions~$p_h$ for~$h = 1.5 \times 10^{-1}$, $t = 1.25$ \label{fig:transient:comp}}
+ 	\centering
+ 	\vskip 1cm
+ 	\begin{subfigure}{.45\linewidth}
+ 		\centering
+ 		\includegraphicsw{transient2-1/movie_slices_frames/frame_0s25.png}
+ 		\caption{Coarse mesh, $t = 0.25$}
+ 	\end{subfigure}%
+ 	\hfill
+ 	\begin{subfigure}{.45\linewidth}
+ 		\centering
+ 		\includegraphicsw{transient2-1/movie_slices_frames/frame_1s50.png}
+ 		\caption{Coarse mesh, $t = 1.50$}	
+ 	\end{subfigure}%
+ 	\par
+ 	\begin{subfigure}{.45\linewidth}
+ 		\centering
+ 		\includegraphicsw{transient2/movie_slices_frames/frame_0s25.png}
+ 		\caption{Fine mesh, $t = 0.25$}
+ 	\end{subfigure}%
+ 	\hfill
+ 	\begin{subfigure}{.45\linewidth}
+ 		\centering
+ 		\includegraphicsw{transient2/movie_slices_frames/frame_1s50.png}
+		\caption{Fine mesh, $t = 1.50$}	
+	\end{subfigure}%
+	\caption{Comparison of the cuts~$p_h\big((x,0.5), t\big)$ of discrete solutions for coarse and fine meshes, $h = 1.5 \times 10^{-1}$ and $h = 8.1 \times 10^{-2}$ 		\label{fig:transient:cuts}}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{.8\linewidth}
+		\centering
+		\includegraphicsw{transient2-1/l2err.png}
+		\caption{Coarse mesh}
+	\end{subfigure}%
+	\par
+	\begin{subfigure}{.8\linewidth}
+		\centering
+		\includegraphicsw{transient2/l2err.png}
+		\caption{Fine mesh}	
+	\end{subfigure}%
+	\caption{$\lTwo$-norm of the error computed for the inclusion~$\Omega_1 \cup \Omega_2$ for coarse and fine meshes, $h = 1.5 \times 10^{-1}$ and $h = 8.1 \times 10^{-2}$ \label{fig:transient:err}}
+\end{figure}
+
+From the figures it is easy to appreciate  that among all the methods only  ASC(1)  provides a reasonable approximation for the coarse mesh, cf. Figures~\ref{fig:transient:comp}.
+Numerical solution computed with ASC(0) overestimates incoming fluxes for the ring. This solution converges to the equilibrium state~$p_h \approx 1$ at approximately $t = 3.75$, which is significantly earlier than the time when same state is achieved by the reference solution. Note that the coarse mesh contains faces with three materials, and we saw already that ASC(0) may fail to converge for this case even for stationary examples. 
+
+We tried replacing Voronoi mesh with a triangulation such that the number of triangles is close to the number of the polygonal cells in the fine Voronoi mesh (456 elements for the triangular mesh v.s. 465 for the Voronoi mesh); the achieved difference is that the triangular mesh has faces with three materials, and Voronoi mesh does not. Nevertheless, ASC(0) performed poorly for this example converging to the steady-state at approximately $t = 3$.
+	
+Arithmetic homogenization performs poorly for both mesh levels (even finer mesh near the inclusions is required to provide reasonably accurate solution). Harmonic homogenization shows reasonable results only for the fine mesh.
+
+In Figure~\ref{fig:transient:err} we present the $\lTwo$-norm of the error $p_* - p_h$ computed for the inclusion~$\Omega_1 \cup \Omega_2$ as a function of time. Since all numerical solutions eventually converge to the same steady state, numerical errors for any method decrease for large enough time. On earlier stages ASC(1) outperforms all methods on the coarse mesh and provides comparable results with ASC(0) scheme and the harmonic homogenization approach on the fine mesh.

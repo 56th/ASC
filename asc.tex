@@ -79,6 +79,7 @@
 \newcommand{\HDivNodeSpace}[1][\Omega]{{\mathbb H_\text{div,\,0}\left({#1}\right)}}
 \newcommand{\HHalfSpace}[1][\bface]{{\mathbb H^{\frac{1}{2}}\left({#1}\right)}}
 \newcommand{\PnSpace}[2]{{\mathbb P^{#1}\left({#2}\right)}}
+\newcommand{\HSpace}[1]{{\mathbb H^{#1}\left(\Omega\right)}}
 
 \newcommand{\errlTwo}[1]{e^{\lTwo}_{#1}}
 \newcommand{\errInf}[1]{e^{\infty}_{#1}}
@@ -174,7 +175,7 @@
 		\begin{subfigure}{.33\linewidth}
 			\centering
 			\includegraphicsw{ring_base_voronoi.png}
-			\caption{Base Mesh}
+			\caption{Base mesh}
 			\label{fig:problem_geometry:base_mesh}
 		\end{subfigure}%
 		\hfill
@@ -205,7 +206,7 @@
 			\centering
 			\includegraphicsw{ring_mini_voronoi_refined.png}
 		\end{subfigure}
-		\caption{The figure illustrates global unstructured polyhedral mesh (left); Physical interfaces for three materials and cut cells, i.e. multi-material cells (central); The piecewise-planar discontinuous reconstruction of the interfaces by the moment-of-fluid method (right). Everything is shown for two refinement level of the base mesh. \label{fig:problem_geometry}}
+		\caption{The figure illustrates global unstructured polyhedral mesh (left); Physical interfaces for three materials and cut cells, i.e. multi-material cells (central); The piecewise-planar discontinuous reconstruction of the interfaces by the moment-of-fluid method (right). Everything is shown for two refinement level of the base mesh \label{fig:problem_geometry}}
 	\end{figure}
 	
 	We assume the triangulation  $\bmesh$ of $\Omega$ consisting of general polyhedral elements as illustrated in Figure~\ref{fig:problem_geometry} (left). This triangulation constitutes our macro-mesh. The material interfaces, i.e. surfaces where $\vect K$ may experience discontinuities, may cut through the macro-mesh in an arbitrary way; see Figure~\ref{fig:problem_geometry} (center). The polygonal cells ${\bcell \in \bmesh}$ cut by the interfaces are further called Multi-Material Cells (MMCs). In practice,  we are given a reconstructed interface by a volume-of-fluid or moment-of-fluid method. This reconstructed interface may be discontinuous across faces of MMC, but locally within each ${\bcell \in \bmesh}$ it is a collection of planar surfaces; see Figure~\ref{fig:problem_geometry} (right).
@@ -257,7 +258,7 @@
 		\vspace{-10pt}
 		\begin{center}
 			\includegraphics[width=0.3\textwidth]{./ring_mini_voronoi_cell.png}%{./Pictures/mainscreen1.png}
-			\caption{Local polyhedral mesh for a three-material cell $T\in\bmesh$.\label{fig:mmesh}}
+			\caption{Local polyhedral mesh for a three-material cell $T\in\bmesh$ \label{fig:mmesh}}
 		\end{center}
 		\vspace{-15pt}
 		\vspace{1pt}
