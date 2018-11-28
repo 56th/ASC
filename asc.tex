@@ -353,7 +353,7 @@
 	where ${\vect \lambda}_\mmesh$ is effectively a piecewise constant approximation of ${\vect \lambda}_\bcell$ on $\mfaces_{\text{ext}}(T)$.
 	Using this in \eqref{mini_flux_dofs}, we get
 	\begin{equation}\label{asc_flux_lambda}
-		{\vect u}^\text{ext}_\mmesh = \vect A_\mmesh\,\vect C_\mmesh\,\vect R_\mmesh\,{\vect \lambda}_\bcell + {\vect a}_\mmesh.
+		{\vect u}^\text{ext}_\mmesh = \vect A_\mmesh\,\vect C_\mmesh\,\vect R_\mmesh\,{\vect \lambda}_\bcell - {\vect a}_\mmesh.
 	\end{equation}
 	%The interpolating matrix~$\vect R_\mmesh$ is completely defined by~$n$ and boundary mini\,faces~$\mfaces[ext]$ of~$\mmesh$.
 	If we find the mortar vector ~${\vect \lambda}_\bcell$, we recover the local approximation to the face concentration, i.e. ${\vect \lambda}_\mmesh$, from~\eqref{asc_lambda}.
