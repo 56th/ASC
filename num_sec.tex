@@ -48,7 +48,7 @@ since $\| p - p_h \|_{\lTwoSpace} = \| P_h\,(p - p_h) \|_{\lTwoSpace} \le \|P_h\
 	\label{fig:fake}}		
 \end{figure}
 
-The first set of tests is designed to check the property of the method to accurately recover the solution that is the polynomial of degree~1. Let us consider the diffusion problem~\eqref{dual} with~$c \equiv f \equiv 0$, $\partial\Omega_D = \partial\Omega$. The computational domain $\Omega=(0,1)^2$ is divided into several subdomains by non-intersecting straight lines. In these settings the interface reconstruction algorithm MOF reconstructs the interfaces exactly. To test the {\it linearity preservation} property, we set up a pseudo-multi-material problem with the diffusion tensor being the same in all subdomains, $\vect K_i = \vect I$. The exact solution a linear function. The geometry of two cases under consideration is shown in Figure~\ref{fig:fake}.
+The first set of tests is designed to check the property of the method to accurately recover the solution that is the polynomial of degree~1. Let us consider the diffusion problem~\eqref{dual} with~$c \equiv f \equiv 0$, $\partial\Omega_D = \partial\Omega$. The computational domain $\Omega=(0,1)^2$ is divided into several subdomains by non-intersecting straight lines. In these settings the interface reconstruction algorithm MOF reconstructs the interfaces exactly. To test the {\it linearity preservation} property, we set up a pseudo-multi-material problem with the diffusion tensor being the same in all subdomains, $\vect K_i = \vect I$. The exact solution is a linear function. The geometry of two cases under consideration is shown in Figure~\ref{fig:fake}.
 	
 We denote the solution computed  with the ASC($n$) method by~$p_{h,\,n}$, $n = 0, 1$. For ASC(0) we have~$\errlTwo{h,\,0} = 6.38 \times 10^{-2}$ and $6.41 \times 10^{-2}$ for the configurations shown in Figures~\ref{fig:fake:2} and~\ref{fig:fake:3}, respectively. That is, ASC(0) is not able to recover $P_1$ solutions exactly.
 
@@ -322,11 +322,11 @@ We see that ASC(0) starts to converge linearly with respect to $\lTwo$-norm once
 %
 %	\Sasha{We also believe that the max eig value stays the same (based on num experiments), i.e. $\mu_{\text{max}}^1 \approx \mu_{\text{max}}^0$ or even $\mu_{\text{max}}^1 = \mu_{\text{max}}^0$}. I think it would be nice to prove it here, so we can show that the cond number is governed by the smallest eig value alone.
 %	
-In this section, we study the dependence of the condition number of matrix $\vect S_\bmesh$ on the position of the material interface against the background mesh. For this purpose, we solve the diffusion problem~\eqref{dual} in the unit square with $\partial\Omega = \partial\Omega_D$, $\vect K = k\,\vect I$, $k = 1$ on the left part and $k = 0.1$ on the right. We keep the mesh fixed, and change the position of the interface so that the minimal length of mini-faces~$w$ gets smaller, $w = 10^{-1}, 10^{-2}, \dots, 10^{-5}$ (see Figure~\ref{fig:w}).
+In this section, we study the dependence of the condition number of matrix $\vect S_\bmesh$ on the position of the material interface against the background mesh. For this purpose, we solve the diffusion problem~\eqref{dual} in the unit square with $\partial\Omega = \partial\Omega_D$, $\vect K = k\,\vect I$, $k = 1$ on the left part and $k = 0.1$ on the right. We keep the mesh fixed, and change the position of the interface so that the minimal length~$w$ of mini-faces gets smaller, $w = 10^{-1}, 10^{-2}, \dots, 10^{-5}$ (see Figure~\ref{fig:w}).
 
 \begin{figure}[h]
 	\centering
-	\caption{Distribution of materials leads to  different values of the minimal length of mini-faces $w$ \label{fig:w}}
+	\caption{Distribution of materials leads to  different values of the minimal length~$w$ of mini-faces \label{fig:w}}
 	\begin{subfigure}{.33\linewidth}
 		\centering
 		\includegraphicsw{skew1.png}
@@ -375,7 +375,7 @@ Numerical results are shown in Table~\ref{fig:w:res}. We observe that the condit
 $$
 	\widetilde{\vect\kappa}_{\text{ASC(1)}} = {\mu_{\text{max}}}/{\mu_3}
 $$
-where $\mu_{\text{min}} = \mu_0 \ge \mu_1 \ge \dots \ge \mu_{\text{max}}$ are the eigenvalues of~$\vect S_\bmesh$ of ASC(1). From this results we see that the effective condition number of ASC(1) stays bounded with respect to the interface position and is  close to the condition number of ASC(0). We hypothesize that the number of outliers in the  spectrum of $\vect S_\bmesh$ is proportional to the number of multi-material cells with small cuts.
+where $\mu_{\text{min}} = \mu_0 \le \mu_1 \le \dots \le \mu_{\text{max}}$ are the eigenvalues of~$\vect S_\bmesh$ of ASC(1). From this results we see that the effective condition number of ASC(1) stays bounded with respect to the interface position and is  close to the condition number of ASC(0). We hypothesize that the number of outliers in the  spectrum of $\vect S_\bmesh$ is proportional to the number of multi-material cells with small cuts.
 	
 It is well-known that the presence of a few outliers in the spectrum does not affect the asymptotic convergence of the conjugate gradient (CG) iterative methods, see, e.g., \cite{olshanskii2014iterative}. Indeed, in our experiments the CG method (with algebraic multigrid preconditioner) was found to be equally effective for solving systems of algebraic equations resulting from ASC(0) and ASC(1).
 %Starting from some iteration CG method behaves like extreme eigenvalues are not present in the spectrum.
@@ -397,7 +397,7 @@ We finally apply the ASC methods to simulate the time-dependent diffusion proble
 %			\nabla\cdot\vect u    &+ \frac{\partial}{\partial t}\,p       &= f&\quad\text{in } \Omega,
 %		\end{split}\right.
 %\end{equation}
-for $t\in(0, T]$ with initial data $p(\vect x, 0) = p_0(\vect x)$ and boundary data as in \eqref{dual:bc:neumann}. After discretizing in time by the implicit Euler method, the problem takes the form \eqref{dual}--\eqref{dual:bc:neumann} with $c=|\Delta t|^{-1}$ and we apply the spacial discretization described in section~\ref{sec:ASC}. For the purpose of comparison, we apply arithmetic and harmonic homogenization methods followed by a MFD discretization.  
+for $t\in(0, T]$ with initial data $p(\vect x, 0) = p_0(\vect x)$ and boundary data as in \eqref{dual:bc}. After discretizing in time by the implicit Euler method, the problem takes the form \eqref{dual}--\eqref{dual:bc} with $c=|\Delta t|^{-1}$ and we apply the spacial discretization described in section~\ref{sec:ASC}. For the purpose of comparison, we apply arithmetic and harmonic homogenization methods followed by a MFD discretization.  
 
 %We use the implicit Euler method to discretize~\eqref{dual_transient} in time. This leads to a sequence of problems~\eqref{dual} with nonzero source term~$f$. For the space discretization we use ASC(0), ASC(1), arithmetic, and harmonic homogenization methods.
 
@@ -539,7 +539,7 @@ The coarse mesh contains 20 multi-material cells and two macro-faces sharing thr
 \end{figure}
 
 From the figures it is easy to appreciate  that among all the methods only  ASC(1)  provides a reasonable approximation for the coarse mesh, cf. Figures~\ref{fig:transient:comp}.
-Numerical solution computed with ASC(0) overestimates incoming fluxes for the ring. This solution converges to the equilibrium state~$p_h \approx 1$ at approximately $t = 3.75$, which is significantly earlier than the time when same state is achieved by the reference solution. Note that the coarse mesh contains faces with three materials, and we saw already that ASC(0) may fail to converge for this case even for stationary examples. 
+Numerical solution computed with ASC(0) overestimates incoming fluxes for the ring. This solution converges to the equilibrium state~$p_h \approx 1$ at approximately $t = 3.75$, which is significantly earlier than the time when the same state is achieved by the reference solution. Note that the coarse mesh contains faces with three materials, and we saw already that ASC(0) may fail to converge for this case even for stationary examples. 
 
 We tried replacing Voronoi mesh with a triangulation such that the number of triangles is close to the number of the polygonal cells in the fine Voronoi mesh (456 elements for the triangular mesh v.s. 465 for the Voronoi mesh); the achieved difference is that the triangular mesh has faces with three materials, and Voronoi mesh does not. Nevertheless, ASC(0) performed poorly for this example converging to the steady-state at approximately $t = 3$.
 	
