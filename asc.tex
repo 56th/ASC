@@ -175,7 +175,7 @@
 		\begin{subfigure}{.33\linewidth}
 			\centering
 			\includegraphicsw{ring_base_voronoi.png}
-			\caption{Base mesh}
+			\caption{Macro-mesh}
 			\label{fig:problem_geometry:base_mesh}
 		\end{subfigure}%
 		\hfill
@@ -206,10 +206,10 @@
 			\centering
 			\includegraphicsw{ring_mini_voronoi_refined.png}
 		\end{subfigure}
-		\caption{The figure illustrates global unstructured polyhedral mesh (left); Physical interfaces for three materials and cut cells, i.e. multi-material cells (central); The piecewise-planar discontinuous reconstruction of the interfaces by the moment-of-fluid method (right). Everything is shown for two refinement level of the base mesh \label{fig:problem_geometry}}
+		\caption{The figure illustrates global unstructured polyhedral mesh (left); Physical interfaces for three materials and cut cells, i.e. multi-material cells (central); The piecewise-planar discontinuous reconstruction of the interfaces by the moment-of-fluid method (right). Everything is shown for two refinement level of the macro-mesh \label{fig:problem_geometry}}
 	\end{figure}
 	
-	We assume the triangulation  $\bmesh$ of $\Omega$ consisting of general polyhedral elements as illustrated in Figure~\ref{fig:problem_geometry} (left). This triangulation constitutes our macro-mesh. The material interfaces, i.e. surfaces where $\vect K$ may experience discontinuities, may cut through the macro-mesh in an arbitrary way; see Figure~\ref{fig:problem_geometry} (center). The polygonal cells ${\bcell \in \bmesh}$ cut by the interfaces are further called Multi-Material Cells (MMCs). In practice,  we are given a reconstructed interface by a volume-of-fluid or moment-of-fluid method. This reconstructed interface may be discontinuous across faces of MMC, but locally within each ${\bcell \in \bmesh}$ it is a collection of planar surfaces; see Figure~\ref{fig:problem_geometry} (right).
+	We assume the triangulation  $\bmesh$ of $\Omega$ consisting of general polyhedral elements as illustrated in Figure~\ref{fig:problem_geometry} (left). This triangulation constitutes our macro-mesh. The material interfaces, i.e. surfaces where $\vect K$ may experience discontinuities, may cut through the macro-mesh in an arbitrary way; see Figure~\ref{fig:problem_geometry} (center). The polygonal cells ${\bcell \in \bmesh}$ cut by the interfaces are further called multi-material cells (MMCs). In practice,  we are given a reconstructed interface by a volume-of-fluid or moment-of-fluid method. This reconstructed interface may be discontinuous across faces of MMCs, but locally within each ${\bcell \in \bmesh}$ it is a collection of planar surfaces; see Figure~\ref{fig:problem_geometry} (right).
 	
 	Denote by $\bfaces$ the collection of all faces of the macro-mesh $\bmesh$. We shall distinct between the subset of internal and external faces,  $\bfaces = \bfaces[int] \cup \bfaces[ext]$\footnote{For the sake of  notation, we shall use~$\bfaces$ to denote both the set of elements and the corresponding domain formed by their union~$\cup_{F\in \bfaces} \bar{F}$; same for $\bfaces[int]$, $\bfaces[ext]$ and other collections of mesh elements introduced later in the text. The meaning should be clear from a context.}.
 	Introducing the new unknown $\lambda \in \HHalfSpace[\bfaces]$, we reformulate \eqref{dual}--\eqref{dual:bc} as a system of local problems coupled through the boundary data
@@ -297,7 +297,7 @@
 	
 	Since the continuity of flux condition \eqref{flux_cond} and boundary conditions are enforced on all the \emph{external} edges of $T$, we need to distinct the vector ${\vect u}^\text{ext}_\mmesh$ of fluxes on $\mfaces[ext](T)$, which is just a trivial restriction of ${\vect u}_\mmesh$ on the edges  from $\mfaces[ext](T)$,
 	\begin{equation}\label{system_mini}
-		{\vect u}^\text{ext}_\mmesh \coloneqq \vect E_\mmesh^T\,{\vect u}_\mmesh
+		{\vect u}^\text{ext}_\mmesh \coloneqq \vect E_\mmesh^T\,{\vect u}_\mmesh,
 	\end{equation}
 	where $\vect E_\mmesh^T$ is the restriction matrix with entries equal $0$ or $1$.
 	
@@ -340,8 +340,8 @@
 	
 	For $F \in \bfaces[int]$ shared by two polygonal cells~$\bcell^\pm\in \bmesh$  denote by~$\mfaces_F(T^\pm) \subset \mfaces_{\text{ext}}(T^\pm)$ the subsets of mini-faces that belong to the macro-face~$F$ from each side. Let $\nu_F \coloneqq \max\,\{ \#\,\mfaces_F(T^+),\,\#\,\mfaces_F(T^-) \}$. We set~$\bfaces_\bcell \subset \bfaces$ to be the subset of macro-faces forming the boundary of a cell~$T$. With each face $F \in \bfaces_\bcell$ we associate~$\min\,\{ n+1, \nu_F \}$ degrees of freedom~\eqref{asc_dofs} in the $\Lambda$ space. The local and global number of d.o.f. are
 	\[
-		n_\bcell = \sum_{F \in \bfaces_\bcell} \min\,\{ n+1, \nu_F \} \quad\text{and}\quad
-		n_\bmesh = \sum_{F \in \bfaces} \min\,\{ n+1, \nu_F \},
+		n_\bcell \coloneqq \sum_{F \in \bfaces_\bcell} \min\,\{ n+1, \nu_F \} \quad\text{and}\quad
+		n_\bmesh \coloneqq \sum_{F \in \bfaces} \min\,\{ n+1, \nu_F \},
 	\]
 	respectively.
 	
@@ -392,7 +392,7 @@
 			\svginputw{e_plus_2.pdf_tex}
 			\caption{$\nu_F = 3$}		
 		\end{subfigure}
-		\caption{$\lambda_{ji}(\mmesh)$ are local d.o.f. used in MFD for $\lambda$ from \eqref{dual_mini}, $\lambda_j(T)$, $\lambda'_j(T)$ are global d.o.f. used to describe mortar space $\Lambda$. Left: Face $F$ is single-material and uses one global d.o.f.; Right: Face $F$ is multi-material and uses two global d.o.f.
+		\caption{$\lambda_{ji}(\mmesh)$ are local d.o.f. used in MFD for $\lambda$ from \eqref{dual_mini}, $\lambda^{(0)}_j(T)$, $\lambda^{(1)}_j(T)$ are global d.o.f. used to describe mortar space $\Lambda$. Left: Face $F$ is single-material and uses one global d.o.f.; Right: Face $F$ is multi-material and uses two global d.o.f.
 		\label{fig:asc_dofs:asc1:mmc}}
 	\end{figure}
 	
@@ -474,6 +474,7 @@
 	From~\eqref{local_system} it is clear that~$\vect S_\bmesh$ is sparse: Global d.o.f. $\lambda^{(0)}_m(\bmesh)$, $\lambda^{(1)}_m(\bmesh)$ (components of~$\vect\lambda_\bmesh$) interact only with d.o.f. associated with faces of macro-cells that share $m$th macro-face. For example, if $F\in\bfaces[int]$ is shared by two quadrilaterals and has global index $m$, then $m$th row of~$\vect S_\bmesh$ has at most 14 nonzero elements for ASC(1) and at most 7 for ASC(0). %; if $i$th base\,face is a face shared by a quadrilateral and a triangle, $i$th row of~$\vect S_\bmesh$ will have~6 nonzero elements and so forth.
 	
 	Now we show that the global matrix~$\vect S_\bmesh$ in~\eqref{asc_system} is symmetric and positive definite. We give the arguments for ASC(1). Same arguments hold for ASC(0) after obvious simplifications.
+	\vskip .2cm
 	%\begin{theorem}\label{thm:asc0}
 	%		$\Ker\vect R_\mmesh = \{ {\vect 0} \}$ for ASC(0)
 	%	\end{theorem}
@@ -582,7 +583,7 @@
 		\begin{align*}
 		\left(\vect S_\bmesh\,\vect\lambda_\bmesh,\,\vect\lambda_\bmesh\right) &\stackrel{\eqref{global_system_assembly}}{=}
 		\Big( \big( \sum_{\bcell \in \bmesh} \vect N^T_\bcell\,\vect S_\bcell\,\vect N_\bcell \big){\vect\lambda_\bmesh},\,{\vect\lambda_\bmesh} \Big) =
-		\sum_{\bcell \in \bmesh} \big( \vect S_\bcell\,\vect N_\bcell\,{\vect\lambda_\bmesh},\,\underbrace{\vect N_\bcell\,{\vect\lambda_\bmesh}}_{{\vect \lambda_\bcell} \coloneqq} \big) \\
+		\sum_{\bcell \in \bmesh} \big( \vect S_\bcell\,\vect N_\bcell\,{\vect\lambda_\bmesh},\,\underbrace{\vect N_\bcell\,{\vect\lambda_\bmesh}}_{{\vect \lambda_\bcell} =} \big) \\
 		& = \sum_{\bcell \in \bmesh} \big(\vect S_\bcell\,{\vect \lambda_\bcell},\,{\vect \lambda_\bcell} \big) > 0.
 		\end{align*}
 		The last inequality holds, since there exists $\bcell$ such that $\vect \lambda_\bcell=\vect N_\bcell\,{\vect\lambda_\bmesh}$ is not in the kernel for $\vect\lambda_\bmesh\neq\vect0$.
