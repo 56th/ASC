@@ -1,4 +1,4 @@
-\section{Numerical results}\label{sec:num}
+\section{Numerica results}\label{sec:num}
 
 Let $h$ be a max cell diameter for the macro-mesh~$\bmesh_h$, and $\mathbb V_h \subset \LTwoSpace$ be a space of piecewise constant
 functions on each cell~$\mcell \in \mmesh(\bcell)$, $\bcell \in \bmesh_h$. We define \textit{discrete} $\LTwo$-norm of $v \in \LTwoSpace$ as
@@ -11,11 +11,21 @@ For the error~$e_h \coloneqq p - p_h$ between the exact and computed solutions w
 \begin{equation}\label{l2norm}
 	\errlTwo{h} \coloneqq \| e_h \|_{\lTwoSpace} = \| p - p_h \|_{\lTwoSpace} = \| P_h\,p - P_h\,p_h \|_{\LTwoSpace} = \| P_h\,p - p_h \|_{\LTwoSpace}
 \end{equation}
-since~$P_h$ is linear and~$p_h \in \mathbb V_h$. The discrete norm~\eqref{l2norm} of the discretization error is computed as follows:
+since~$P_h$ is linear and~$p_h \in \mathbb V_h$. The discrete norm~\eqref{l2norm} of the concentration discretization error is computed as follows:
 $$
 	\errlTwo{h} = \left[\sum\limits_{\bcell \in \bmesh_h}\sum\limits_{\mcell\in\mmesh(\bcell)} \left(\frac{1}{|\mcell|}\int_{\mcell} p \diff{\vect x} - p_h(\mcell)\right)^2|\mcell|\right]^\frac12,
 $$
-where $|\mcell|$ is the area of cell $\mcell$.
+        where $|\mcell|$ is the area of cell $\mcell$. While the disrete norm of the flux discretization error is defined as follows:
+        $$
+        \varepsilon_h^{l_2} =  \left[\sum\limits_{\bface \in \bmesh_h}
+          A_\bface\left(
+          \sum\limits_{\mface\in\bface}
+          \frac{1}{|\mface|}\int_{\mface}
+          \vect u \diff{\vect s}  - \sum\limits_{\mface\in\bface}\vect u_h(\mface)\right)^2 
+          \right]^\frac12
+        $$
+        where $A_\bface|$ is the representative are of a face $\bface$ which is equal to the arithmetic average
+of areas of cells sharing the face $\bface$.
 
 If~$\bmesh_h$ consists of triangles and no material interfaces are present, ASC($n$) boils down to mixed-hybrid Raviart\,--\,Thomas finite element method (which is algebraically equivalent to~$R\,T_0$ finite element method). In this particular case we have~\cite{M2AN_1980__14_3_249_0}
 $$
@@ -97,33 +107,37 @@ for ASC($n$).
 	\centering
 	\caption{Piecewise linear example: convergence \label{fig:conv:pwlin}}
 	\footnotesize
-	\begin{tabular}[1.5]{| c | c || c | c || c |}
+	\begin{tabular}[1.5]{| c | c || c | c | c || c | c  ||}
 		\hline
-		\multirow{5}{*}{\rotatebox{90}{ASC(0)}} & $h$ & $\errlTwo{0}$ & $\rho$ & $\errInf{0}$ \\
-		\cline{2-5}
-		& $3.5\times10^{-1}$ & $7.3\times10^{-1}$ & & 4.8 \\
-		\cline{2-5}
-		& $8.8\times10^{-2}$ & $1.6\times10^{-1}$ & 1.1 & 1.2 \\
-		\cline{2-5}
-		& $2.2\times10^{-2}$ & $3.7\times10^{-2}$ & 1.1 & $3.4\times10^{-1}$ \\
-		\cline{2-5}
-		& $5.5\times10^{-3}$ & $8.9\times10^{-3}$ & 1.0 & $7.9\times10^{-2}$ \\
+		\multirow{5}{*}{\rotatebox{90}{ASC(0)}} & $h$ & $\errlTwo{0}$ & $\rho_p$ & $\errInf{0}$
+                                                              & $\varepsilon^{l_2}_0$ & $\rho_u$ \\              %& $\varepsilon^\infty_0$ \\
+		\cline{2-7}
+		& $3.5\times10^{-1}$ & $7.3\times10^{-1}$ &     & 4.8               & $ 6.6\times10^{-1}$ &  \\              %    & 7.9 \\
+		\cline{2-7}
+		& $8.8\times10^{-2}$ & $1.6\times10^{-1}$ & 1.1 & 1.2               & $ 3.5\times10^{-1}$ & 0.46 \\              %& 6.0\\
+		\cline{2-7}
+		& $2.2\times10^{-2}$ & $3.7\times10^{-2}$ & 1.1 & $3.4\times10^{-1}$ & $ 1.3\times10^{-1}$ & 0.71 \\              %& 5.8\\
+		\cline{2-7}
+		& $5.5\times10^{-3}$ & $8.9\times10^{-3}$ & 1.0 & $7.9\times10^{-2}$ & $ 4.1\times10^{-2}$ & 0.83 \\              %& 6.0\\
 		\hline
 		\hline
-		\multirow{5}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{1}$ & $\rho$ & $\errInf{1}$ \\
-		\cline{2-5}
-		& $3.5\times10^{-1}$ & $2.5\times10^{-2}$ & & $1.6\times10^{-1}$ \\
-		\cline{2-5}
-		& $8.8\times10^{-2}$ & $1.9\times10^{-3}$ & 1.84 & $6.3\times10^{-2}$ \\
-		\cline{2-5}
-		& $2.2\times10^{-2}$ & $1.6\times10^{-4}$ & 1.79 & $9.8\times10^{-3}$ \\
-		\cline{2-5}
-		& $5.5\times10^{-3}$ & $1.3\times10^{-5}$ & 1.80 & $4.0\times10^{-3}$ \\
+		\multirow{5}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{1}$ & $\rho$ & $\errInf{1}$
+                & $\varepsilon^{l_2}_1$ & $\rho_u$ \\              %& $\varepsilon^\infty_1$\\
+		\cline{2-7}
+		& $3.5\times10^{-1}$ & $2.5\times10^{-2}$ & & $2.9\times10^{-1}$      & $ 4.6\times10^{-2}$ &   \\              %  &0.51\\
+		\cline{2-7}
+		& $8.8\times10^{-2}$ & $1.9\times10^{-3}$ & 1.84 & $6.6\times10^{-2}$ & $ 2.0\times10^{-2}$ & 0.6 \\              %&0.46\\
+		\cline{2-7}
+		& $2.2\times10^{-2}$ & $1.6\times10^{-4}$ & 1.79 & $4.3\times10^{-2}$ & $ 5.5\times10^{-3}$ & 0.93 \\              %&0.57\\
+		\cline{2-7}
+		& $5.5\times10^{-3}$ & $1.3\times10^{-5}$ & 1.80 & $2.0\times10^{-2}$ & $ 1.3\times10^{-3}$ & 1.   \\  %& 0.46\\
 		\hline
 	\end{tabular}
 \end{table}
 
-Numerical results are shown in Table~\ref{fig:conv:pwlin}. We observe that ASC(0) converges linearly with respect to the $\lTwo$-norm, and ASC(1) has the convergence rate close to quadratic with respect to the $\lTwo$-norm.
+Numerical results are shown in Table~\ref{fig:conv:pwlin}. We observe that ASC(0) converges linearly with respect to the $\lTwo$-norm,
+and ASC(1) has the convergence rate close to quadratic with respect to the $\lTwo$-norm.
+The convergence of the flux errors is also is higher for ASC(1) method and is close to linear convergence.
 
 \subsection{Piecewise $P_2$ solutions}
 	
@@ -150,45 +164,94 @@ Let us consider the diffusion problem~\eqref{dual} with~$c \equiv 0$, $\partial\
 	\centering
 	\caption{Piecewise quadratic example, two materials: convergence \label{tab:conv:pwquad2}}
 	\footnotesize
-	\begin{tabular}[1.1]{| c | c || c | c || c |}
+	\begin{tabular}[1.1]{| c | c || c | c | c ||c | c | c ||}
 		\hline
-		\multirow{7}{*}{\rotatebox{90}{ASC(0)}} & $h$ & $\errlTwo{0}$ & ${\rho}$ & $\errInf{0}$ \\
-		\cline{2-5}
-		& $3.0\times10^{-1}$ & $2.4\times10^{-3}$ & & $6.3\times10^{-1}$ \\
-		\cline{2-5}
-		& $1.5\times10^{-1}$ & $6.5\times10^{-4}$ & 2.0 & $7.0\times10^{-3}$ \\
-		\cline{2-5}
-		& $8.1\times10^{-2}$ & $2.6\times10^{-4}$ & 1.4 & $3.2\times10^{-3}$ \\
-		\cline{2-5}
-		& $4.2\times10^{-2}$ & $1.4\times10^{-4}$ & 0.9 & $2.3\times10^{-3}$ \\
-		\cline{2-5}
-		& $2.1\times10^{-2}$ & $3.7\times10^{-5}$ & 1.9 & $1.1\times10^{-3}$ \\
-		\cline{2-5}
-		& $1.0\times10^{-2}$ & $2.7\times10^{-5}$ & 0.4 & $8.6\times10^{-4}$ \\
+		\multirow{7}{*}{\rotatebox{90}{ASC(0)}} & $h$ & $\errlTwo{0}$ & ${\rho_p}$ & $\errInf{0}$
+                & $\varepsilon^{l_2}_0$ & $\rho_u$ \\ %& $\varepsilon^\infty_0$ \\
+		\cline{2-7}
+		& $3.0\times10^{-1}$ & $2.4\times10^{-3}$ &     & $6.3\times10^{-1}$ & $6.9\times10^{-5}$ &  \\ %& $2.6\times10^{-4}$ \\
+		\cline{2-7}
+		& $1.5\times10^{-1}$ & $6.5\times10^{-4}$ & 2.0 & $7.0\times10^{-3}$ & $3.6\times10^{-5}$ & 0.9 \\ %&$1.6\times10^{-4} $ \\
+		\cline{2-7}
+		& $8.1\times10^{-2}$ & $2.6\times10^{-4}$ & 1.4 & $3.2\times10^{-3}$ & $3.4\times10^{-5}$ & 0.09 \\ %&$2.0\times10^{-3}$  \\
+		\cline{2-7}
+		& $4.2\times10^{-2}$ & $1.4\times10^{-4}$ & 0.9 & $2.3\times10^{-3}$ & $2.1\times10^{-5}$ & 0.73 \\ %&$1.0\times10^{-3}$  \\
+		\cline{2-7}
+		& $2.1\times10^{-2}$ & $3.7\times10^{-5}$ & 1.9 & $1.1\times10^{-3}$ & $1.1\times10^{-5}$ & 0.93 \\ %&$6.9\times10^{-4}$  \\
+		\cline{2-7}
+		& $1.0\times10^{-2}$ & $2.7\times10^{-5}$ & 0.4 & $8.6\times10^{-4}$ & $6.5\times10^{-6}$ & 0.75 \\ % &$1.8\times10^{-3}$  \\
 		\hline
 	\end{tabular}
-	\begin{tabular}[1.1]{| c | c || c | c || c |}
+	\begin{tabular}[1.1]{| c | c || c | c | c ||c | c | c || }
 		\hline
-		\multirow{7}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{1}$ & ${\rho}$ & $\errInf{1}$ \\
-		\cline{2-5}
-		& $3.0\times10^{-1}$ & $2.4\times10^{-3}$ & & $2.1\times10^{-3}$ \\
-		\cline{2-5}
-		& {$1.5\times10^{-1}$} & $7.0\times10^{-4}$ & 1.9 & {$1.3\times10^{-2}$} \\
-		\cline{2-5}
-		& $8.1\times10^{-2}$ & $2.3\times10^{-4}$ & 1.8 & $6.8\times10^{-4}$ \\
-		\cline{2-5}
-		& $4.2\times10^{-2}$ & $6.8\times10^{-5}$ & 1.8 & $3.2\times10^{-4}$ \\
-		\cline{2-5}
-		& $2.1\times10^{-2}$ & $2.0\times10^{-5}$ & 1.8 & $1.1\times10^{-4}$ \\
-		\cline{2-5}
-		& $1.0\times10^{-2}$ & $5.4\times10^{-6}$ & 1.9 & $3.3\times10^{-5}$ \\
+		\multirow{7}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{1}$ & ${\rho}$ & $\errInf{1}$ 
+                & $\varepsilon^{l_2}_1$ & $\rho_u$ \\ %& $\varepsilon^\infty_1$ \\
+		\cline{2-7}
+		& $3.0\times10^{-1}$ & $2.4\times10^{-3}$ & & $2.1\times10^{-3}$     &$1.2\times10^{-4}$  &  \\ %&$3.0\times10^{-4}$  \\
+		\cline{2-7}
+		& $1.5\times10^{-1}$ & $7.0\times10^{-4}$ & 1.9 & $1.3\times10^{-2}$ &$6.5\times10^{-5}$  & 0.88 \\ %&$8.8\times10^{-4}$  \\
+		\cline{2-7}
+		& $8.1\times10^{-2}$ & $2.3\times10^{-4}$ & 1.8 & $6.8\times10^{-4}$ &$3.0\times10^{-5}$  & 1.25 \\ %&$2.6\times10^{-4}$  \\
+		\cline{2-7}
+		& $4.2\times10^{-2}$ & $6.8\times10^{-5}$ & 1.8 & $3.2\times10^{-4}$ &$1.4\times10^{-5}$  & 1.16 \\ %&$3.2\times10^{-4}$  \\
+		\cline{2-7}
+		& $2.1\times10^{-2}$ & $2.0\times10^{-5}$ & 1.8 & $1.1\times10^{-4}$ &$5.0\times10^{-6}$  & 1.48 \\ %&$2.4\times10^{-4}$  \\
+		\cline{2-7}
+		& $1.0\times10^{-2}$ & $5.4\times10^{-6}$ & 1.9 & $3.3\times10^{-5}$ &$2.2\times10^{-6}$  & 1.18 \\ %&$1.2\times10^{-4}$  \\
 		\hline
 	\end{tabular}
 \end{table}
 
-The norms of the errors are shown in Table~\ref{tab:conv:pwquad2}. ASC(1) demonstrates convergence with the rate in the $\lTwo$-norm close to quadratic. ASC(0) convergence rate fluctuates significantly.
+%% \begin{table}[h!]
+%% 	\centering
+%% 	\caption{Piecewise quadratic example, two materials: convergence \label{tab:conv:pwquad2_flux}}
+%% 	\footnotesize
+%% 	\begin{tabular}[1.1]{| c | c || c | c || c |}
+%% 		\hline
+%% 		\multirow{7}{*}{\rotatebox{90}{ASC(0)}} & $h$ & $\errlTwo{0}$ & ${\rho}$ & $\errInf{0}$ \\
+%% 		\cline{2-5}
+%% 		& $3.0\times10^{-1}$ & $9.3\times10^{-5}$ & & $2.6\times10^{-4}$ \\
+%% 		\cline{2-5}
+%% 		& $1.5\times10^{-1}$ & $4.2\times10^{-5}$ & & $1.6\times10^{-4}$ \\
+%% 		\cline{2-5}
+%% 		& $8.1\times10^{-2}$ & $4.6\times10^{-5}$ & & $2.0\times10^{-3}$ \\
+%% 		\cline{2-5}
+%% 		& $4.2\times10^{-2}$ & $2.5\times10^{-5}$ & & $1.1\times10^{-3}$ \\
+%% 		\cline{2-5}
+%% 		& $2.1\times10^{-2}$ & $1.4\times10^{-5}$ & & $6.9\times10^{-4}$ \\
+%% 		\cline{2-5}
+%% 		& $1.0\times10^{-2}$ & $8.9\times10^{-6}$ & & $1.8\times10^{-3}$ \\
+%% 		\hline
+%% 	\end{tabular}
+%% 	\begin{tabular}[1.1]{| c | c || c | c || c |}
+%% 		\hline
+%% 		\multirow{7}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{1}$ & ${\rho}$ & $\errInf{1}$ \\
+%% 		\cline{2-5}
+%% 		& $3.0\times10^{-1}$ & $1.4\times10^{-4}$ &     & $3\times10^{-4}$ \\
+%% 		\cline{2-5}
+%% 	        & $1.5\times10^{-1}$ & $7.9\times10^{-5}$ & & $8.7\times10^{-4}$ \\
+%% 		\cline{2-5}
+%% 		& $8.1\times10^{-2}$ & $4.0\times10^{-5}$ & & $2.6\times10^{-4}$ \\
+%% 		\cline{2-5}
+%% 		& $4.2\times10^{-2}$ & $1.8\times10^{-5}$ & & $3.2\times10^{-4}$ \\
+%% 		\cline{2-5}
+%% 		& $2.1\times10^{-2}$ & $6.4\times10^{-6}$ & & $2.3\times10^{-4}$ \\
+%% 		\cline{2-5}
+%% 		& $1.0\times10^{-2}$ & $2.7\times10^{-6}$ & & $1.2\times10^{-4}$ \\
+%% 		\hline
+%% 	\end{tabular}
+%% \end{table}
 
-We also observe a bump in the max norm error for ASC(1) on the second mesh level, $h = 1.5\times10^{-1}$. To have some insight, we show the corresponding mesh in the Figure~\ref{fig:conv:pwquad2:inf:mesh}. One may note that the interface reconstruction produces significant discontinuity of interfaces: A small volume of the external material, i.e. the one occupying $\Omega_2$ domain, appears inside the disk (domain $\Omega_1$). Due to constant trace approximation, ASC(0) is not sensitive to such irregularity. It turns out that for ASC(1) the $\ell^\infty$ norm of the error is affected by the appearance of such small isolated cut cells. At the same time, this does not affect the $\lTwo$-convergence of ASC(1).
+The norms of the errors are shown in Table~\ref{tab:conv:pwquad2}. ASC(1) demonstrates convergence with the rate in the $\lTwo$-norm close to quadratic for scalar unknowns and
+even higher than linear for flux errors. It is important to take into accont that approximation errors in the interface reconstruction
+may  effect the convergence of discretization methods. For example, in these set of tests ASC(0) convergence rate fluctuates significantly for both scalar and flux errors.
+We also observe a bump in the max norm error for ASC(1) on the second mesh level, $h = 1.5\times10^{-1}$.
+To have some insight, we show the corresponding mesh in the Figure~\ref{fig:conv:pwquad2:inf:mesh}.
+One may note that the interface reconstruction produces significant discontinuity of interfaces:
+A small volume of the external material, i.e. the one occupying $\Omega_2$ domain, appears inside the disk (domain $\Omega_1$).
+Due to constant trace approximation, ASC(0) is not sensitive to such irregularity.
+It turns out that for ASC(1) the $\ell^\infty$ norm of the error is affected by the appearance of such small isolated cut cells.
+At the same time, this does not affect the $\lTwo$-convergence of ASC(1).
 
 \begin{figure}[h]
 	\centering
@@ -452,7 +515,7 @@ We first compute solution $p_*$ to the problem~(\ref{dual_transient}) using $P2$
 For ASC(0), ASC(1), arithmetic and harmonic homogenization methods we use two Voronoi meshes with~$h = 1.5 \times 10^{-1}$ (124 base\,cells) and $h = 8.1 \times 10^{-2}$ (465 base\,cells).
 The coarse mesh contains 20 multi-material cells and two macro-faces sharing three materials. The fine mesh contains 50 multi-material cells and no three material macro-faces. For all these methods we use 20 time frames, $\Delta t = T / 20$. Results are shown in Figures~\ref{fig:transient:comp}\,--\,\ref{fig:transient:err}.
 
-\clearpage
+%\clearpage
 
 \begin{figure}[h]
 	\centering
