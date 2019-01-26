@@ -128,7 +128,7 @@
 	%\renewcommand{\array}[1][2pt]{\arraycolsep=#1\def\arraystretch{1.5}\oldarray}
 	
 	\begin{abstract}
-		The paper studies an approximate static condensation method for the diffusion problem with discontinuous diffusion coefficients. The method allows for a general polygonal mesh which is unfitted to the material interfaces. Moreover, the interfaces can be discontinuous across the mesh edges as typical for numerical reconstructions using the volume or moment-of-fluid methods.  We apply a mimetic finite difference method to solve local diffusion problems and use $P_1$ (mortar) edge elements to couple local problems into the global system. The condensation process and the properties of the resulting algebraic system are discussed. It is demonstrated that the method is second order accurate on smooth solutions and performs well for problems with high contrast in diffusion coefficients. Experiments also show the robustness with respect to position of the interface against the underlying mesh.
+		The paper studies an approximate static condensation method for the diffusion problem with discontinuous diffusion coefficients. The method allows for a general polygonal mesh which is unfitted to the material interfaces. Moreover, the interfaces can be discontinuous across the mesh edges as typical for numerical reconstructions using the volume or moment-of-fluid methods.  We apply a mimetic finite difference method to solve local diffusion problems and use $P_1$ (mortar) edge elements to couple local problems into the global system. The condensation process and the properties of the resulting algebraic system are discussed. It is demonstrated that the method is second order accurate on smooth solutions and performs well for problems with high contrast in diffusion coefficients. Experiments also show the robustness with respect to position of the material interfaces against the underlying mesh.
 	\end{abstract}
 	
 	%\Sasha{Note that \texttt{usepackage\{dutchcal\}} seems to be not working with miktex (I need this package for a bold mathcal font). I use texlive and it works just ok. I left it commented so it compiles more or less everywhere. You may see some funny symbols from time to time  while reading if you leave it commented.}
@@ -139,7 +139,7 @@
 	Mathematical models of such processes are often formulated in terms of systems of partial differential equations with discontinuous coefficients and interface conditions on time-dependent internal boundaries.
 	Due to their high complexity, these models defy analytical treatment, and hence numerical simulations became an indispensable tool for solving the models and gaining insights into underlying phenomena.
 	
-	Past decades evidenced an explosive growth in developing of efficient computational techniques for problems with evolving interfaces, which involve interaction between many materials or different phases of matter. This includes immersed boundary method~\cite{peskin2002immersed}, immersed interface method~\cite{leveque1994immersed}, and unfitted finite element methods \cite{belytschko2009review,burman2015cutfem}, to name several popular numerical approaches. Depending on how the interface is treated numerically, one can distinguish between methods that smear the interface over a strip of finite thickness which should be further resolved by the mesh, like in the phase field approach~\cite{steinbach2009phase}, and methods that use a sharp interface representation, as in the level-set method \cite{sethian1999level}.  If one applies a sharp representation to handle complex geometries or interfaces undergoing large deformations, it is convenient to allow the  interface to cut through the background mesh in an arbitrary way. In turn, this leads to the problem of building accurate and stable approximations for  so-called multi-material cells, i.e. the mesh cells intersected by material interfaces. In particular, one is interested in discretizations to be robust with respect to how interfaces intersect the mesh and to the contrast of  material properties, e.g. the ratio of physical parameters. This is the setting and the problem  we focus in this paper.
+	Past decades evidenced an explosive growth in developing of efficient computational techniques for problems with evolving interfaces, which involve interaction between many materials or different phases of matter. These developments include immersed boundary method~\cite{peskin2002immersed}, immersed interface method~\cite{leveque1994immersed}, and unfitted finite element methods \cite{belytschko2009review,burman2015cutfem}, to name several popular numerical approaches. Depending on how the interface is treated numerically, one can distinguish between methods that smear the interface over a strip of finite thickness which should be further resolved by the mesh, like in the phase field approach~\cite{steinbach2009phase}, and methods that use a sharp interface representation, as in the level-set method \cite{sethian1999level}.  If one applies a sharp representation to handle complex geometries or interfaces undergoing large deformations, it is convenient to allow the  interface to cut through the background mesh in an arbitrary way. In turn, this leads to the problem of building accurate and stable approximations for  so-called multi-material cells, i.e. the mesh cells intersected by material interfaces. In particular, one is interested in discretizations which are robust with respect to how interfaces intersect the mesh and with respect to the contrast of  material properties, e.g. the ratio of physical parameters. This is the setting and the problem  we focus in this paper.
 
 %However, numerous applications require local conservation of material volumes on computational meshes that do not explicitly track material interfaces. This is typical for simulations of high speed multi-material flows, where shocks and vorticity often require the use of the Arbitrary Lagrangian-Eulerian method. The complication with this method is that over the course of simulation, material interfaces become unaligned with the computational mesh, with their shape and position inside mesh cells not being explicitly known.
 	
@@ -150,17 +150,17 @@ Although being technologically straightforward, the homogenization approach ofte
 
 As an alternative to the homogenization, one may reconstruct interfaces in each  multi-material cell  using a piecewise planar approximation. In this case, single-material domains  in the cell are  non-overlapping polytopes that typically preserve known material volumes.
 %The alternatives generally require for the so-called interface reconstruction to be used in order to approximate material interfaces inside multi-material cells. Interface reconstruction methods typically represent materials in a cell by non-overlapping single-material polytopes that match given volume fractions.
-%The most popular approach is based on using a single linear interface to represent an interface between two materials, and is commonly called the Piecewise-Linear Interface Calculation (PLIC). 
-In this paper, we deal with interfaces reconstructed by the volume-of-fluid (VOF)~\cite{hirt1981volume} method, which is a commonly used numerical interface recovery approach. The approach includes the moment-of-fluid (MOF) methods~\cite{ahn2009adaptive} that generally provide better accuracy if centroids of material subdomains are known.
+%The most popular approach is based on using a single linear interface to represent an interface between two materials, and is commonly called the Piecewise-Linear Interface Calculation (PLIC).
+In this paper, we deal with interfaces reconstructed by the volume-of-fluid (VOF)~\cite{hirt1981volume} method, which is a commonly used numerical  approach to recover interface location. The approach includes the moment-of-fluid (MOF) methods~\cite{ahn2009adaptive} that generally provide better accuracy if centroids of material subdomains are known.
 For the numerical experiments here we apply the extended MOF~\cite{kikinzon2018xmof}  to construct local meshes inside multi-material cells such that subcell contains only one material and all information about the local topology is available.
-% MAxim: It was not clear why you particularly mention  X-MOF. So I assume that it is what you use for experiments.  
+% MAxim: It was not clear why you particularly mention  X-MOF. So I assume that it is what you use for experiments.
 
 %A drawback of interface reconstruction is that reconstructed material interfaces are discontinuous on the interfaces between multi-material cells.
 The conservation properties of the  VOF and MOF approaches, however, come at a price of recovering a piecewise planar interface approximation that is  discontinuous across the faces of the background computational mesh.
-One approach to deal with this issue is merging the local tessellations with the computational mesh, thus effectively refining the mesh so that every cell contains only one material~\cite{garimella2011supermesh}. It appears to be a non-trivial computational geometry problem, and the resulting mesh in 2D typically contains very small and co-linear faces, while the extension of this approach to 3D does not seem feasible for general unstructured meshes.
+One technique to deal with this issue consists in including the local tessellations into the global computational mesh, thus effectively refining the mesh so that every cell contains only one material~\cite{garimella2011supermesh}. This turns out to be a non-trivial computational geometry problem, and the resulting mesh in 2D often contains very small and co-linear faces, while the extension of this approach to 3D does not seem feasible for general unstructured meshes.
 
 	In this paper, we devise  a higher order method for the numerical solution of the diffusion problem with discontinuous coefficients on polytopal meshes with multi-material cells. We assume that interface reconstruction is performed using the extended MOF method, which provides local single-material meshes with full topological data. One might consider solving this problem with Nitsche’s methods used in the framework of cut-cells~\cite{burman2015cutfem, hansbo2002unfitted} or extended finite element methods (X-FEM)~\cite{dolbow2008xfem}. However, these methods are typically not locally conservative
-%, and interface reconstruction is usually used when volume conservation is a requirement. Additionally, 
+%, and interface reconstruction is usually used when volume conservation is a requirement. Additionally,
 and the discontinuity of material interfaces across faces of multi-material cells can be large enough to result in a significant loss of accuracy.
 	
  The present method builds upon the approximate static condensation (ASC) algorithm proposed in~\cite{kikinzon2017approximate}; it admits high-contrast diffusion coefficients and discontinuous reconstruction of the interfaces. The ASC approach uses the formulation of the interface diffusion problem as a system of problems on local meshes that are coupled through the concentration values and fluxes on the faces of multi-material cells. This face concentration serves as a new primal unknown and it is further approximated by piecewise  polynomial functions defined on all faces of the global (unfitted polygonal) mesh. The original paper ~\cite{kikinzon2017approximate} considered $P_0$ (piecewise constant) approximation to the face concentration, while the present study introduces higher order polynomials for this purpose.
@@ -312,13 +312,13 @@ The approximate static condensation approach leaves much freedom in the choice o
 			{\vect f}_\mmesh
 		\end{pmatrix}.
 	\end{equation}
-	Here $\vect M_\mmesh$, $\vect\Sigma_\mmesh$, $\vect B^T_\mmesh$, $-\vect B_\mmesh$ are vector-mass, mass, gradient and divergence matrices, respectively. $-\vect C_\mmesh$ is a diagonal scaling matrix. i.e. the mass matrix for ${\vect \lambda}_\mmesh$ unknowns;
+	Here $\vect M_\mmesh$, $\vect\Sigma_\mmesh$, $\vect B^T_\mmesh$, $-\vect B_\mmesh$ are vector-mass, mass, gradient and divergence matrices, respectively; $-\vect C_\mmesh$ is a diagonal scaling matrix, i.e. the mass matrix for ${\vect \lambda}_\mmesh$ unknowns;
 	$\vect E_\mmesh \in \mathbb{R}^{n_f \times n_\lambda}$ is a rectangular matrix with 0 and 1 entries which sparsifies a vector from  $\mathbb{R}^{n_{\lambda}}$
 	to a vector from  $\mathbb{R}^{n_{f}}$.
 	For the details on MFD and accurate definition of the matrices we refer to \cite{lipnikov2014mimetic,MFDbook}.
 	Here we need the property that  $\vect B_\mmesh$ has a full row rank, and $\vect M_\mmesh = \vect M^T_\mmesh$ is positive definite.
 	
-	Since the continuity of flux condition \eqref{flux_cond} and boundary conditions are enforced on all the \emph{external} edges of $T$, we need to distinct the vector ${\vect u}^\text{ext}_\mmesh$ of fluxes on $\mfaces[ext](T)$, which is just a trivial restriction of ${\vect u}_\mmesh$ on the edges  from $\mfaces[ext](T)$,
+	Since the continuity of flux condition \eqref{flux_cond} and boundary conditions are enforced on  the \emph{external} edges of $T$, we need to distinct the vector ${\vect u}^\text{ext}_\mmesh$ of fluxes on $\mfaces[ext](T)$, which is just a trivial restriction of ${\vect u}_\mmesh$ on the edges  from $\mfaces[ext](T)$,
 	\begin{equation}\label{system_mini}
 		{\vect u}^\text{ext}_\mmesh \coloneqq \vect E_\mmesh^T\,{\vect u}_\mmesh,
 	\end{equation}
@@ -338,7 +338,7 @@ The approximate static condensation approach leaves much freedom in the choice o
 	%	Matrix~$\vect A_\mmesh$ and vector~${\vect a}_\mmesh$ can be easily computed if the number of mini\,cells is relatively small. Otherwise, one may prefer to use a mixed-hybrid formulation instead of~$\eqref{weak_form}$ (see section~\ref{MH}).
 	
 	Next, we should use the continuity of flux condition \eqref{flux_cond} and boundary conditions to obtain a complete system for ${\vect u}^\text{ext}_\mmesh$ and ${\vect \lambda}_\mmesh$. However, we cannot do this in a straightforward way, since the discontinuity of material interfaces across the macro-mesh faces may lead to a mismatch of discrete fluxes from two sides of $F\in\bfaces[int]$, including different space dimensions.
-	Therefore, we shall enforce the flux continuity condition in the spirit of the mortar finite element method~\cite{mortar} using the space of function defined on $\bfaces[int]$, which are polynomials of degree at most $n$ on every $F\in\bfaces[int]$, an analog of the Lagrange multiplier space in the mortar method:
+	Therefore, we shall enforce the flux continuity condition in the spirit of the mortar finite element method~\cite{mortar} using the space of functions defined on $\bfaces[int]$, which are polynomials of degree at most $n$ on every $F\in\bfaces[int]$, an analog of the Lagrange multiplier space in the mortar method:
 	\[
 		\Lambda=\left\{\lambda\in \LTwoSpace[{\bfaces[int]}]\,:\, \lambda\in P_n~\text{for any}~F\in\bfaces[int]\right\}.
 	\]
@@ -359,7 +359,7 @@ The approximate static condensation approach leaves much freedom in the choice o
 	\begin{equation}\label{asc_dofs}
 		\lambda^{(i)}_F=\frac{\int_F  \lambda\,s_i \diff l}{|F|}, \quad i = 0, \dots, n.
 	\end{equation}
-	Here~$\{\,s_i\,\}_{i=0,\dots,n}$ is the set of $\LTwoSpace[\bface]$-orthogonal polynomials of degree~$n$.
+	Here~$\{\,s_i\,\}_{i=0,\dots,n}$ is the set of $\LTwoSpace$-orthogonal polynomials on $F$ of degree~$n$.
 	
 	For $F \in \bfaces[int]$ shared by two polygonal cells~$\bcell^\pm\in \bmesh$  denote by~$\mfaces_F(T^\pm) \subset \mfaces_{\text{ext}}(T^\pm)$ the subsets of mini-faces that belong to the macro-face~$F$ from each side. Let $\nu_F \coloneqq \max\,\{ \#\,\mfaces_F(T^+),\,\#\,\mfaces_F(T^-) \}$. We set~$\bfaces_\bcell \subset \bfaces$ to be the subset of macro-faces forming the boundary of a cell~$T$. With each face $F \in \bfaces_\bcell$ we associate~$\min\,\{ n+1, \nu_F \}$ degrees of freedom~\eqref{asc_dofs} in the $\Lambda$ space. The local and global number of d.o.f. are
 	\[
@@ -425,7 +425,7 @@ The approximate static condensation approach leaves much freedom in the choice o
 	\begin{equation}\label{lambda_intermsof_moments}
 		{\lambda}\big({\vect r}(t)\big) = \lambda^{(1)}_{j}(T)\,|F|\,t + \left( \lambda^{(0)}_{j}(T) - \frac{\lambda^{(1)}_{j}(T)\,|F|}{2} \right),\qquad  F\in\bfaces[int]
 	\end{equation}
-	for $\lambda\in\Lambda$. Here $t\in(0,1)$ and ${\vect r}\::\:\left(0,1\right) \rightarrow F$ is the affine parametrization of $F$, which has index $j$ among macro-faces of $T$.
+	for $\lambda\in\Lambda$. Here $t\in(0,1)$ and ${\vect r}\::\:\left(0,1\right) \rightarrow F$ is the affine parametrization of the face $F$ with index $j$ among macro-faces of $T$.
 	
 	Integrating \eqref{lambda_intermsof_moments} over all mini-faces $f \in \mfaces_\bface(\bcell)$ ($f$ has local index $i$ among mini-faces belonging to $F$) and re-scaling, we get
 	\begin{equation}\label{asc1_interp}
@@ -489,7 +489,7 @@ The approximate static condensation approach leaves much freedom in the choice o
 	\begin{align}\label{global_system_assembly}
 		%\begin{split}
 		\vect S_\bmesh = \sum_{\bcell \in \bmesh} \vect N^T_\bcell\,\vect S_\bcell\,\vect N_\bcell, \quad
-		{\vect b}_\bmesh = \sum_{\bcell \in \bmesh} \vect N^T_\bcell\,{\vect b}_\bcell.
+		{\vect b}_\bmesh = \sum_{\bcell \in \bmesh} \vect N^T_\bcell\,{\vect b}_\bcell,
 		%\end{split}
 	\end{align}
 	where $\vect N_\bcell$ defines global to local mapping for the cell $T$.
@@ -533,7 +533,7 @@ The approximate static condensation approach leaves much freedom in the choice o
 				& & & \vect S_m
 			\end{pmatrix},
 		\end{equation}
-		where~$m \coloneqq$ number of macro-faces spanning~$\bcell$ and
+		where~$m \coloneqq$ number of macro-faces spanning~$\partial\bcell$ and
 		\begin{equation*}
 			\vect S_k \coloneqq
 			\begin{cases}
@@ -551,7 +551,7 @@ The approximate static condensation approach leaves much freedom in the choice o
 		\begin{equation*}
 			s_{k\,i} =  s_{k\,j}, \quad i, j = 1, 2, \dots, m_k
 		\end{equation*}
-		for some~$k$. Take some $\vect S \equiv \vect S_k$ corresponding to a multi-material face~$F \in \bfaces_\bcell$ with~${l \coloneqq m_k}$ materials,
+		for some~$k$. Take some $\vect S = \vect S_k$ corresponding to a multi-material face~$F \in \bfaces_\bcell$ with~${l \coloneqq m_k}$ materials,
 		\begin{equation*}
 			\vect S = \begin{pmatrix}
 				1 &  s_1 \\
