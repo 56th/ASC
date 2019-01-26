@@ -436,7 +436,7 @@ The approximate static condensation approach leaves much freedom in the choice o
 		\end{cases}
 	\end{equation}
 	where $s_{j\,i} $ is a signed distance between centroids of~$f$  and~$F$. For the corresponding vectors of unknowns  ${\vect \lambda}_\mmesh = \{ \lambda_{j\,i}(\mmesh) \}$ and ${\vect \lambda}_\bcell = \{ \lambda^{(0)}_{j}(\bcell) \} \cup \{ \lambda^{(1)}_{j}(\bcell) \}$ this defines
-	the matrix $\vect R_\mmesh$ through~\eqref{asc_lambda}. For the example in Figure~\ref{fig:asc_dofs:asc1:mmc} (left), $\vect R_\mmesh$ is given by
+	the matrix $\vect R_\mmesh$ through~\eqref{asc_lambda}. For the example in Figure~\ref{fig:asc_dofs:asc1:mmc} (left and right) we have
 	\begin{equation*}\footnotesize
 		\vect R_\mmesh
 		=
@@ -450,25 +450,62 @@ The approximate static condensation approach leaves much freedom in the choice o
 			0 & 0 & 0 & 0 & 1 &  s_{3\,1} & 0 \\
 			0 & 0 & 0 & 0 & 1 &  s_{3\,2} & 0 \\
 			0 & 0 & 0 & 0 & 0 & 0 & 1
-		\end{pmatrix}.		
+		\end{pmatrix},
+		\quad
+		\vect \lambda_\mmesh = 
+		\begin{pmatrix}
+			\lambda_{11}(\mmesh) \\
+			\lambda_{12}(\mmesh) \\
+			\lambda_{13}(\mmesh) \\
+			\lambda_{21}(\mmesh) \\
+			\lambda_{22}(\mmesh) \\
+			\lambda_{23}(\mmesh) \\
+			\lambda_{31}(\mmesh) \\
+			\lambda_{32}(\mmesh) \\
+			\lambda_{41}(\mmesh) \\
+		\end{pmatrix};	
 	\end{equation*}
-	For ASC(0) the matrix $\vect R_\mmesh$  is as above with rows containing $s_{ij}$-s eliminated.
+	for the moment d.o.f. we have
+	\begin{align*}\footnotesize
+		\vect \lambda_\bcell =& 
+		\left(
+			\lambda^{(0)}_1(\bcell),\,
+			\lambda^{(1)}_1(\bcell),\,
+			\lambda^{(0)}_2(\bcell),\,
+			\lambda^{(1)}_2(\bcell),\,
+			\lambda^{(0)}_3(\bcell),\,
+			\lambda^{(1)}_3(\bcell),\,
+			\lambda^{(0)}_4(\bcell)
+		\right)^T
+		\text{ and} \\
+		&\left(
+			\lambda^{(0)}_1(\bcell),\,
+			\lambda^{(1)}_1(\bcell),\,
+			\lambda^{(0)}_2(\bcell),\,
+			\lambda^{(1)}_2(\bcell),\,
+			\lambda^{(0)}_3(\bcell),\,
+			\lambda^{(1)}_3(\bcell),\,
+			\lambda^{(0)}_4(\bcell),\,
+			\lambda^{(1)}_4(\bcell)
+		\right)^T		
+	\end{align*}
+	for Figure~\ref{fig:asc_dofs:asc1:mmc} (left) and Figure~\ref{fig:asc_dofs:asc1:mmc} (right), respectively. For ASC(0) the matrix $\vect R_\mmesh$  is as above with rows containing $s_{ij}$-s eliminated.
 	%Since the fourth base\,face $F \in \bfaces_\bcell$ has only one material, a trace on~$F$ from the cell~$\bcell$ is approximated by a constant. However, if in the adjacent cell we have several materials on $F$\footnotemark{}, we will use the value of~$\lambda'_{\bcell\,4}$ to improve the approximation of the fine traces on~$F$ in the adjacent cell.
 	
 	Now, when the mappings between local and global approximations of $\lambda$ are defined, we are ready to proceed with the assembly of the global matrix $\vect S_\bmesh$. The flux continuity over the face $F$ \big(condition~\eqref{flux_cont}\big) yields
-	\begin{equation*}
+	\begin{equation}\label{eq:aux1pre}
 		\left\{\begin{split}
 			\sum_{f\in \mfaces_F(T^+)} u^{\text{ext}}_{\mmesh^+}(f)\,|f| &+ \sum_{f\in \mfaces_F(T^-)} u^{\text{ext}}_{\mmesh^-}(f)\,|f| &= 0, \\
 			\sum_{f\in \mfaces_F(T^+)} u^{\text{ext}}_{\mmesh^+}(f)\,\int_{f} s_1 \diff{l} &+ \sum_{f\in \mfaces_F(T^-)} u^{\text{ext}}_{\mmesh^-}(f)\,\int_{f} s_1 \diff{l} &= 0
 		\end{split}\right.
 		%\quad\Leftrightarrow \\
 		%		\sum_{i \in I_{\mfaces^+_F}} u^{\text{ext}}_{\mmesh^+\,i}\,\Delta s^+_i\,|\mfaces^+_{F\,i}| &+ \sum_{i \in I_{\mfaces^-_F}} u^{\text{ext}}_{\mmesh^-\,i}\,\Delta s^-_i\,|\mfaces^-_{F\,i}| = 0,
-	\end{equation*}
+	\end{equation}
 	or in the matrix form
 	\begin{equation}\label{eq:aux1}
-		\left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect u}^{\text{ext}}_{\mmesh^+} \right)_i + \left( \vect R^T_{\mmesh^-}\,\vect C_{\mmesh^-}\,{\vect u}^{\text{ext}}_{\mmesh^-} \right)_j = 0,
+		\left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect u}^{\text{ext}}_{\mmesh^+} \right)_{i+m} + \left( \vect R^T_{\mmesh^-}\,\vect C_{\mmesh^-}\,{\vect u}^{\text{ext}}_{\mmesh^-} \right)_{j+m} = 0, \quad m \in \{0, 1\}
 	\end{equation}
-	where $i$ and $j$ are the local indexes of the face $F$ in the cells $T^+$ and $T^-$, respectively. For the Neumann part of the boundary of~$\bcell^\pm$ we set $\mfaces_N(\bcell^\pm) \coloneqq \{ f \in \mfaces[ext](\bcell^\pm)\::\:f \subset \partial\Omega_N \}$. If $F$ from $T^+$ belongs to the Neumann part of the boundary, then we have
+	where $i$ and $j$ are the local indexes of the face $F$ in the cells $T^+$ and $T^-$, respectively. ($m = 0$ corresponds to the first equation in~\eqref{eq:aux1pre} and $m = 1$ corresponds to the second one; further we omit ``$+m$" for simplicity.) For the Neumann part of the boundary of~$\bcell^\pm$ we set $\mfaces_N(\bcell^\pm) \coloneqq \{ f \in \mfaces[ext](\bcell^\pm)\::\:f \subset \partial\Omega_N \}$. If $F$ from $T^+$ belongs to the Neumann part of the boundary, then we have
 	\begin{equation*}
 		\left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect u}^{\text{ext}}_{\mmesh^+} \right)_i = \left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect g}_{N\,\mmesh^+} \right)_i, \quad
 		{\vect g}_{N\,\mmesh^+} \coloneqq \left\{ \int_f g_N\,s_k \diff{l}\,/\,|f| \right\}_{f\,\in\,\mfaces_N(\bcell^+),\:k\,\in\,\{0,\,1\}}.
