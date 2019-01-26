@@ -452,7 +452,7 @@ The approximate static condensation approach leaves much freedom in the choice o
 			0 & 0 & 0 & 0 & 0 & 0 & 1
 		\end{pmatrix},
 		\quad
-		\vect \lambda_\mmesh = 
+		\vect \lambda_\mmesh =
 		\begin{pmatrix}
 			\lambda_{11}(\mmesh) \\
 			\lambda_{12}(\mmesh) \\
@@ -467,7 +467,7 @@ The approximate static condensation approach leaves much freedom in the choice o
 	\end{equation*}
 	for the moment d.o.f. we have
 	\begin{align*}\footnotesize
-		\vect \lambda_\bcell =& 
+		\vect \lambda_\bcell =&
 		\left(
 			\lambda^{(0)}_1(\bcell),\,
 			\lambda^{(1)}_1(\bcell),\,
@@ -505,10 +505,10 @@ The approximate static condensation approach leaves much freedom in the choice o
 	\begin{equation}\label{eq:aux1}
 		\left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect u}^{\text{ext}}_{\mmesh^+} \right)_{i+m} + \left( \vect R^T_{\mmesh^-}\,\vect C_{\mmesh^-}\,{\vect u}^{\text{ext}}_{\mmesh^-} \right)_{j+m} = 0, \quad m \in \{0, 1\}
 	\end{equation}
-	where $i$ and $j$ are the local indexes of the face $F$ in the cells $T^+$ and $T^-$, respectively. ($m = 0$ corresponds to the first equation in~\eqref{eq:aux1pre} and $m = 1$ corresponds to the second one; further we omit ``$+m$" for simplicity.) For the Neumann part of the boundary of~$\bcell^\pm$ we set $\mfaces_N(\bcell^\pm) \coloneqq \{ f \in \mfaces[ext](\bcell^\pm)\::\:f \subset \partial\Omega_N \}$. If $F$ from $T^+$ belongs to the Neumann part of the boundary, then we have
+	where $i$ and $j$ are the local indexes of the face $F$ in the cells $T^+$ and $T^-$, respectively ($m = 0$ corresponds to the first equation in~\eqref{eq:aux1pre} and $m = 1$ corresponds to the second one; further we omit ``$+m$" for simplicity). For the Neumann part of the boundary of~$\bcell^\pm$ we set $\mfaces_N(\bcell^\pm) \coloneqq \{ f \in \mfaces[ext](\bcell^\pm)\::\:f \subset \partial\Omega_N \}$. If $F$ from $T^+$ belongs to the Neumann part of the boundary, then we have
 	\begin{equation*}
 		\left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect u}^{\text{ext}}_{\mmesh^+} \right)_i = \left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect g}_{N\,\mmesh^+} \right)_i, \quad
-		{\vect g}_{N\,\mmesh^+} \coloneqq \left\{ \int_f g_N\,s_k \diff{l}\,/\,|f| \right\}_{f\,\in\,\mfaces_N(\bcell^+),\:k\,\in\,\{0,\,1\}}.
+		{\vect g}_{N\,\mmesh^+} \coloneqq \left\{ \int_f g_N\,s_m \diff{l}\,/\,|f| \right\}_{f\,\in\,\mfaces_N(\bcell^+),\:m\,\in\,\{0,\,1\}}.
 	\end{equation*}
 	
 	Substituting~\eqref{asc_flux_lambda} into \eqref{eq:aux1} we get the local equation for~${\vect \lambda}_\bcell$
