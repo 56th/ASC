@@ -124,7 +124,7 @@ for ASC($n$).
 		& $5.5\times10^{-3}$ & $8.9\times10^{-3}$ & 1.0 & $7.9\times10^{-2}$ & $ 4.1\times10^{-2}$ & 0.83 \\              %& 6.0\\
 		\hline
 		\hline
-		\multirow{5}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{1}$ & $\rho$ & $\errInf{1}$
+		\multirow{5}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{1}$ & $\rho_p$ & $\errInf{1}$
                 & $\varepsilon^{l_2}_1$ & $\rho_u$ \\              %& $\varepsilon^\infty_1$\\
 		\cline{2-7}
 		& $3.5\times10^{-1}$ & $2.5\times10^{-2}$ & & $2.9\times10^{-1}$      & $ 4.6\times10^{-2}$ &   \\              %  &0.51\\
@@ -187,7 +187,7 @@ Let us consider the diffusion problem~\eqref{dual} with~$c \equiv 0$, $\partial\
 	\end{tabular}
 	\begin{tabular}[1.1]{| c | c || c | c | c ||c | c | c || }
 		\hline
-		\multirow{7}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{1}$ & ${\rho}$ & $\errInf{1}$
+		\multirow{7}{*}{\rotatebox{90}{ASC(1)}} & $h$ & $\errlTwo{1}$ & ${\rho_p}$ & $\errInf{1}$
                 & $\varepsilon^{l_2}_1$ & $\rho_u$ \\ %& $\varepsilon^\infty_1$ \\
 		\cline{2-7}
 		& $3.0\times10^{-1}$ & $2.4\times10^{-3}$ & & $2.1\times10^{-3}$     &$1.2\times10^{-4}$  &  \\ %&$3.0\times10^{-4}$  \\
@@ -518,9 +518,18 @@ We first compute solution $p_*$ to the problem~(\ref{dual_transient}) using $P_2
 For ASC(0), ASC(1), arithmetic and harmonic homogenization methods we use two Voronoi meshes with~$h = 1.5 \times 10^{-1}$ (124 base\,cells) and $h = 8.1 \times 10^{-2}$ (465 base\,cells).
 The coarse mesh contains 20 multi-material cells and two macro-faces sharing three materials. The fine mesh contains 50 multi-material cells and no three material macro-faces. For all these methods we use 20 time steps, $\Delta t = T / 20$. Results are shown in Figures~\ref{fig:transient:comp}\,--\,\ref{fig:transient:err}.
 
-%\clearpage
+From the figures it is easy to appreciate  that among all the methods only  ASC(1)  provides a reasonable approximation for the coarse mesh, cf. Figures~\ref{fig:transient:comp}.
+Numerical solution computed with ASC(0) overestimates incoming fluxes for the ring. This solution converges to the equilibrium state~$p_h \approx 1$ at approximately $t = 3.75$, which is significantly earlier than the time when the same state is achieved by the reference solution. Note that the coarse mesh contains faces with three materials, and we saw already that ASC(0) may fail to converge for this case even for stationary examples.
 
-\begin{figure}[h]
+We tried replacing Voronoi mesh with a triangulation such that the number of triangles is close to the number of the polygonal cells in the fine Voronoi mesh (456 elements for the triangular mesh v.s. 465 for the Voronoi mesh); the achieved difference is that the triangular mesh has faces with three materials, and Voronoi mesh does not. Nevertheless, ASC(0) performed poorly for this example converging to the steady-state at approximately $t = 3$.
+
+Arithmetic homogenization performs poorly for both mesh levels (even finer mesh near the inclusions is required to provide reasonably accurate solution). Harmonic homogenization shows reasonable results only for the fine mesh.
+
+In Figure~\ref{fig:transient:err} we present the $\lTwo$-norm of the error $p_* - p_h$ computed for the inclusion~$\Omega_1 \cup \Omega_2$ as a function of time. Since all numerical solutions eventually converge to the same steady state, numerical errors for any method decrease for large enough time. On earlier stages ASC(1) outperforms all methods on the coarse mesh and provides comparable results with ASC(0) scheme and the harmonic homogenization approach on the fine mesh.
+
+\clearpage
+
+\begin{figure}
 	\centering
 	\begin{subfigure}{.3\linewidth}
 		\centering
@@ -559,7 +568,7 @@ The coarse mesh contains 20 multi-material cells and two macro-faces sharing thr
 	\end{subfigure}%
 	\caption{Comparison of the discrete solutions~$p_h$ for~$h = 1.5 \times 10^{-1}$, $t = 1.25$ \label{fig:transient:comp}}
 \end{figure}
-\begin{figure}[h]
+\begin{figure}
  	\centering
  	\vskip 1cm
  	\begin{subfigure}{.45\linewidth}
@@ -587,6 +596,7 @@ The coarse mesh contains 20 multi-material cells and two macro-faces sharing thr
 	\end{subfigure}%
 	\caption{Comparison of the cuts~$p_h\big((x,0.5), t\big)$ of discrete solutions for coarse and fine meshes, $h = 1.5 \times 10^{-1}$ and $h = 8.1 \times 10^{-2}$ 		\label{fig:transient:cuts}}
 \end{figure}
+\clearpage
 
 \begin{figure}[h]
 	\centering
@@ -603,12 +613,3 @@ The coarse mesh contains 20 multi-material cells and two macro-faces sharing thr
 	\end{subfigure}%
 	\caption{$\lTwo$-norm of the error computed for the inclusion~$\Omega_1 \cup \Omega_2$ for coarse and fine meshes, $h = 1.5 \times 10^{-1}$ and $h = 8.1 \times 10^{-2}$ \label{fig:transient:err}}
 \end{figure}
-
-From the figures it is easy to appreciate  that among all the methods only  ASC(1)  provides a reasonable approximation for the coarse mesh, cf. Figures~\ref{fig:transient:comp}.
-Numerical solution computed with ASC(0) overestimates incoming fluxes for the ring. This solution converges to the equilibrium state~$p_h \approx 1$ at approximately $t = 3.75$, which is significantly earlier than the time when the same state is achieved by the reference solution. Note that the coarse mesh contains faces with three materials, and we saw already that ASC(0) may fail to converge for this case even for stationary examples.
-
-We tried replacing Voronoi mesh with a triangulation such that the number of triangles is close to the number of the polygonal cells in the fine Voronoi mesh (456 elements for the triangular mesh v.s. 465 for the Voronoi mesh); the achieved difference is that the triangular mesh has faces with three materials, and Voronoi mesh does not. Nevertheless, ASC(0) performed poorly for this example converging to the steady-state at approximately $t = 3$.
-	
-Arithmetic homogenization performs poorly for both mesh levels (even finer mesh near the inclusions is required to provide reasonably accurate solution). Harmonic homogenization shows reasonable results only for the fine mesh.
-
-In Figure~\ref{fig:transient:err} we present the $\lTwo$-norm of the error $p_* - p_h$ computed for the inclusion~$\Omega_1 \cup \Omega_2$ as a function of time. Since all numerical solutions eventually converge to the same steady state, numerical errors for any method decrease for large enough time. On earlier stages ASC(1) outperforms all methods on the coarse mesh and provides comparable results with ASC(0) scheme and the harmonic homogenization approach on the fine mesh.
