@@ -1,11 +1,11 @@
 \section{Numerical results}\label{sec:num}
 
 Let $h$ be a maximum cell diameter for the macro-mesh~$\bmesh_h$, and $\mathbb V_h \subset \LTwoSpace$ be a space of piecewise constant
-functions on each cell~$\mcell \in \mmesh(\bcell)$, $\bcell \in \bmesh_h$. We define \textit{discrete} $\LTwo$-norm of $v \in \LTwoSpace$ as
+functions on each cell~$\mcell \in \mmesh(\bcell)$, $\bcell \in \bmesh_h$. For $v \in \LTwoSpace$ we define
 \begin{equation}\label{l2}
   \| v \|_{\lTwoSpace} \coloneqq \| P_h\,v \|_{\LTwoSpace},
 \end{equation}
-where $P_h\;:\;\LTwoSpace\rightarrow\mathbb V_h$ is $\LTwo$-projection operator.
+where $P_h\;:\;\LTwoSpace\rightarrow\mathbb V_h$ is $\LTwo$-projection operator. Note that~$\| \cdot \|_{\lTwoSpace}$ defines a norm in~$\mathbb V_h$; we will refer to it as \textit{discrete} $\LTwo$-norm.
 
 For the error~$e_h \coloneqq p - p_h$ between the exact and computed solutions we have
 \begin{equation}\label{l2norm}
