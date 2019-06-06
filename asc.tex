@@ -7,6 +7,8 @@
 % COLORS
 %
 \usepackage[dvipsnames, table]{xcolor}{\rm }
+\usepackage{soul} % https://tex.stackexchange.com/a/260567/135296
+\DeclareRobustCommand{\hlcyan}[1]{{\sethlcolor{cyan}\hl{#1}}}
 
 %
 % LINKS AND REFERENCES
@@ -139,11 +141,11 @@
 	Mathematical models of such processes are often formulated in terms of systems of partial differential equations with discontinuous coefficients and interface conditions on time-dependent internal boundaries.
 	Due to their high complexity, these models defy analytical treatment, and hence numerical simulations became an indispensable tool for solving the models and gaining insights into underlying phenomena.
 	
-	Past decades evidenced an explosive growth in developing of efficient computational techniques for problems with evolving interfaces, which involve interaction between many materials or different phases of matter. These developments include immersed boundary method~\cite{peskin2002immersed}, immersed interface method~\cite{leveque1994immersed}, and unfitted finite element methods \cite{belytschko2009review,burman2015cutfem}, to name several popular numerical approaches. Depending on how the interface is treated numerically, one can distinguish between methods that smear the interface over a strip of finite thickness which should be further resolved by the mesh, like in the phase field approach~\cite{steinbach2009phase}, and methods that use a sharp interface representation, as in the level-set method \cite{sethian1999level}.  If one applies a sharp representation to handle complex geometries or interfaces undergoing large deformations, it is convenient to allow the  interface to cut through the background mesh in an arbitrary way. In turn, this leads to the problem of building accurate and stable approximations for  so-called multi-material cells, i.e. the mesh cells intersected by material interfaces. In particular, one is interested in discretizations which are robust with respect to how interfaces intersect the mesh and with respect to the contrast of  material properties, e.g. the ratio of physical parameters. This is the setting and the problem  we focus in this paper.
+	Past decades evidenced an explosive \hlcyan{growth in the development of efficient computational techniques} for problems with evolving interfaces, which involve interaction between many materials or different phases of matter. These developments include immersed boundary method~\cite{peskin2002immersed}, immersed interface method~\cite{leveque1994immersed}, and unfitted finite element methods \cite{belytschko2009review,burman2015cutfem}, to name several popular numerical approaches. Depending on how the interface is treated numerically, one can distinguish between methods that smear the interface over a strip of finite thickness which should be further resolved by the mesh, like in the phase field approach~\cite{steinbach2009phase}, and methods that use a sharp interface representation, as in the level-set method \cite{sethian1999level}.  If one applies a sharp representation to handle complex geometries or interfaces undergoing large deformations, it is convenient to allow the  interface to cut through the background mesh in an arbitrary way. In turn, this leads to the problem of building accurate and stable approximations for  so-called multi-material cells, i.e. the mesh cells intersected by material interfaces. In particular, one is interested in discretizations which are robust with respect to how interfaces intersect the mesh and with respect to the contrast of  material properties, e.g. the ratio of physical parameters. This is the setting and the problem  we focus in this paper.
 
 %However, numerous applications require local conservation of material volumes on computational meshes that do not explicitly track material interfaces. This is typical for simulations of high speed multi-material flows, where shocks and vorticity often require the use of the Arbitrary Lagrangian-Eulerian method. The complication with this method is that over the course of simulation, material interfaces become unaligned with the computational mesh, with their shape and position inside mesh cells not being explicitly known.
 	
-One standard approach to handle  multi-material cells is a homogenization procedure. In this approach, one assigns to the cells  artificial homogeneous  material properties, which are calculated based on the volumetric shares of different materials in each of the multi-material cells. This enables one to apply standard discretization thechniques. %if one needs to solve for other physics, such as the heat transfer, on every time step of the simulation.
+One standard approach to handle  multi-material cells is a homogenization procedure. In this approach, one assigns to the cells  artificial homogeneous  material properties, which are calculated based on the volumetric shares of different materials in each of the multi-material cells. This enables one to apply standard discretization \hl{techniques}. %if one needs to solve for other physics, such as the heat transfer, on every time step of the simulation.
      %Then, ad-hoc methods can be used to interpolate the solution for the contained materials based on
 Further one recovers solution in each phase from the computed cell-averaged values~\cite{dawes2013solving}.
 Although being technologically straightforward, the homogenization approach often fails  to accurately model subcell material interactions, which results in non-physical numerical solutions to problems with high-contrast material properties.
@@ -234,7 +236,7 @@ The approximate static condensation approach leaves much freedom in the choice o
 	
 	We assume the triangulation  $\bmesh$ of $\Omega$ consisting of general polyhedral elements as illustrated in Figure~\ref{fig:problem_geometry} (left). This triangulation constitutes our macro-mesh. The material interfaces, i.e. surfaces where $\vect K$ may experience discontinuities, may cut through the macro-mesh in an arbitrary way; see Figure~\ref{fig:problem_geometry} (center). The polygonal cells ${\bcell \in \bmesh}$ cut by the interfaces are further called multi-material cells (MMCs). In practice,  we are given a reconstructed interface by a volume-of-fluid or moment-of-fluid method. This reconstructed interface may be discontinuous across faces of MMCs, but locally within each ${\bcell \in \bmesh}$ it is a collection of planar surfaces; see Figure~\ref{fig:problem_geometry} (right).
 	
-	Denote by $\bfaces$ the collection of all faces of the macro-mesh $\bmesh$. We shall distinct between the subset of internal and external faces,  $\bfaces = \bfaces[int] \cup \bfaces[ext]$\footnote{For the sake of  notation, we shall use~$\bfaces$ to denote both the set of elements and the corresponding domain formed by their union~$\cup_{F\in \bfaces} \bar{F}$; same for $\bfaces[int]$, $\bfaces[ext]$ and other collections of mesh elements introduced later in the text. The meaning should be clear from a context.}.
+	Denote by $\bfaces$ the collection of all faces of the macro-mesh $\bmesh$. \hlcyan{We shall distinguish between the subset of internal and external faces},  $\bfaces = \bfaces[int] \cup \bfaces[ext]$\footnote{For the sake of  notation, we shall use~$\bfaces$ to denote both the set of elements and the corresponding domain formed by their union~$\cup_{F\in \bfaces} \bar{F}$; same for $\bfaces[int]$, $\bfaces[ext]$ and other collections of mesh elements introduced later in the text. The meaning should be clear from a context.}.
 	Introducing the new unknown $\lambda \in \HHalfSpace[\bfaces]$, we reformulate \eqref{dual}--\eqref{dual:bc} as a system of local problems coupled through the boundary data
 	and flux continuity condition:
 	\begin{eqnarray}
@@ -286,7 +288,7 @@ The approximate static condensation approach leaves much freedom in the choice o
 		\vspace{-15pt}
 		\vspace{1pt}
 	\end{wrapfigure}
-	If $T$ contains only one phase or material, then we obviously have $\mmesh(T) = \{\bcell\}$. Otherwise for the cell shared by several phases, $\mmesh(T)$ consists of polygonal elements, forming a tessellation of $T$, such that any ${\tau \in \mmesh(T)}$ contains only one phase/material; see Figure~\ref{fig:mmesh}. We denote by $\mfaces(T)$ the set of all faces in $\mmesh(T)$, which collects both   internal and boundary (external) faces with respect to $T$,  $\mfaces(T) = \mfaces[int](T) \cup \mfaces[ext](T)$. Thus for the example of local mesh drafted in Figure~\ref{fig:mmesh}, we have three elements in $\mmesh(T)$, two internal faces from $\mfaces[int](T)$ and eleven external faces from $\mfaces[ext](T)$. It is clear that this local mesh is fitted to the material interfaces.
+	If $T$ contains only one phase or material, then we obviously have $\mmesh(T) = \{\bcell\}$. Otherwise for the cell shared by several phases, $\mmesh(T)$ consists of polygonal elements, forming a tessellation of $T$, such that any ${\tau \in \mmesh(T)}$ contains only one phase/material; see Figure~\ref{fig:mmesh}. We denote by $\mfaces(T)$ the set of all faces in $\mmesh(T)$, which collects both   internal and boundary (external) faces with respect to $T$,  $\mfaces(T) = \mfaces[int](T) \cup \mfaces[ext](T)$. \hlcyan{If the meaning is not clear from the context, we will refer to elements of~$\mfaces(T)$ as ``mini-faces," and to elements of~$\bfaces$ as ``macro-faces."} Thus for the example of local mesh drafted in Figure~\ref{fig:mmesh}, we have three elements in $\mmesh(T)$, two internal faces from $\mfaces[int](T)$ and eleven external faces from $\mfaces[ext](T)$. It is clear that this local mesh is fitted to the material interfaces.
 	
 	We shall discretize \eqref{dual_mini} in $T$ in terms of average fluxes assigned to each face from $\mfaces(T)$,
 	we denote the corresponding vector by ${\vect u}_\mmesh\in\mathbb{R}^{n_f}$, $n_f=\#\mfaces(T)$,  and concentration values assigned to each cell ${\tau \in \mmesh(T)}$, we denote the corresponding vector by ${\vect p}_\mmesh\in\mathbb{R}^{n_p}$, $n_p=\#\mmesh(T)$. The given data is the source term vector ${\vect f}_\mmesh\in \mathbb{R}^{n_p}$ and the concentration values $\lambda$ on the boundary of $T$.
@@ -312,13 +314,13 @@ The approximate static condensation approach leaves much freedom in the choice o
 			{\vect f}_\mmesh
 		\end{pmatrix}.
 	\end{equation}
-	Here $\vect M_\mmesh$, $\vect\Sigma_\mmesh$, $\vect B^T_\mmesh$, $-\vect B_\mmesh$ are vector-mass, mass, gradient and divergence matrices, respectively; $-\vect C_\mmesh$ is a diagonal scaling matrix, i.e. the mass matrix for ${\vect \lambda}_\mmesh$ unknowns;
+	Here $\vect M_\mmesh$, $\vect\Sigma_\mmesh$, $\vect B^T_\mmesh$, $-\vect B_\mmesh$ are vector-mass, mass, gradient and divergence matrices, respectively; \hlcyan{$-\vect C_\mmesh$ is a diagonal scaling matrix that has mini-faces' measures~$|f|$ on the diagonal, $f \in \mfaces[ext](T)$, i.e. the mass matrix for ${\vect \lambda}_\mmesh$ unknowns};
 	$\vect E_\mmesh \in \mathbb{R}^{n_f \times n_\lambda}$ is a rectangular matrix with 0 and 1 entries which sparsifies a vector from  $\mathbb{R}^{n_{\lambda}}$
 	to a vector from  $\mathbb{R}^{n_{f}}$.
 	For the details on MFD and accurate definition of the matrices we refer to \cite{lipnikov2014mimetic,MFDbook}.
 	Here we need the property that  $\vect B_\mmesh$ has a full row rank, and $\vect M_\mmesh = \vect M^T_\mmesh$ is positive definite.
 	
-	Since the continuity of flux condition \eqref{flux_cond} and boundary conditions are enforced on  the \emph{external} edges of $T$, we need to distinct the vector ${\vect u}^\text{ext}_\mmesh$ of fluxes on $\mfaces[ext](T)$, which is just a trivial restriction of ${\vect u}_\mmesh$ on the edges  from $\mfaces[ext](T)$,
+	Since the continuity of flux condition \eqref{flux_cond} and boundary conditions are enforced on  the \emph{external} edges of $T$, \hlcyan{we need to distinguish the vector} ${\vect u}^\text{ext}_\mmesh$ of fluxes on $\mfaces[ext](T)$, which is just a trivial restriction of ${\vect u}_\mmesh$ on the edges  from $\mfaces[ext](T)$,
 	\begin{equation}\label{system_mini}
 		{\vect u}^\text{ext}_\mmesh \coloneqq \vect E_\mmesh^T\,{\vect u}_\mmesh,
 	\end{equation}
@@ -337,31 +339,35 @@ The approximate static condensation approach leaves much freedom in the choice o
 	\smallskip
 	%	Matrix~$\vect A_\mmesh$ and vector~${\vect a}_\mmesh$ can be easily computed if the number of mini\,cells is relatively small. Otherwise, one may prefer to use a mixed-hybrid formulation instead of~$\eqref{weak_form}$ (see section~\ref{MH}).
 	
-	Next, we should use the continuity of flux condition \eqref{flux_cond} and boundary conditions to obtain a complete system for ${\vect u}^\text{ext}_\mmesh$ and ${\vect \lambda}_\mmesh$. However, we cannot do this in a straightforward way, since the discontinuity of material interfaces across the macro-mesh faces may lead to a mismatch of discrete fluxes from two sides of $F\in\bfaces[int]$, including different space dimensions.
-	Therefore, we shall enforce the flux continuity condition in the spirit of the mortar finite element method~\cite{mortar} using the space of functions defined on $\bfaces[int]$, which are polynomials of degree at most $n$ on every $F\in\bfaces[int]$, an analog of the Lagrange multiplier space in the mortar method:
+	Next, we should use the continuity of flux condition \eqref{flux_cond} and boundary conditions to obtain a complete system for ${\vect u}^\text{ext}_\mmesh$ and ${\vect \lambda}_\mmesh$. However, we cannot do this in a straightforward way, since the discontinuity of material interfaces across the macro-mesh faces may lead to a mismatch of discrete fluxes from two sides of $F\in\bfaces[int]$. \hlcyan{We elaborate on this below.}
+	
+	\hlcyan{For $F \in \bfaces[int]$ shared by two polygonal cells~$\bcell^\pm\in \bmesh$ denote by~$\mfaces_F(T^\pm) \subset \mfaces_{\text{ext}}(T^\pm)$ the subsets of mini-faces that belong to the macro-face~$F$ from each side. In general, $\mfaces_F(T^+)$ and $\mfaces_F(T^-)$ can have different numbers of mini-faces that make up the macro-face~$F$, i.e. $\#\,\mfaces_F(T^+) \ne \#\,\mfaces_F(T^+)$, and hence the restrictions of concentration vectors~${\vect \lambda}_\mmesh$ and fluxes vectors~${\vect u}^\text{ext}_\mmesh$ can be of different sizes. Moreover, even if~$\#\,\mfaces_F(T^+) = \#\,\mfaces_F(T^+)$, locations of the mini-faces may be different due to volume- or moment-of-fluid interface reconstruction. See an example on Figure~{\ref{fig:mismatch}}.}
+	
+	\begin{figure}[h]
+		\begin{subfigure}{.49\linewidth}
+			\svginputw{e_plus_e_minus.pdf_tex}
+		\end{subfigure}%
+		\quad
+		\begin{subfigure}{.49\linewidth}
+			\hlcyan{We have $3 = \#\,\mfaces_F(T^+) \ne \#\,\mfaces_F(T^+) = 2$. Note also that locations of mini-faces corresponding to the same material are different from each side of~$F$}
+		\end{subfigure}
+		\caption{\hlcyan{Example of the mismatch of discrete fluxes from two sides of $F\in\bfaces[int]$}}
+		\label{fig:mismatch}
+	\end{figure}
+	
+	\hlcyan{This makes matching concentration and fluxes values not trivial.} Therefore, we shall enforce the flux continuity condition in the spirit of the mortar finite element method~\cite{mortar} using the space of functions defined on $\bfaces[int]$, which are polynomials of degree at most $n$ on every $F\in\bfaces[int]$, an analog of the Lagrange multiplier space in the mortar method:
 	\[
 		\Lambda=\left\{\lambda\in \LTwoSpace[{\bfaces[int]}]\,:\, \lambda\in P_n~\text{for any}~F\in\bfaces[int]\right\}.
 	\]
-	
-	%	Let $F \coloneqq {\bcell^+} \cap {\bcell^-}$, $F \in \bfaces[int]$, be a face shared by base\,cells~$\bcell^+$ and~${\bcell^- \in \bmesh}$ with mini\,meshes~$\mmesh^\pm$ and mini\,faces~$\mfaces^\pm$, respectively. We denote by~$\mfaces^\pm_F \subset \mfaces^\pm_{\text{ext}}$ mini\,faces that belong to the face~$F$. In general measures of mini\,faces of~$\mfaces^\pm_F$ corresponding to one material may be different, and, moreover, it may be the case that $\#\,\mfaces^+_F \ne \#\,\mfaces^-_F$ (see figure~\ref{fig:e_plus_e_minus}). That is, one may have different trace DOFs~\eqref{dual_mini:trace} from~$\mmesh^+$ and~$\mmesh^-$.
-	%%	Let us set~$\nu_{F_{\bcell^\pm}} \coloneqq \#\,\mfaces^\pm_F$
-	%	We set~$\nu_F \coloneqq \max\,\{ \#\,\mfaces^+_F,\,\#\,\mfaces^-_F \}$.
-	%	
-	%	\begin{figure}[h]
-	%		\centering
-	%		\caption{MMCs: $3 = \#\,\mfaces^+_F \ne \#\,\mfaces^-_F = 2$, $\nu_F = 3$}
-	%		\label{fig:e_plus_e_minus}
-	%		\svginputw[.7\linewidth]{e_plus_e_minus.pdf_tex}
-	%	\end{figure}
-	
+
 	When the Lagrange multiplier space $\Lambda$ couples local MFD solutions, it is convenient to define
 	degrees of freedom for $\lambda\in\Lambda$ in terms of its~$(n+1)$ moments $\lambda^{(i)}_F$ on every internal face $F\in\bfaces[int]$:
 	\begin{equation}\label{asc_dofs}
 		\lambda^{(i)}_F=\frac{\int_F  \lambda\,s_i \diff l}{|F|}, \quad i = 0, \dots, n.
 	\end{equation}
-	Here~$\{\,s_i\,\}_{i=0,\dots,n}$ is the set of $\LTwoSpace$-orthogonal polynomials on $F$ of degree~$n$.
+	Here~$\{\,s_i\,\}_{i=0,\dots,n}$ is the set of \hlcyan{$\LTwoSpace[F]$-orthogonal} polynomials on $F$ of degree~$n$.
 	
-	For $F \in \bfaces[int]$ shared by two polygonal cells~$\bcell^\pm\in \bmesh$  denote by~$\mfaces_F(T^\pm) \subset \mfaces_{\text{ext}}(T^\pm)$ the subsets of mini-faces that belong to the macro-face~$F$ from each side. Let $\nu_F \coloneqq \max\,\{ \#\,\mfaces_F(T^+),\,\#\,\mfaces_F(T^-) \}$. We set~$\bfaces_\bcell \subset \bfaces$ to be the subset of macro-faces forming the boundary of a cell~$T$. With each face $F \in \bfaces_\bcell$ we associate~$\min\,\{ n+1, \nu_F \}$ degrees of freedom~\eqref{asc_dofs} in the $\Lambda$ space. The local and global number of d.o.f. are
+	Let $\nu_F \coloneqq \max\,\{ \#\,\mfaces_F(T^+),\,\#\,\mfaces_F(T^-) \}$. We set~$\bfaces_\bcell \subset \bfaces$ to be the subset of macro-faces forming the boundary of a cell~$T$. With each face $F \in \bfaces_\bcell$ we associate~$\min\,\{ n+1, \nu_F \}$ degrees of freedom~\eqref{asc_dofs} in the $\Lambda$ space. The local and global number of d.o.f. are
 	\[
 		n_\bcell \coloneqq \sum_{F \in \bfaces_\bcell} \min\,\{ n+1, \nu_F \} \quad\text{and}\quad
 		n_\bmesh \coloneqq \sum_{F \in \bfaces} \min\,\{ n+1, \nu_F \},
@@ -435,7 +441,12 @@ The approximate static condensation approach leaves much freedom in the choice o
 			\lambda^{(0)}_{j}(\bcell),                                        & \text{otherwise},
 		\end{cases}
 	\end{equation}
-	where $s_{j\,i} $ is a signed distance between centroids of~$f$  and~$F$. For the corresponding vectors of unknowns  ${\vect \lambda}_\mmesh = \{ \lambda_{j\,i}(\mmesh) \}$ and ${\vect \lambda}_\bcell = \{ \lambda^{(0)}_{j}(\bcell) \} \cup \{ \lambda^{(1)}_{j}(\bcell) \}$ this defines
+	\hlcyan{where $s_{j\,i} \equiv s_f$ is a signed distance between centroids of~$f$  and~$F$, i.e. if $\vect a_F$, $\vect b_F$ and $\vect a_f$, $\vect b_f$ are vertices forming macro-face~$F$ and mini-face~$f$, respectively, then we have}
+	\begin{equation}\label{sdist}
+		s_f \coloneqq \left\| \frac{\vect a_f + \vect b_f}{2} - \vect a_F \right\|_2 - \left\| \frac{\vect a_F + \vect b_F}{2} - \vect a_F\right\|_2.
+	\end{equation}
+	
+	For the corresponding vectors of unknowns  ${\vect \lambda}_\mmesh = \{ \lambda_{j\,i}(\mmesh) \}$ and ${\vect \lambda}_\bcell = \{ \lambda^{(0)}_{j}(\bcell) \} \cup \{ \lambda^{(1)}_{j}(\bcell) \}$~\eqref{asc1_interp} defines
 	the matrix $\vect R_\mmesh$ through~\eqref{asc_lambda}. For the example in Figure~\ref{fig:asc_dofs:asc1:mmc} (left and right) we have
 	\begin{equation*}\footnotesize
 		\vect R_\mmesh
@@ -496,12 +507,17 @@ The approximate static condensation approach leaves much freedom in the choice o
 	\begin{equation}\label{eq:aux1pre}
 		\left\{\begin{split}
 			\sum_{f\in \mfaces_F(T^+)} u^{\text{ext}}_{\mmesh^+}(f)\,|f| &+ \sum_{f\in \mfaces_F(T^-)} u^{\text{ext}}_{\mmesh^-}(f)\,|f| &= 0, \\
-			\sum_{f\in \mfaces_F(T^+)} u^{\text{ext}}_{\mmesh^+}(f)\,\int_{f} s_1 \diff{l} &+ \sum_{f\in \mfaces_F(T^-)} u^{\text{ext}}_{\mmesh^-}(f)\,\int_{f} s_1 \diff{l} &= 0
+			\sum_{f\in \mfaces_F(T^+)} u^{\text{ext}}_{\mmesh^+}(f)\,\int_{f} s_1 \diff{l} &+ \sum_{f\in \mfaces_F(T^-)} u^{\text{ext}}_{\mmesh^-}(f)\,\int_{f} s_1 \diff{l} &= 0.
 		\end{split}\right.
 		%\quad\Leftrightarrow \\
 		%		\sum_{i \in I_{\mfaces^+_F}} u^{\text{ext}}_{\mmesh^+\,i}\,\Delta s^+_i\,|\mfaces^+_{F\,i}| &+ \sum_{i \in I_{\mfaces^-_F}} u^{\text{ext}}_{\mmesh^-\,i}\,\Delta s^-_i\,|\mfaces^-_{F\,i}| = 0,
 	\end{equation}
-	or in the matrix form
+	\hlcyan{Integrating the first moments in the second equation of~{\eqref{eq:aux1pre}}, one gets}
+	\begin{equation*}
+		\sum_{f\in \mfaces_F(T^+)} u^{\text{ext}}_{\mmesh^+}(f)\,s_f\,|f| + 
+		\sum_{f\in \mfaces_F(T^-)} u^{\text{ext}}_{\mmesh^-}(f)\,s_f\,|f| = 0,
+	\end{equation*}
+	\hlcyan{where~$s_f$ is defined in~{\eqref{sdist}}. Noting that matrix~$\vect C_\mmesh$ from~{\eqref{local}} has mini-faces' measures on its diagonal, and interpolation matrix~$\vect R_\mmesh$ defined via~{\eqref{asc1_interp}} has signed distances and ones as its elements, one can rewrite~{\eqref{eq:aux1pre}} in the matrix form}
 	\begin{equation}\label{eq:aux1}
 		\left( \vect R^T_{\mmesh^+}\,\vect C_{\mmesh^+}\,{\vect u}^{\text{ext}}_{\mmesh^+} \right)_{i+m} + \left( \vect R^T_{\mmesh^-}\,\vect C_{\mmesh^-}\,{\vect u}^{\text{ext}}_{\mmesh^-} \right)_{j+m} = 0, \quad m \in \{0, 1\}
 	\end{equation}
