@@ -231,7 +231,7 @@ The approximate static condensation approach leaves much freedom in the choice o
 			\centering
 			\includegraphicsw{ring_mini_voronoi_refined.png}
 		\end{subfigure}
-		\caption{The figure illustrates global unstructured polyhedral mesh (left); Physical interfaces for three materials and cut cells, i.e. multi-material cells (central); The piecewise-planar discontinuous reconstruction of the interfaces by the moment-of-fluid method (right). Everything is shown for two refinement level of the macro-mesh \label{fig:problem_geometry}}
+		\caption{The figure illustrates global unstructured polyhedral mesh (left); Physical interfaces for three materials and cut cells, i.e. multi-material cells (central); The piecewise-planar discontinuous reconstruction of the interfaces by the moment-of-fluid method (right). Everything is shown for two refinement levels of the macro-mesh \label{fig:problem_geometry}}
 	\end{figure}
 	
 	We assume the triangulation  $\bmesh$ of $\Omega$ consisting of general polyhedral elements as illustrated in Figure~\ref{fig:problem_geometry} (left). This triangulation constitutes our macro-mesh. The material interfaces, i.e. surfaces where $\vect K$ may experience discontinuities, may cut through the macro-mesh in an arbitrary way; see Figure~\ref{fig:problem_geometry} (center). The polygonal cells ${\bcell \in \bmesh}$ cut by the interfaces are further called multi-material cells (MMCs). In practice,  we are given a reconstructed interface by a volume-of-fluid or moment-of-fluid method. This reconstructed interface may be discontinuous across faces of MMCs, but locally within each ${\bcell \in \bmesh}$ it is a collection of planar surfaces; see Figure~\ref{fig:problem_geometry} (right).
