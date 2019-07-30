@@ -1,0 +1,201 @@
+\input{style.tex}
+
+\title{Extension of the approximate static condensation method for multi-material diffusion problems to 3D}
+\author{
+	Alexander Zhiliakov\thanks{Department of Mathematics, University of Houston, Houston, Texas 77204 (alex@math.uh.edu).}
+}
+
+\begin{document}
+	
+\maketitle
+
+\tableofcontents
+\vfill
+\clearpage
+\let\oldtabular\tabular
+\renewcommand{\tabular}[1][1.5]{\def\arraystretch{#1}\oldtabular}
+
+\section{Introduction}
+
+In this technical report we present the extension of the approximate static condensation method (ASC) from 2D to 3D. The ASC method was first introduced in~\cite{kikinzon2017approximate}, and then was further studied in~\cite{ZHILIAKOV2019333}. 
+
+\AZ{TBA: What was done in~\cite{kikinzon2017approximate} and~\cite{ZHILIAKOV2019333}; outline of the report.}
+
+In a polyhedral bounded domain $\Omega \subset \Rn{3}$ we consider the diffusion problem in the mixed form
+\begin{equation}\label{dual}
+	\arraycolsep=2pt\def\arraystretch{1.5}
+	\left\{\begin{array}{rcrccl}
+	\vect K^{-1}\,\vect u & + & \nabla\,p & = & 0 &\quad\text{in } \Omega , \\
+	\nabla\cdot\vect u    & + & c\,p      & = & f &\quad\text{in } \Omega
+	\end{array}\right.
+\end{equation}
+with boundary data
+\begin{equation}
+	p = g_D \text{ on } \partial\Omega_D,\quad
+	\vect u \cdot \hat{\vect n} = g_N \text{ on } \partial\Omega_N. \label{dual:bc}
+\end{equation}
+
+\subsection{Notations and problem description}
+
+\AZ{TBA: basic notations and quick problem setting.}
+\begin{eqnarray}
+	\arraycolsep=2pt\def\arraystretch{1.5}
+	\left\{\begin{array}{rcrccl}
+	\vect K^{-1}\,\vect u                   & + & \nabla\,p & = & 0       &\quad\text{in } \bcell, \\
+	\nabla\cdot\vect u                      & + & c\,p      & = & f       &\quad\text{in } \bcell, \\
+											&   & p         & = & \lambda &\quad\text{on } \partial\bcell, %\label{dual_mini:trace}
+	\end{array}\right.
+	& \qquad \forall~\bcell\in\bmesh, \label{dual_mini} \\
+		\llbracket\vect u \cdot \hat{\vect n}\rrbracket = 0\quad\:\:\text{on } F,\:\:\:\:
+	& \qquad\quad \forall~F\in\bfaces[int]. \label{flux_cond}
+\end{eqnarray}
+\begin{equation}\label{local}
+	\begin{pmatrix}
+		\phantom{-}\vect M_\mmesh & \vect B^T_\mmesh \\
+		-\vect B_\mmesh & \vect \Sigma_\mmesh
+	\end{pmatrix}
+	\begin{pmatrix} {\vect u}_\mmesh \\ {\vect p}_\mmesh \end{pmatrix}
+	=
+	\begin{pmatrix} \vect E_\mmesh\,\vect C_\mmesh\,{\vect \lambda}_\mmesh \\ {\vect f}_\mmesh \end{pmatrix}.
+\end{equation}
+
+\subsection{Higher order method} 
+
+\AZ{I would much appreciate if somebody adds the description. Daniil, could you do this? :)}
+
+\section{Implementation details}
+
+ASC algorithm may be seen as a high-level approach: Once disctretizations~\eqref{local} of local systems~\eqref{dual_mini} are available, one can perform the approximate static condensation procedure, assemble and solve the global linear system for concentrations etc. If one works with simple mesh cells, e.g. hexahedrons or tetrahedrons, then the usual finite element, finite volume, or finite difference approaches may be used for the discretization of local matrices in~\eqref{local}. 
+
+However, we would like to be more flexible w.r.t. cells' geometry, and thus we stick to mimetic finite difference method~\cite{MFDbook}. As we did for 2D case, we use Amanzi multi-process HPC simulator software~\cite{amanzi} for this purpose.
+
+\subsection{Mesh requirements}
+
+We would like to allow for general polyhedral cells for both macro- and mini-meshes. Faces may not be necessarily flat. In order to generate a macro-mesh~$\mmesh$, we use ShaPo software package~\cite{shapo2d, shapo3d} developed in Los Alamos National Laboratory. Meshes are exported to the binary Exodus~II format~\cite{exo}, and then efficiently imported to Amanzi. Examples of meshes generated with ShaPo are demonstrated in Figure~\ref{fig:shapo}.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{.1\linewidth}\end{subfigure}%
+	\begin{subfigure}{.4\linewidth}
+		\centering
+		\includegraphicsw[.8]{{shapo1.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.4\linewidth}
+		\centering
+		\includegraphicsw[.8]{{shapo2.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.1\linewidth}\end{subfigure}%
+	\caption{Meshes generated with Shapo. Left: prismatic Voronoi mesh generated from 2D mesh. Right: pure Voronoi mesh}
+	\label{fig:shapo}		
+\end{figure}
+
+As in 2D case, we assemble the global matrix via iterating over macro-cells~$\bcell \in \bmesh$ of the macro-mesh~$\bmesh$. Thus we need the following interface for the mesh~$\bmesh$.
+
+\textit{Local matrix assembly:}
+\begin{enumerate}
+	\item Given the index of the macro-cell~$\bcell$, one needs to iterate over mini-cells~$\mcell \in \mmesh(\bcell) \equiv \mmesh$ of its mini-mesh;
+	\item Given the mini-mesh~$\mmesh$, one needs to be able to get the indices of its mini-faces~$\mfaces(\bcell)$;
+	\item One also needs to be able to differ internal and boundary mini-faces: $\mface \in \mfaces[int](\bcell)$ or $\mface \in \mfaces[ext](\bcell)$;
+	\item Given the index of the boundary mini-face~$\mface \in \mfaces[ext](\bcell)$, one needs to be able to get the global index of the macro-face~$\bface \in \bfaces$ that the mini-face belongs to, $\mface \subset \bface$;  
+	\item The crucial aspect is assembly of the mass matrix~$\vect M_{\mmesh} = \sum_{\mcell \in \mmesh} \vect N^T_{\mcell}\,\vect M_{\mcell}\,\vect N_{\mcell}$ stemmed from MFD. $\vect M_{\mmesh}$ is global w.r.t. the mini-mesh~$\mmesh$, and local w.r.t. the macro-mesh~$\bmesh$. It is associated with flux d.o.f., so one needs the following mappings:
+	\begin{itemize}
+		\item Index of $\mcell \in \mmesh \mapsto$ indices of mini-faces~$\mface \in \mfaces$ that form mini-cell~$\mcell$. This is needed for mapping of local (associated with faces of~$\mcell$) flux d.o.f. to global (associated with faces of~$\mmesh$), i.e. implicitly representing the assembly matrix~$\vect N_\mcell$,
+		\item Index of~$\mcell \in \mmesh \mapsto$ vector of areas of mini-faces~$\mface \in \mfaces$ that form mini-cell~$\mcell$,
+		\item Index of~$\mcell \in \mmesh \mapsto$ its centroid,
+		\item Index of~$\mcell \in \mmesh \mapsto$ its volume;
+	\end{itemize} 
+	\item Index of mini-face~$f \in \mfaces$ of~$\mmesh \mapsto$ local index of the macro-face~$\bface \in \bfaces$ in~$\bcell$ that~$f$ belongs to. This is needed for the interpolation matrix~$\vect R_{\mmesh}$.
+\end{enumerate}
+
+The bullets~(3) and~(4) above are the most challenging one: Typically VOF or MOF interface reconstruction software does not provide one with such topology information. The \textit{extended} MOF (XMOF) software package~\cite{kikinzon2018xmof} that we used in~\cite{kikinzon2017approximate, ZHILIAKOV2019333} is capable of recovering full macro- and mini-mesh connectivity, however, the implementation only exists for 2D case as for now.
+
+\textit{Global matrix assembly:}
+\begin{enumerate}
+	\item The global system for coarse (moment) concentrations~$\vect \lambda_{\bmesh}$, $\vect S_{\bmesh}\,\vect \lambda_{\bmesh} = \vect b_{\bmesh}$, is assembled cell-wised: $\vect S_{\bmesh} = \sum_{\bcell \in \bmesh} \vect N_\bcell^T\,\vect S_\bcell\,\vect N_\bcell$.
+	\item Thus one needs the following routine: index of~$\bcell \in \bmesh \mapsto$ global indices of macro-faces~$\bface \in \bfaces$ that form macro-cell~$\bcell$. This is needed for mapping local (associated with faces of~$T$) concentration d.o.f. to global (associated with faces of~$\bmesh$) ones, i.e. implicitly representing the assembly matrix~$\vect N_T$;
+	\item The condensation process\,---\,i.e. computation of~$\vect S_\bcell$\,---\,is essentially the same as for 2D, so we refer to~\cite[p.~7]{ZHILIAKOV2019333}.
+\end{enumerate}
+
+\subsection{Interface reconstruction} 
+
+In order to perform MOF interface reconstruction, we use Tangram software framework~\cite{tangram}. We refer to Figure~\ref{fig:tangram} for an example. Note that ASC method allows for discontinuous material\,/\,phases configuration.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{.1\linewidth}\end{subfigure}%
+	\begin{subfigure}{.4\linewidth}
+		\centering
+		\includegraphicsw[.8]{{mof_tjunction.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.4\linewidth}
+		\centering
+		\includegraphicsw[.8]{{mof_tjunction_noise.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.1\linewidth}\end{subfigure}%
+	\caption{MOF interface reconstruction with Tangram. Left: T-junction materials\,/\,phases configuration (different colors correspond to different materials\,/\,phases). Right: the same as in Left picture, but with some ``noise'' added to simulate discontinuous interfaces}
+	\label{fig:tangram}		
+\end{figure}
+
+\begin{remark}
+As we mentioned above, recovering macro- and mini-mesh connectivity has to be implemented separately, for currently it is not a part of Tangram software. This by itself is a non-trivial problem of computational geometry if one works in floating point arithmetic, and making it robust may be challenging. This goes beyond of what we present in the current report.
+\end{remark}
+
+Since Tangram is not a part of Amanzi, we have to link it to Amanzi and provide a mesh wrapper so that Tangram is able to work with the Amanzi mesh data structure. One can find building \& running instructions here: \url{https://github.com/56th/amanzi/blob/56th/ASC/src/operators/README.md}.
+
+\section{Numerical experiments}
+
+\subsection{Mixed--hybrid mimetic finite difference method}
+
+We first test our implementation on the problem where \textit{no} multi-material cells are present. Note that in this case the interpolation matrix boils down to identity,
+\begin{equation}
+	\vect R_{\mmesh} = \vect I, \quad \forall \mmesh = \mmesh(\bcell \in \bmesh).
+\end{equation}
+In this case the ASC($n$) method is equivalent to the ordinary mixed-hybrid mimetic finite difference\footnotemark{} approach.
+
+We choose~$\vect K = \vect I$, $c = 2$, $f = 0$, and $\partial\Omega = \partial\Omega_D$ in~\eqref{dual} and~\eqref{dual:bc}. The exact solution is set as
+\begin{equation}\label{exact1}
+	p(\vect x) = (1,\,2,\,3)\,\vect x + 4.
+\end{equation}
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw{{exact1_brick.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw{{exact1_poly.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw{{exact1_tetra.cropped}.png}
+	\end{subfigure}%	
+	\caption{Computed solutions $p_h$. Left: Brick mesh for~$\Omega = (-1,\,1)^3$, $\|p - p_h\|_{\lTwoSpace} = 2.03\times 10^{-14}$. Middle: Polyhedral prismatic mesh for~$\Omega = (0,\,1)^3$, $\|p - p_h\|_{\lTwoSpace} = 2.24\times 10^{-15}$. Right: Tetrahedral mesh for~$\Omega = (-3000,\,3000)^2\times(-4000,\,0)$, $\|p - p_h\|_{\lTwoSpace} = 2.47\times 10^{-7}$}
+	\label{fig:exact1}		
+\end{figure}
+
+Computed solutions~$p_h$ for three different domains and cell choices are shown in Figure~\ref{fig:exact1}. Note that the exact solution~$p$ in~\eqref{exact1} is an affine function, and the method recovers it exactly (up to the machine precision) w.r.t. mean values over the cells~$\bcell \in \bmesh$. 
+
+\footnotetext{Or to whatever method that was used to discretize local problems~\eqref{dual_mini}.}
+
+\subsection{Interface without multi-material faces}
+
+\AZ{TBA\dots}
+
+\subsection{Interface with multi-material faces}
+
+\AZ{TBA\dots}
+
+\section*{Acknowledgments}
+
+\AZ{Mikhail, please correct the details.}
+Funded by the Department of Energy at Los Alamos National Laboratory
+under contracts DE-AC52-06NA25396 and the DOE Office of Science
+Advanced Computing Research (ASCR) program in Applied Mathematical
+Sciences. Alexander Zhiliakov acknowledges the internship opportunity in the Los Alamos National Laboratory.
+
+\bibliographystyle{plain}
+\bibliography{bibl}
+
+\end{document}

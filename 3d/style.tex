@@ -1,0 +1,110 @@
+\documentclass[12pt]{article}
+
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd} % \llbracket for jumps
+\usepackage{bbm}
+\newtheorem*{remark}{Remark}
+
+\usepackage[dvipsnames, table]{xcolor}
+\colorlet{DarkRed}{Red!90!black}
+\colorlet{LightRed}{Red!10!white}
+\colorlet{DarkGreen}{Green!50!black}
+\colorlet{LightGreen}{Green!10!white}
+\usepackage{colortbl} % https://texblog.org/2011/04/19/highlight-table-rowscolumns-with-color/
+
+% sections
+\usepackage{titlesec} % https://latex.org/forum/viewtopic.php?t=10456
+\titleformat*{\section}{\large\bfseries}
+\titlespacing*{\section}{0pt}{2mm}{2mm}
+\titleformat{\subsection}[runin]% runin puts it in the same paragraph
+{\normalfont\bfseries}% formatting commands to apply to the whole heading
+{\thesubsection}% the label and number
+{0.5em}% space between label/number and subsection title
+{}% formatting commands applied just to subsection title
+[.]% punctuation or other commands following subsection title
+\titlespacing*{\subsection}{0pt}{2mm}{2mm}
+\titleformat{\subsubsection}[runin]{\normalfont\bfseries}{\thesubsubsection}{0.5em}{}[.]
+\titlespacing*{\subsubsection}{0pt}{2mm}{2mm}
+
+% links
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks,
+	linkcolor={DarkRed},
+	citecolor={DarkRed},
+	urlcolor={blue}
+}
+
+\usepackage{geometry}
+\newgeometry{
+	left=2cm, right=1.5cm, top=1.5cm, bottom=1.5cm,
+	includefoot, heightrounded
+}
+
+\usepackage[parfill]{parskip} % https://tex.stackexchange.com/a/16703/135296
+
+% sub figures / grids of pictures
+\usepackage{graphicx}
+\graphicspath{{../img/3d/}} % includegraphics path
+\newcommand{\includegraphicsw}[2][1.]{\includegraphics[width=#1\linewidth]{#2}}
+
+% tables
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{float} % for H
+
+% bold for everything
+\usepackage{bm}
+\usepackage{dutchcal} % lowercase mathcal font
+\newcommand{\vect}[1]{\boldsymbol{\mathbf{#1}}}
+
+\newcommand{\bcell}{T}
+\newcommand{\bmesh}{{\vect{\mathcal T}}}
+\newcommand{\mcell}{\tau}
+\newcommand{\mmesh}{{\vect{\mathcal \tau}}}
+\newcommand{\bface}{F}
+\newcommand{\bfaces}[1][]{{\vect{\mathcal F}_{\text{#1}}}}
+\newcommand{\mface}{f}
+\newcommand{\mfaces}[1][]{{\vect{\mathcal f}_{\text{#1}}}}
+
+\newcommand{\LTwo}{{\mathbbm L^2}}
+\newcommand{\lTwo}{{\ell^2}}
+\newcommand{\HDiv}{{\mathbbm H_\text{div}}}
+\newcommand{\Rn}[1]{{\mathbbm R^{#1}}}
+\newcommand{\Pn}[1]{{\mathbbm P^{#1}}}
+\newcommand{\LTwoSpace}[1][\Omega]{{\mathbbm L^2\left({#1}\right)}}
+\newcommand{\lTwoSpace}[1][\Omega]{{\ell^2\left({#1}\right)}}
+\newcommand{\HDivSpace}[1][\Omega]{{\mathbbm H_\text{div}\left({#1}\right)}}
+\newcommand{\HDivNodeSpace}[1][\Omega]{{\mathbbm H_\text{div,\,0}\left({#1}\right)}}
+\newcommand{\HHalfSpace}[1][\bface]{{\mathbbm H^{\frac{1}{2}}\left({#1}\right)}}
+\newcommand{\PnSpace}[2]{{\mathbbm P^{#1}\left({#2}\right)}}
+\newcommand{\HSpace}[1]{{\mathbbm H^{#1}\left(\Omega\right)}}
+
+\newcommand{\errlTwo}[1]{e^{\lTwo}_{#1}}
+\newcommand{\errInf}[1]{e^{\infty}_{#1}}
+
+% differentials
+\newcommand*\diff{\mathop{}\!\mathrm{d}}
+\newcommand*\Diff[1]{\mathop{}\!\mathrm{d^#1}}
+
+\usepackage{listings}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\lstset{
+	language=C++,
+	basicstyle=\footnotesize\ttfamily,
+	breaklines=true,
+	commentstyle=\color{mygreen},
+	frame=l,
+	xleftmargin=5pt,
+	tabsize=2,
+	belowskip=-1pt
+} 
+
+% https://tex.stackexchange.com/questions/9425/how-to-fix-footnote-position-at-the-bottom-of-the-page
+\usepackage[bottom]{footmisc}
+
+% remarks and comments
+\newcommand{\AZ}[1]{{\color{red}\textbf{AZ}:~#1}}

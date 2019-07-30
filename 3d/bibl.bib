@@ -1,0 +1,72 @@
+@article{ZHILIAKOV2019333,
+	title = "A higher order approximate static condensation method for multi-material diffusion problems",
+	journal = "Journal of Computational Physics",
+	volume = "395",
+	pages = "333--350",
+	year = "2019",
+	issn = "0021-9991",
+	doi = "https://doi.org/10.1016/j.jcp.2019.06.044",
+	url = "http://www.sciencedirect.com/science/article/pii/S0021999119304528",
+	author = "Alexander Zhiliakov and Daniil Svyatskiy and Maxim Olshanskii and Evgeny Kikinzon and Mikhail Shashkov",
+	keywords = "High contrast diffusion coefficients, Unfitted meshes, Approximate static condensation method, Mimetic finite differences, Volume-of-fluid method",
+	abstract = "The paper studies an approximate static condensation method for the diffusion problem with discontinuous diffusion coefficients. The method allows for a general polygonal mesh which is unfitted to the material interfaces. Moreover, the interfaces can be discontinuous across the mesh edges as typical for numerical reconstructions using the volume or moment-of-fluid methods. We apply a mimetic finite difference method to solve local diffusion problems and use P1 (mortar) edge elements to couple local problems into the global system. The condensation process and the properties of the resulting algebraic system are discussed. It is demonstrated that the method is second order accurate on smooth solutions and performs well for problems with high contrast in diffusion coefficients. Experiments also show the robustness with respect to position of the material interfaces against the underlying mesh."
+}
+
+@inproceedings{shapo2d,
+	author = {Pouderoux, Joachim and Berndt, Markus and Kenamond, Mack and Shashkov, Mikhail},
+	year = {2015},
+	title = {{ShaPo: A Framework for Generating 2D Voronoi Meshes}}
+}
+
+@inproceedings{shapo3d,
+	author = {Shashkov, Mikhail and Pouderoux, Joachim and Charest, M and Kenamond, Mack},
+	year = {2017},
+	title = {{2D and 3D Voronoi Meshes Generation with ShaPo}},
+	doi = {10.13140/RG.2.2.28985.06242}
+}
+
+@misc{amanzi,
+	title = {{AMANZI: The Multi-Process HPC Simulator}},
+	howpublished = {\url{https://github.com/amanzi/amanzi}},
+	note = {Accessed: \today}
+}
+
+@misc{tangram,
+	title = {{Tangram: Interface reconstruction framework}},
+	howpublished = {\url{https://github.com/laristra/tangram}},
+	note = {Accessed: \today}
+}
+
+@misc{exo,
+	title = {{SEACAS: The Sandia Engineering Analysis Code Access System}},
+	howpublished = {\url{https://gsjaardema.github.io/seacas/}},
+	note = {Accessed: \today}
+}
+
+@article{kikinzon2017approximate,
+  title={Approximate static condensation algorithm for solving multi-material diffusion problems on meshes non-aligned with material faces},
+  author={Kikinzon, Evgeny and Kuznetsov, Yuri and Lipnikov, Konstatin and Shashkov, Mikhail},
+  journal={Journal of Computational Physics},
+  volume={347},
+  pages={416--436},
+  year={2017},
+  publisher={Elsevier}
+}
+
+@article{kikinzon2018xmof,
+  title={Establishing mesh topology in multi-material cells: Enabling technology for robust and accurate multi-material simulations},
+  author={Kikinzon, Evgeny and Shashkov, Mikhail and Garimella, Rao},
+  journal={Computers and Fluids},
+  volume={172},
+  pages={251--263},
+  year={2018},
+  publisher={Elsevier}
+}
+
+@book{MFDbook,
+  title={The mimetic finite difference method for elliptic problems},
+  author={da Veiga, Louren{\c{c}}o Beirao and Lipnikov, Konstantin and Manzini, Gianmarco},
+  volume={11},
+  year={2014},
+  publisher={Springer}
+}
