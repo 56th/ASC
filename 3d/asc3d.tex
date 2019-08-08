@@ -49,6 +49,28 @@ with boundary data
 		\llbracket\vect u \cdot \hat{\vect n}\rrbracket = 0\quad\:\:\text{on } F,\:\:\:\:
 	& \qquad\quad \forall~F\in\bfaces[int]. \label{flux_cond}
 \end{eqnarray}
+
+In the weak form this problem is formulated as follows:
+find $\vect u \in \bigotimes\limits_{\bcell\in\bmesh}\HDivSpace[\bcell]$ s.t. $\vect u \cdot \hat{\vect n} = g_N$ on $\partial\Omega_N$, $ p\in\LTwoSpace$, $\lambda\in\HHalfSpace[{\bfaces[int]}]$ such that
+	\begin{equation}\label{weak_form}
+		\begin{split}
+			\int_{\Omega} \vect K^{-1}\,\vect u\cdot\vect v \diff \vect x - \sum_{\bcell\in\bmesh}\int_\bcell p\,\nabla\cdot\vect v \diff \vect x + \sum_{\bface\in\bfaces[int]}\int_{\bface} \lambda\,\llbracket\vect v\cdot\hat{\vect n}\rrbracket \diff l &= -\int_{\partial\Omega_D} g_D\,\vect v\cdot\hat{\vect n} \diff l, \\
+			\sum_{\bcell\in\bmesh}\int_\bcell \nabla\cdot\vect u\,q \diff \vect x + \int_\Omega c\,p\,q \diff \vect x &= \int_\Omega f\,q \diff \vect x, \\
+			\sum_{\bface\in\bfaces[int]}\int_{\bface} \llbracket\vect u\cdot\hat{\vect n}\rrbracket\,\mu \diff l &= 0
+		\end{split}
+	\end{equation}
+	for all $\vect v \in \bigotimes\limits_{\bcell\in\bmesh}\HDivSpace[\bcell]$ s.t. $\vect v \cdot \hat{\vect n} = 0$ on $\partial\Omega_N$, $q \in \LTwoSpace[\Omega]$, and $\mu \in \HHalfSpace[{\bfaces[int]}]$.
+
+        We shall discretize problem \eqref{weak_form} on a particular cell $T$ in terms of average fluxes assigned to each face from $\mfaces(T)$,
+        we denote the corresponding vector by ${\vect u}_\mmesh\in\mathbb{R}^{n_f}$, $n_f=\#\mfaces(T)$,  and concentration values assigned to each cell ${\tau \in \mmesh(T)}$, we denote the corresponding vector by ${\vect p}_\mmesh\in\mathbb{R}^{n_p}$, $n_p=\#\mmesh(T)$. The given data is the source term vector ${\vect f}_\mmesh\in \mathbb{R}^{n_p}$ and the concentration values $\lambda$ on the boundary of $T$.
+	To approximate this boundary data \emph{for the local problem}, we introduce the vector
+	${\vect \lambda}_\mmesh\in\mathbb{R}^{n_\lambda}$, $n_\lambda=\#\mfaces[ext](T)$,
+	where we assign one averaged concentration value for each $f\in\mfaces[ext](T)$, so that ${\vect \lambda}_\mmesh$ can be seen as a piecewise-constant approximation of $\lambda$ with respect to the subdivision of $\partial T$ into the faces of the local mesh $\mmesh$.
+	
+
+%Before we go into details of the method, we note that $\lambda$ can also  be observed as the Lagrange multiplier corresponding to the normal flux condition~\eqref{flux_cond}.
+%The problem \eqref{dual_mini}--\eqref{flux_cond} can be formulated in the weak form:
+
 \begin{equation}\label{local}
 	\begin{pmatrix}
 		\phantom{-}\vect M_\mmesh & \vect B^T_\mmesh \\
@@ -59,9 +81,78 @@ with boundary data
 	\begin{pmatrix} \vect E_\mmesh\,\vect C_\mmesh\,{\vect \lambda}_\mmesh \\ {\vect f}_\mmesh \end{pmatrix}.
 \end{equation}
 
+\subsection{Lowest order method}
+
 \subsection{Higher order method} 
 
-\AZ{I would much appreciate if somebody adds the description. Daniil, could you do this? :)}
+%\AZ{I would much appreciate if somebody adds the description. Daniil, could you do this? :)}
+Let $\vect s_{ji}$ are the vectors which connects the centoroid of macroface $F_j$ and
+mini-faces $f_i$.
+The matrix $S_j=\{ \vect s_{j1}, \vect s_{j2} \dots \vect s_{jn}\}$ for macroface $F_j$
+is formed using $\vect s_{ji}$ as columns, $S_j \in {\mathbb R}^{3\times n}$. Since we assume
+that all macrofaces are planar then $rank(S_j) \le 2$. For better readability of the formulas we droppped the subscript $j$ bellow.
+Let consider $QR$ decomposition of matrix $S$. Since it is possible that $S$ has incomplete rank then:
+
+$$ S P = QR=(\vect q_1, \vect q_2, \vect q_3)
+\left(
+\begin{array}{cc}
+R_{11} & R_{12}\\
+0 & 0
+\end{array}
+\right),$$
+
+\noindent where $P$ is a permutation matrix, $Q \in \mathbb R^{3\times 3}$ is orthogonal matrix,
+$R_{11}\in \mathbb R^{2\times 2}$ is uppper triangular matrix and $R_{12} \in \mathbb R^{2\times(n-2)}$.
+For the sake of simplicity we assume that $P$ is identity matrix. This can be achieved by
+the corresponding ordering of mini-faces $f_i$. Now we impose the continuity condition for the inteface fluxes we need to introduce the discrete space on macrofaces and establish
+the relationship between degrees of freedom on mini and macrofaces. The degrees of freedom for $\lambda$ on minifaces are defined as :
+
+$$\lambda(f_i) = \frac{1}{|f_i|}\int_{f_i} \lambda dx$$
+
+If we introduce the average concentration on a macroface as one macroface degrees of freedom:
+
+$$\lambda^{(0)}(F) = \frac{1}{|F|}\int_{F} \lambda dx$$
+
+then $\lambda(f_i)$ can be expressed in terms of $\lambda(F)$ as follows:
+
+$$\lambda(f_i) = \lambda^{(0)}(F) + \nabla^T \lambda \cdot \vect s_i$$
+or
+$$\lambda_f^T =  \lambda^{(0)}(F) \vect e^T + \nabla^T \lambda S =
+\lambda^{(0)}(F) \vect e^T + \nabla^T \lambda (\vect q_1, \vect q_2, \vect q_3)
+\left(
+\begin{array}{cc}
+R_{11} & R_{12}\\
+0 & 0
+\end{array}
+\right) = $$
+$$\lambda^{(0)}(F) \vect e^T  + (\nabla^T \lambda  \cdot  \vect q_1, \nabla^T \lambda  \cdot  \vect q_2) \left(
+\begin{array}{cc}
+R_{11} & R_{12}
+\end{array}
+\right) = \lambda^{(0)}(F) \vect e^T + (\lambda^{(1)}(F),\lambda^{(2)}(F)) \left(
+\begin{array}{cc}
+R_{11} & R_{12}
+\end{array}
+\right).$$
+
+Here, the additional degrees of freedom $\lambda^{(k)}(F) = \nabla^T \lambda  \cdot  \vect q_k, k=1,2$
+are introduced and $\vect e$ is the vector of ones.
+
+To close the global linear system we neeed to impose the interface conditions for the fluxes $\vect u^{\text{ext}}_\mmesh$.
+
+\begin{equation}\label{flux_cont1}
+\int_F \vect u|_{\bcell^+}\cdot\hat{\vect n}\, \diff s =
+\int_F \vect u|_{\bcell^-}\cdot\hat{\vect n}\, \diff s, \text{for each } F \in \bfaces[int],
+\end{equation}
+
+
+\begin{equation}\label{flux_cont2}
+\int_F \vect u|_{\bcell^+}\cdot\hat{\vect n}\,({\vect r} \cdot \vect q_k^{\bcell^+}) \diff s =
+\int_F \vect u|_{\bcell^-}\cdot\hat{\vect n}\,({\vect r} \cdot \vect q_k^{\bcell^-}) \diff s,
+\quad k=1,2,  \quad \text{for each } F \in \bfaces[int],
+\end{equation}
+
+where ${\vect r}^T = (x-x_F, y-y_F, z-z_F).$
 
 \section{Implementation details}
 
