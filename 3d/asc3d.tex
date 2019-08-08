@@ -138,6 +138,20 @@ R_{11} & R_{12}
 Here, the additional degrees of freedom $\lambda^{(k)}(F) = \nabla^T \lambda  \cdot  \vect q_k, k=1,2$
 are introduced and $\vect e$ is the vector of ones.
 
+{\it Another interpretation of degrees of freedom could be somewhat similar to 2D version.The Lagrange multiplier space in can be defined as}:
+
+$$\Lambda=\left\{\lambda\in \LTwoSpace[{\bfaces[int]}]\,:\, \lambda\in {\widetilde P}_n~\text{for any}~F\in\bfaces[int]\right\}.
+$$
+\noindent {\it where ${\widetilde P}_n~$ is the polynomial space defined in a
+local coordinate system $\{\vect q_1, \vect q_2\}$.
+It is convenient to define degrees of freedom for $\lambda\in\Lambda$ in terms
+of its~$(n+1)$ moments $\lambda^{(i)}_F$ on every internal face $F\in\bfaces[int]$:
+
+\begin{equation}\label{asc_dofs}
+\lambda^{(i)}_F=\frac{\int_F  \lambda\,\phi_i \diff s}{|F|}, \quad i = 0, \dots, n.	\end{equation}
+Here~$\{\,\phi_i\,\}_{i=0,\dots,n}$ is the set of {\color{blue}$\LTwoSpace[F]$-orthogonal} polynomials on $F$ of degree~$n$ in a local coordinate system .
+}
+
 To close the global linear system we neeed to impose the interface conditions for the fluxes $\vect u^{\text{ext}}_\mmesh$.
 
 \begin{equation}\label{flux_cont1}
