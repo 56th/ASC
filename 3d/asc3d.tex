@@ -288,9 +288,42 @@ Computed solutions~$p_h$ for three different domains and cell choices are shown 
 
 \AZ{TBA: $p = 1$ (voronoi sandwich mesh) and $p = 2\,z + 1$ (square)}
 
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw[.9]{{skewed_exact_k.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw[.9]{{skewed_k.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw[.9]{{skewed_vor_k.cropped}.png}
+	\end{subfigure}%
+	\vskip .3cm
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw[.9]{{skewed_exact.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw[.9]{{skewed.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw[.9]{{skewed_vor.cropped}.png}
+	\end{subfigure}%	
+	\caption{Computed solutions $p_h$. Left: Multi-material faces lie only in $xy$-plane, $\|p - p_h\|_{\lTwoSpace} = 1.08\times 10^{-14}$. Middle and right: Slightly perturbed interface so we have that $p$ is not constant on all multi-material faces, $\|p - p_h\|_{\lTwoSpace} = 3.10\times 10^{-10}$ (Middle) and $\|p - p_h\|_{\lTwoSpace} = 3.17\times 10^{-3}$ (Right)}
+	\label{fig:skewed}		
+\end{figure}
+
 \subsection{General example: planar sandwich}
 
 \AZ{TBA: high-contrast $k$, sequence of voronoi and brick meshes (skewed parallel interfaces), compare with homo, plot fluxes}
+
+Pic: $p_h$ + fluxes and error for cyl
 
 \section*{Acknowledgments}
 
