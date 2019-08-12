@@ -1,0 +1,109 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[dvips]{epsfig}
+\usepackage{graphicx}%,amsmath,amsthm,amsfonts,cite}
+\usepackage{showkeys}
+\usepackage{subfigure}
+\usepackage{epsfig}
+\usepackage{color}
+\usepackage{hyperref}
+%\usepackage{nath}
+
+
+\newcommand{\anna}[2][cyan]{\emph{\textcolor{#1}{#2}}}
+\definecolor{blueg}{rgb}{0.2, 0.2, 0.6}
+\newcommand{\gp}[2][blueg]{\emph{\textcolor{#1}{#2}}}
+\newcommand{\stef}[2][red]{\emph{\textcolor{#1}{#2}}}
+\textwidth=15.5cm
+\textheight=22.0cm
+\hoffset=-1.2cm
+\voffset=-2.3cm
+\parskip=10pt
+\parindent=0pt
+\def\rc#1{\textcolor{red}{#1}}
+
+\usepackage{soul} % https://tex.stackexchange.com/a/260567/135296
+\DeclareRobustCommand{\hlcyan}[1]{{\sethlcolor{cyan}\hl{#1}}}
+
+%\include{commands.tex}
+
+\usepackage{dutchcal}
+\newcommand{\vect}[1]{\boldsymbol{\mathbf{#1}}}
+\newcommand{\mfaces}[1][]{{\vect{\mathcal f}_{\text{#1}}}}
+\newcommand{\bfaces}[1][]{{\vect{\mathcal F}_{\text{#1}}}}
+
+%\pagestyle{empty}
+\begin{document}
+
+\begin{center}A list of changes  and responses to reviewers for ``A higher order approximate static condensation method for multi-material diffusion problems'' by A. Zhiliakov, D. Svyatskiy, M. Olshanskii, E. Kikinzon, M. Shashkov.
+\end{center}
+\bigskip
+
+%We are grateful to the reviewers for a careful read of the manuscript and constructive suggestions, which lead to an improved paper.
+%We addressed all points raised by the reviewers as outlined below.  \\
+
+
+%\centerline{
+%{\Large {SISC manuscript \#M116618}}
+%}
+
+Reviewer 1 requested no modifications to the manuscript. Thus, in this document we are  addressing the points raised by Reviewer 2.
+
+\textbf{Answers to Reviewer 2}
+
+The authors would like to thank the Reviewer for a careful read of the manuscript and his/her comments and
+constructive suggestions, which led to an improved paper. We addressed all points raised by the reviewers as outlined below.
+In the following
+we use italic font to quote the Reviewer.
+Our revised article has been modified accordingly, with the changes {highlighted in blue}.\\
+
+
+\emph{(1) Page 1, paragraph 2: ``growth in developing of efficient computational techniques," change to ``growth in the development of efficient computational techniques."}
+
+Fixed.
+
+\emph{(2) Page 5, paragraph 1: ``We shall distinct between the subset of internal and external faces." Should change ``distinct" to ``distinguish."}
+
+Fixed.
+
+\emph{(3) Page 6, right above equation (7): ``we need to distinct the vector" should be changed to ``we need to distinguish the vector"}
+
+Fixed.
+
+\emph{(4) Page 7: ``However, we cannot do this in a straightforward way, since the discontinuity of material interfaces across the macro-mesh faces may lead to a mismatch of discrete fluxes... including different space dimensions." This sentence can be written more clearly. In particular, the phrase ``including different space dimensions" is a bit confusing. I think you are alluding to the fact that neighboring macro cells $T^{+}$ and $T^{-}$ that share a macro-face in $\bfaces_{\text{int}}$ can have different numbers of (mini) faces that make up the macro-face (i.e., $\#\mfaces[ext](T^+) \neq \#\mfaces[ext](T^-)$), and therefore the concentration vectors~$\vect \lambda_{\boldsymbol{\tau}}$, restricted to each macro-face, can be of different sizes (and, even if the sizes are the same, the location of the faces will be different and so matching these values is not trivial). You might want to put in a sentence or two spelling this out more, and perhaps point to Figure 2 in the description. Introducing the phrase ``micro-face" and the notation $\mfaces[ext](T^+)$, etc., earlier, as done on page 7, will help with the clarity.}
+
+We elaborated on this (page 7, paragraph 3) and added Figure 3 to illustrate the d.o.f. mismatch.
+
+\emph{(5) Page 7, just below equation (11): ``... is the set of $L_{2}\left(\Omega\right)$-orthogonal polynomials on $F$ of degree $n$." Since $\Omega$ is the entire spatial domain and the functions $s_{i}$ are polynomials defined only on each macro-face $F$ (and not on $\Omega$), shouldn't this be $L_{2}\left(F\right)$ instead of $L_{2}\left(\Omega\right)$?}
+
+Indeed, it should be~$L_{2}\left(F\right)$. Fixed.
+
+\emph{(6) On Page 7, you refer (I think) for the first time to faces in $\bfaces[int]$ as macro-faces and faces in $\mfaces(T)$ as mini-faces. Although it is pretty clear what you mean, if this is indeed the first time you define these terms, then they should be defined earlier in Section 3. In particular, in Section 3 you refer to mini-faces as faces. Making this distinction early on would actually make the descriptions in Section 3 more clear.}
+
+We added the explanation for what we mean by ``mini-faces" and ``macro-faces" to the beginning of Section 3 (page 6, paragraph 1).
+
+\emph{(7) Page 10, going from (18) to (19): you introduce $\mathbf{C}_{\boldsymbol{\tau}}$ on page 6 only as ``the mass matrix for $\vect \lambda_{\boldsymbol{\tau}}$ unknowns." It is hard for me, from this minimal description, to see that equation (18) is the equation (19) written in matrix form. Can you add more detail in the description of $\mathbf{C}_{\boldsymbol{\tau}}$ to help clarify this? In particular, an extra few sentences of detail would be very helpful here, to make the exposition more self-contained.}
+
+We made the definition of~$\vect C_{\boldsymbol{\tau}}$ more precise (page 6, below equation (6)). We also added equation~(18) on page 9 where we precisely defined ``signed distances" to make the flux continuity condition written in the matrix form more transparent. Hence ``equation (18) is the equation (19) written in matrix form" now reads as ``equation (19) is the equation (20) written in matrix form."
+
+We simplified the second continuity condition in (19), page 10, by integrating the first moment~$s_1$. This makes it easy to see the matrix form in the equation~(20).
+
+\emph{(8) Page 11: ``Clearly, matrix $\mathbf{R}_{\boldsymbol{\tau}}$ has a non-trivial kernel iff $s_{ki}=s_{kj}, \quad i,j=1,\ldots,m_{k}$. Shouldn't it be: iff there is a $k$ such that $s_{ki}=s_{kj}$ for some $i$ and $j$? For example, $\mathbf{R}_{\boldsymbol{\tau}}$ just below equation (17) shares two rows and so is singular if, e.g., $s_{21}=s_{22}$.}
+
+%After the previous correction, ``$\mathbf{R}_{\boldsymbol{\tau}}$ just below equation (17) shares two rows and so is singular if, e.g., $s_{21}=s_{22}$" reads as ``$\mathbf{R}_{\boldsymbol{\tau}}$ just below equation (18) shares two rows and so is singular if, e.g., $s_{21}=s_{22}$."
+
+Matrix~$\mathbf{R}_{\boldsymbol{\tau}}$ is not singular for it is not a square matrix if the corresponding cell has a multi-material face. We only prove that it has a trivial kernel, i.e. its columns are linearly independent, which is indeed the case if $s_{ki}\neq s_{kj}$ for some $i\neq j$. So no changes are needed here.
+
+\emph{(9) ``It is important to take into accont", page 15, accont $=>$ account"}
+
+Fixed.
+
+%
+%\textbf{Other minor changes}
+%
+%The changes are \hl{highlighted in yellow}.
+%
+%(1) Page 2, paragraph 2: ``standard discretization thechniques" changed to ``standard discretization techniques."
+
+\end{document}

@@ -1,0 +1,76 @@
+%% Creator: Inkscape inkscape 0.92.3, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'e_plus_1.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{500.00001526bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.95999997)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{e_plus_2.pdf}}%
+    \put(0.14,0.45){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.60205931\unitlength}\raggedright \rotatebox{90}{$\lambda^{(0)}_4(\bcell)$}\end{minipage}}}%
+    \put(0.14,0.65){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.60205931\unitlength}\raggedright \rotatebox{90}{$\lambda^{(1)}_4(\bcell)$}\end{minipage}}}%
+    \put(0.14446781,0.06770095){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.60205931\unitlength}\raggedright $F$\end{minipage}}}%
+    \put(1.015,0.45){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.60205931\unitlength}\raggedright \rotatebox{90}{$\lambda^{(0)}_2(\bcell)$}\end{minipage}}}%
+    \put(1.015,0.65){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.60205931\unitlength}\raggedright \rotatebox{90}{$\lambda^{(1)}_2(\bcell)$}\end{minipage}}}%
+    \put(0.45,0.08){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.60205931\unitlength}\raggedright $\lambda^{(0)}_1(\bcell)$\end{minipage}}}%
+    \put(0.65,0.08){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.60205931\unitlength}\raggedright $\lambda^{(1)}_1(\bcell)$\end{minipage}}}%
+    \put(0.45,0.95){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.60205931\unitlength}\raggedright $\lambda^{(0)}_3(\bcell)$\end{minipage}}}%
+    \put(0.65,0.95){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.60205931\unitlength}\raggedright $\lambda^{(1)}_3(\bcell)$\end{minipage}}}%
+    \put(0.233,0.16451129){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.62021658\unitlength}\raggedright $\lambda_{11}(\mmesh)$\end{minipage}}}%
+    \put(0.47713236,0.16434098){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.62021658\unitlength}\raggedright $\lambda_{12}(\mmesh)$\end{minipage}}}%
+    \put(0.81307623,0.16521083){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.62021658\unitlength}\raggedright $\lambda_{13}(\mmesh)$\end{minipage}}}%
+    \put(0.76031741,0.84997084){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.62021658\unitlength}\raggedright $\lambda_{31}(\mmesh)$\end{minipage}}}%
+    \put(0.35831742,0.84997084){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.62021658\unitlength}\raggedright $\lambda_{32}(\mmesh)$\end{minipage}}}%
+    \put(0.23989368,0.51){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.62021658\unitlength}\raggedright $\lambda_{41}(\mmesh)$\end{minipage}}}%
+    \put(0.83,0.26609836){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.62021658\unitlength}\raggedright $\lambda_{21}(\mmesh)$\end{minipage}}}%
+    \put(0.82,0.51){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.62021658\unitlength}\raggedright $\lambda_{22}(\mmesh)$\end{minipage}}}%
+    \put(0.82,0.75323313){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.62021658\unitlength}\raggedright $\lambda_{23}(\mmesh)$\end{minipage}}}%
+  \end{picture}%
+\endgroup%
