@@ -335,6 +335,21 @@ Computed solutions~$p_h$ for three different domains and cell choices are shown 
 	\label{fig:cyl}		
 \end{figure}
 
+\begin{table}[H]
+	\centering\footnotesize
+	\caption{Convergence results for the cylinder example} 
+	\label{tab:cyl}
+	\begin{subtable}{1.\linewidth}
+		\centering
+		\begin{tabular}[1.2]{|c||c|c||c||c|}
+			\hline
+			$h$ & $\| p - p_h \|_{\lTwoSpace}$ & Order & $| \bar p - \bar p_h |$ & $\| p - p_h \|_{\infty}$ \\ 
+			\hline
+			\input{cyl_table.tex}
+		\end{tabular}
+	\end{subtable}%
+\end{table}
+
 \AZ{TBA: high-contrast $k$, sequence of voronoi and brick meshes (skewed parallel interfaces), compare with homo, plot fluxes}
 
 Pic: $p_h$ + fluxes and error for cyl
