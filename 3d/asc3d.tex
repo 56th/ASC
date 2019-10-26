@@ -319,7 +319,9 @@ Computed solutions~$p_h$ for three different domains and cell choices are shown 
 	\label{fig:skewed}		
 \end{figure}
 
-\subsection{General example: planar sandwich}
+\subsection{Planar sandwich}
+
+We choose~$\vect K = k\,\vect I$ with $k = 10^4$ in the middle part of the domain, and $k = 1$ in the left and right parts; $c = 2$, $f = 0$, and $\partial\Omega = \partial\Omega_D$ in~\eqref{dual} and~\eqref{dual:bc}. The exact solution is continuous piecewise linear s.t. its normal flux is also continuous.
 
 \begin{figure}[H]
 	\centering
@@ -337,7 +339,7 @@ Computed solutions~$p_h$ for three different domains and cell choices are shown 
 
 \begin{table}[H]
 	\centering\footnotesize
-	\caption{Convergence results for the cylinder example} 
+	\caption{Convergence results for the cylinder example. $\bar q$ denotes the mean value of a function~$q$} 
 	\label{tab:cyl}
 	\begin{subtable}{1.\linewidth}
 		\centering
@@ -350,17 +352,86 @@ Computed solutions~$p_h$ for three different domains and cell choices are shown 
 	\end{subtable}%
 \end{table}
 
-\AZ{TBA: high-contrast $k$, sequence of voronoi and brick meshes (skewed parallel interfaces), compare with homo, plot fluxes}
+\AZ{TBA: compare with homo. methods}
 
-Pic: $p_h$ + fluxes and error for cyl
+\subsection{Spherical inclusion}
+
+We choose~$\vect K = k\,\vect I$ with $k = 1$ inside the sphere and $k = 100$ outside; $c = 1$ and $\partial\Omega = \partial\Omega_D$ in~\eqref{dual} and~\eqref{dual:bc}. The exact solution is set to be continuous piecewise quadratic s.t. its normal flux is also continuous across the interface. Load data~$f$ is computed from the exact solution.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw[.9]{{incl100.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw[.9]{{incl1000.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw[.9]{{incl10000.cropped}.png}
+	\end{subfigure}%
+	\vskip .3cm
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw[.9]{{incl100_k.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw[.9]{{incl1000_k.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.33\linewidth}
+		\centering
+		\includegraphicsw[.9]{{incl10000_k.cropped}.png}
+	\end{subfigure}
+	\caption{Spherical material inclusion for $h \in \{ 6.44\times 10^{-1}, 2.97\times 10^{-1}, 1.53\times 10^{-1}\}$ resulting from Tangram moment-of-fluid interface reconstruction. Note that the interface is discontinuous}
+	\label{fig:incl}		
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{.5\linewidth}
+		\centering
+		\includegraphicsw[.9]{{sph_p_1000.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.5\linewidth}
+		\centering
+		\includegraphicsw[.9]{{sph_e_1000.cropped}.png}
+	\end{subfigure}%
+	\vskip .3cm
+	\begin{subfigure}{.5\linewidth}
+		\centering
+		\includegraphicsw[.9]{{sph_p_10000.cropped}.png}
+	\end{subfigure}%
+	\begin{subfigure}{.5\linewidth}
+		\centering
+		\includegraphicsw[.9]{{sph_e_10000.cropped}.png}
+	\end{subfigure}%	
+	\caption{Computed solution $p_h$ and corresponding error~$(p - p_h)$, $h = 2.97\times 10^{-1}$ (Top) and $h = 1.53\times 10^{-1}$ (Bottom)}
+	\label{fig:sph}		
+\end{figure}
+
+\begin{table}[H]
+	\centering\footnotesize
+	\caption{Convergence results for the spherical inclusion example. $\bar q$ denotes the mean value of a function~$q$} 
+	\label{tab:cube}
+	\begin{subtable}{1.\linewidth}
+		\centering
+		\begin{tabular}[1.2]{|c||c|c||c||c|}
+			\hline
+			$h$ & $\| p - p_h \|_{\lTwoSpace}$ & Order & $| \bar p - \bar p_h |$ & $\| p - p_h \|_{\infty}$ \\ 
+			\hline
+			\input{cube_table.tex}
+		\end{tabular}
+	\end{subtable}%
+\end{table}
+
+We see that for this example the reconstructed interface is actually discontinuous, and the convergence rate for pressure $\lTwoSpace$-error is worse than for piecewise linear case (where the interface is reconstructed exactly), cf. Tables~$\ref{tab:cyl}$ and \ref{tab:cube}. However, in both cases convergence rate is close to one. We see that $\ell^\infty(\Omega)$-error is sensitive to small isolated material volumes that appear to have ``wrong'' material ID after the interface reconstruction (similar to what we observe for 2D case, cf.~\cite[Section~4.3.1]{ZHILIAKOV2019333}); however, this does not affect the $\lTwoSpace$-error.
 
 \section*{Acknowledgments}
 
-\AZ{Mikhail, please correct the details.}
-Funded by the Department of Energy at Los Alamos National Laboratory
-under contracts DE-AC52-06NA25396 and the DOE Office of Science
-Advanced Computing Research (ASCR) program in Applied Mathematical
-Sciences. Alexander Zhiliakov acknowledges the internship opportunity in the Los Alamos National Laboratory.
+This work was performed under the auspices of the National Nuclear Security Administration of the US Department of Energy at Los Alamos National Laboratory under Contract No.~89233218CNA000001. The authors gratefully acknowledge the support of the NNSA Advanced Simulation and Computing ASC) Program.
 
 \AZ{Add building / running instructions as an appendix}
 
